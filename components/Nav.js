@@ -12,8 +12,6 @@ const COVER_ITEMS = [
 ];
 
 const regionItems = (slug) => [
-  [`/${slug}/route-finder`, "Route Finder"],
-  [`/${slug}/find-port`, "Find My Port"],
   [`/${slug}/planner`, "Trip Planner"],
   [`/${slug}/split-charter`, "Split Charters"],
   [`/${slug}/ports`, "All Ports"],

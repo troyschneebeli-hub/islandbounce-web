@@ -8,9 +8,7 @@ export const metadata = {
 };
 
 const TOOLS = [
-  { href: "/indonesia/route-finder", title: "Route Finder", blurb: "Type your address, pick a destination — every exit port's real drive time and boat crossing in one search." },
-  { href: "/indonesia/find-port", title: "Find My Closest Port", blurb: "Real driving times from your hotel to every Bali port." },
-  { href: "/indonesia/planner", title: "Trip Planner", blurb: "Drive + boat math for every departure to your destination." },
+  { href: "/indonesia/planner", title: "Trip Planner", blurb: "Type your address, pick a destination — every exit port's real drive time and boat crossing, drawn on an interactive map." },
   { href: "/indonesia/ports", title: "All Ports", blurb: "Every harbor across Bali, the Gilis, Nusa & Lombok." },
   { href: "/indonesia/compare", title: "Compare Boats", blurb: "Quick side-by-side operator comparison." },
 ];
