@@ -1,14 +1,30 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { COLORS } from "@/lib/theme";
 import { PLANNER_DESTINATIONS } from "@/data/planner";
 import AddressAutocomplete from "@/components/AddressAutocomplete";
 import FindPortMap from "@/components/FindPortMap";
 
+// useSearchParams() requires a Suspense boundary in the Next.js App Router
+// (otherwise the production build fails with "should be wrapped in a
+// suspense boundary") — this outer component is just that wrapper.
 export default function FindPortPage() {
+  return (
+    <Suspense fallback={null}>
+      <PlannerContent />
+    </Suspense>
+  );
+}
+
+function PlannerContent() {
+  const searchParams = useSearchParams();
+  const prefillDestination = searchParams.get("to");
   const [address, setAddress] = useState("");
-  const [destination, setDestination] = useState(PLANNER_DESTINATIONS[0]);
+  const [destination, setDestination] = useState(
+    PLANNER_DESTINATIONS.includes(prefillDestination) ? prefillDestination : PLANNER_DESTINATIONS[0]
+  );
   const [origin, setOrigin] = useState(null); // { lat, lng, label } — only set once a real place is picked
   const [activeDestination, setActiveDestination] = useState(null); // destination actually being searched, vs the dropdown's current value
   const [error, setError] = useState("");

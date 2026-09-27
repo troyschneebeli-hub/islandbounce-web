@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { COLORS } from "@/lib/theme";
+import SeaConditionsBadge from "@/components/SeaConditionsBadge";
 
 export default function PortCard({ port }) {
   return (
@@ -12,11 +13,16 @@ export default function PortCard({ port }) {
       <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 11, color: COLORS.brass, marginBottom: 10 }}>
         {port.frequency}
       </div>
+      {port.lat != null && port.lng != null && (
+        <div style={{ marginBottom: 12 }}>
+          <SeaConditionsBadge lat={port.lat} lng={port.lng} />
+        </div>
+      )}
       <Link
-        href="/indonesia/compare"
+        href="/indonesia/planner"
         style={{ fontSize: 12, fontWeight: 700, color: COLORS.sea, background: "none", border: `1px solid ${COLORS.sea}`, padding: "6px 12px", borderRadius: 6, textDecoration: "none", display: "inline-block" }}
       >
-        Compare boats from here →
+        Plan a route from here →
       </Link>
     </div>
   );

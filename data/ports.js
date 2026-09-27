@@ -9,14 +9,17 @@ export const BALI_PORTS = [
   { name: "Benoa / Nusa Dua", address: "Benoa Harbour, Benoa, Denpasar, Bali, Indonesia", lat: -8.7489, lng: 115.2126, blurb: "The closest port if you're based in Uluwatu, Jimbaran, or Nusa Dua — as little as 20–30 minutes away. Kuta and Seminyak aren't far either (25–30 minutes), but it's a longer haul from Canggu or Ubud (45 minutes to over an hour).", connects: "Gili Islands", frequency: "1–2 sailings/day" },
 ];
 
+// NOTE: approximate coordinates from general knowledge, not independently
+// verified against exact harbor points — good enough for map markers,
+// worth a spot-check against Google Maps directly before treating as precise.
 export const ISLAND_PORTS = [
-  { name: "Gili Trawangan", blurb: "The most-searched Gili — biggest island, most nightlife, most boat options.", connects: "Sanur, Padang Bai, Serangan, Bangsal", frequency: "Most-served Gili port by far" },
-  { name: "Gili Air", blurb: "Quieter than Trawangan, still well connected.", connects: "Sanur, Padang Bai, Serangan, Bangsal", frequency: "Similar frequency to Gili Trawangan" },
-  { name: "Gili Meno", blurb: "The smallest, quietest Gili — fewer direct services.", connects: "Padang Bai, Serangan", frequency: "Fewer direct sailings than Trawangan/Air" },
-  { name: "Nusa Penida", blurb: "Multiple harbors (Toyapakeh, Buyuk, Sampalan) depending on which Bali port you leave from.", connects: "Sanur, Kusamba, Padang Bai", frequency: "Very frequent from Kusamba; 2x/day from Padang Bai" },
-  { name: "Nusa Lembongan", blurb: "The other Nusa island — short hop from Sanur, short hop to Penida.", connects: "Sanur, Nusa Penida", frequency: "Multiple daily departures" },
-  { name: "Bangsal (Lombok)", blurb: "The main Lombok gateway to the Gilis — most fast boats land here.", connects: "Sanur, Padang Bai, Serangan, Gili Islands", frequency: "Most fast boats run once daily, ~8–9:30am" },
-  { name: "Senggigi (Lombok)", blurb: "Fewer operators than Bangsal, useful if you're staying on this stretch of coast.", connects: "Padang Bai", frequency: "1 daily departure, similar pattern to Bangsal" },
-  { name: "Lembar (Lombok)", blurb: "The public car-ferry port — slow, cheap, and the weather-reliable backup.", connects: "Padang Bai", frequency: "24/7, every 60–90 minutes" },
-  { name: "Gili Gede (SW Lombok)", blurb: "Under-covered, quieter southwest Lombok option, often via a Nusa Penida stop.", connects: "Serangan", frequency: "Limited — around 1 daily or less" },
+  { name: "Gili Trawangan", lat: -8.3496, lng: 116.0463, blurb: "The most-searched Gili — biggest island, most nightlife, most boat options.", connects: "Sanur, Padang Bai, Serangan, Bangsal", frequency: "Most-served Gili port by far" },
+  { name: "Gili Air", lat: -8.3563, lng: 116.0836, blurb: "Quieter than Trawangan, still well connected.", connects: "Sanur, Padang Bai, Serangan, Bangsal", frequency: "Similar frequency to Gili Trawangan" },
+  { name: "Gili Meno", lat: -8.3453, lng: 116.0667, blurb: "The smallest, quietest Gili — fewer direct services.", connects: "Padang Bai, Serangan", frequency: "Fewer direct sailings than Trawangan/Air" },
+  { name: "Nusa Penida", lat: -8.7278, lng: 115.5444, blurb: "Multiple harbors (Toyapakeh, Buyuk, Sampalan) depending on which Bali port you leave from.", connects: "Sanur, Kusamba, Padang Bai", frequency: "Very frequent from Kusamba; 2x/day from Padang Bai" },
+  { name: "Nusa Lembongan", lat: -8.6784, lng: 115.4425, blurb: "The other Nusa island — short hop from Sanur, short hop to Penida.", connects: "Sanur, Nusa Penida", frequency: "Multiple daily departures" },
+  { name: "Bangsal (Lombok)", lat: -8.3489, lng: 116.0913, blurb: "The main Lombok gateway to the Gilis — most fast boats land here.", connects: "Sanur, Padang Bai, Serangan, Gili Islands", frequency: "Most fast boats run once daily, ~8–9:30am" },
+  { name: "Senggigi (Lombok)", lat: -8.4880, lng: 116.0410, blurb: "Fewer operators than Bangsal, useful if you're staying on this stretch of coast.", connects: "Padang Bai", frequency: "1 daily departure, similar pattern to Bangsal" },
+  { name: "Lembar (Lombok)", lat: -8.7402, lng: 116.0796, blurb: "The public car-ferry port — slow, cheap, and the weather-reliable backup.", connects: "Padang Bai", frequency: "24/7, every 60–90 minutes" },
+  { name: "Gili Gede (SW Lombok)", lat: -8.8180, lng: 116.0450, blurb: "Under-covered, quieter southwest Lombok option, often via a Nusa Penida stop.", connects: "Serangan", frequency: "Limited — around 1 daily or less" },
 ];

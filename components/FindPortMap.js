@@ -1,11 +1,12 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { BALI_PORTS } from "@/data/ports";
+import { BALI_PORTS, ISLAND_PORTS } from "@/data/ports";
 import { BOAT_ROUTES, genDepartures, CHECKIN_BUFFER_MIN, fmtMins } from "@/data/planner";
 import { buildTransportLink } from "@/lib/affiliateLinks";
 import { COLORS } from "@/lib/theme";
 import { loadGoogleMaps } from "@/components/AddressAutocomplete";
+import SeaConditionsBadge from "@/components/SeaConditionsBadge";
 
 // Light, bright map style built from the site's own palette (sand/sea/
 // coral) — a full flip from the earlier dark/neon version, to match the
@@ -37,20 +38,18 @@ const ACCENT_DIM = "#C9D8D2";
 
 const DEFAULT_BOUNDS = { south: -8.9, west: 114.85, north: -8.05, east: 116.18 };
 
-// NOTE: approximate coordinates from general knowledge, not independently
-// verified against exact harbor points — worth a spot-check against
-// Google Maps directly before treating as precise.
-const DESTINATION_COORDS = {
-  "Gili Trawangan": { lat: -8.3496, lng: 116.0463 },
-  "Gili Air": { lat: -8.3563, lng: 116.0836 },
-  "Gili Meno": { lat: -8.3453, lng: 116.0667 },
-  "Nusa Penida": { lat: -8.7278, lng: 115.5444 },
-  "Nusa Lembongan": { lat: -8.6784, lng: 115.4425 },
-  "Bangsal (Lombok)": { lat: -8.3489, lng: 116.0913 },
-  "Senggigi (Lombok)": { lat: -8.4880, lng: 116.0410 },
-  "Lembar (Lombok)": { lat: -8.7402, lng: 116.0796 },
-  "Gili Gede (SW Lombok)": { lat: -8.8180, lng: 116.0450 },
-};
+// A small boat silhouette (hull + cabin), pointing "up" at 0° rotation —
+// matches Google's rotation convention (0° = up, clockwise from there),
+// same as the built-in arrow symbol it replaces. Verified by rendering it
+// at several rotation angles before shipping, not just assumed to look
+// right rotated.
+const BOAT_ICON_PATH =
+  "M 0,-13 L -5,-7 L -5,8 Q -5,12 0,12 Q 5,12 5,8 L 5,-7 Z " +
+  "M -3,-2 L -3,6 Q -3,7 -2,7 L 2,7 Q 3,7 3,6 L 3,-2 Z";
+
+// Derived from the shared ISLAND_PORTS list in data/ports.js — one source
+// of truth for these coordinates instead of a second local copy.
+const DESTINATION_COORDS = Object.fromEntries(ISLAND_PORTS.map((p) => [p.name, { lat: p.lat, lng: p.lng }]));
 
 function easeOutCubic(t) {
   return 1 - Math.pow(1 - t, 3);
@@ -105,7 +104,7 @@ function lerpLatLng(a, b, t) {
   return { lat: a.lat + (b.lat - a.lat) * t, lng: a.lng + (b.lng - a.lng) * t };
 }
 
-export default function FindPortMap({ origin, destination, height = 520 }) {
+export default function FindPortMap({ origin, destination }) {
   const mapRef = useRef(null);
   const mapInstance = useRef(null);
   const routesRef = useRef([]); // [{ port, isFastest, glow, line, cancelDraw, fullPath }]
@@ -272,13 +271,14 @@ export default function FindPortMap({ origin, destination, height = 520 }) {
             icons: [{ icon: { path: "M 0,-1 0,1", strokeOpacity: 0.7, strokeColor: color, scale: 2.5 }, offset: "0", repeat: "14px" }],
           });
           const heading = computeHeading({ lat: o.port.lat, lng: o.port.lng }, destCoord);
+          const iconBase = { path: BOAT_ICON_PATH, scale: isFastest ? 1.15 : 0.9, fillColor: color, fillOpacity: 1, strokeColor: "#FFFFFF", strokeWeight: 1.2 };
           const boatMarker = new maps.Marker({
             position: { lat: o.port.lat, lng: o.port.lng },
             map: null,
-            icon: { path: maps.SymbolPath.FORWARD_CLOSED_ARROW, scale: isFastest ? 4.5 : 3.5, rotation: heading, fillColor: color, fillOpacity: 1, strokeColor: "#FFFFFF", strokeWeight: 1.2 },
+            icon: { ...iconBase, rotation: heading },
             zIndex: isFastest ? 20 : 15,
           });
-          seaLegsRef.current.push({ port: o.port.name, dashLine, boatMarker, rafId: null, from: { lat: o.port.lat, lng: o.port.lng }, to: destCoord, cycle: isFastest ? 3200 : 4200 });
+          seaLegsRef.current.push({ port: o.port.name, dashLine, boatMarker, rafId: null, from: { lat: o.port.lat, lng: o.port.lng }, to: destCoord, heading, iconBase, cycle: isFastest ? 4200 : 5400 });
           bounds.extend(destCoord);
         }
       });
@@ -305,6 +305,8 @@ export default function FindPortMap({ origin, destination, height = 520 }) {
         const driveMin = Math.round(o.driveSeconds / 60);
         return {
           port: o.port.name,
+          lat: o.port.lat,
+          lng: o.port.lng,
           connects: o.port.connects,
           driveMin,
           driveText: o.driveText,
@@ -348,9 +350,39 @@ export default function FindPortMap({ origin, destination, height = 520 }) {
         s.dashLine.setMap(mapInstance.current);
         s.boatMarker.setMap(mapInstance.current);
         const start = performance.now();
+
+        // Perpendicular unit vector to the direct line, so the boat can
+        // weave slightly side to side instead of gliding in a dead-straight
+        // line — reads as riding over swells rather than sliding on rails.
+        const dLat = s.to.lat - s.from.lat;
+        const dLng = s.to.lng - s.from.lng;
+        const dist = Math.hypot(dLat, dLng) || 1;
+        const perpLat = -dLng / dist;
+        const perpLng = dLat / dist;
+        const bobAmplitude = dist * 0.035;
+        const bobCycles = 3.5; // side-to-side oscillations across one crossing
+        const FADE_FRACTION = 0.07; // fraction of the cycle spent fading in/out at the seam
+
         function boatFrame(now) {
           const t = ((now - start) % s.cycle) / s.cycle;
-          s.boatMarker.setPosition(lerpLatLng(s.from, s.to, easeInOutSine(t)));
+          const eased = easeInOutSine(t);
+
+          const basePos = lerpLatLng(s.from, s.to, eased);
+          const bob = Math.sin(t * Math.PI * 2 * bobCycles) * bobAmplitude;
+          s.boatMarker.setPosition({ lat: basePos.lat + perpLat * bob, lng: basePos.lng + perpLng * bob });
+
+          // Rotation wobble, phase-offset from the bob so the boat's nose
+          // seems to roll and yaw slightly out of sync — closer to how a
+          // small boat actually moves than a perfectly rigid heading.
+          const rotationWobble = Math.sin(t * Math.PI * 2 * bobCycles + 0.6) * 7;
+          s.boatMarker.setIcon({ ...s.iconBase, rotation: s.heading + rotationWobble });
+
+          // Fade at the loop seam instead of an abrupt teleport back to the start.
+          let opacity = 1;
+          if (t < FADE_FRACTION) opacity = t / FADE_FRACTION;
+          else if (t > 1 - FADE_FRACTION) opacity = (1 - t) / FADE_FRACTION;
+          s.boatMarker.setOpacity(opacity);
+
           s.rafId = requestAnimationFrame(boatFrame);
         }
         s.rafId = requestAnimationFrame(boatFrame);
@@ -372,7 +404,7 @@ export default function FindPortMap({ origin, destination, height = 520 }) {
 
   if (error) {
     return (
-      <div style={{ height, background: COLORS.foam, borderRadius: 14, display: "flex", alignItems: "center", justifyContent: "center", padding: 20, textAlign: "center" }}>
+      <div className="h-[300px] sm:h-[380px] lg:h-[520px]" style={{ background: COLORS.foam, borderRadius: 14, display: "flex", alignItems: "center", justifyContent: "center", padding: 20, textAlign: "center" }}>
         <p style={{ fontSize: 12.5, color: COLORS.coralDeep }}>{error}</p>
       </div>
     );
@@ -380,7 +412,11 @@ export default function FindPortMap({ origin, destination, height = 520 }) {
 
   return (
     <div className="flex flex-col lg:flex-row gap-4">
-      <div style={{ position: "relative", height, overflow: "hidden", flex: "1 1 auto", minWidth: 0 }}>
+      <div
+        onClick={() => setHovered(null)}
+        className="h-[340px] sm:h-[440px] lg:h-[520px]"
+        style={{ position: "relative", overflow: "hidden", flex: "1 1 auto", minWidth: 0 }}
+      >
         {!loaded && (
           <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", background: "#F3ECDB", fontSize: 12.5, color: COLORS.sea, opacity: 0.7 }}>
             Loading map…
@@ -396,8 +432,8 @@ export default function FindPortMap({ origin, destination, height = 520 }) {
 
       {results.length > 0 && (
         <div
-          className="flex flex-row lg:flex-col gap-2 overflow-x-auto lg:overflow-x-visible lg:overflow-y-auto lg:max-w-[320px]"
-          style={{ flex: "0 0 auto", width: "100%", maxHeight: height, paddingTop: 12 }}
+          className="flex flex-row lg:flex-col gap-2 overflow-x-auto lg:overflow-x-visible lg:overflow-y-auto lg:max-w-[320px] lg:max-h-[520px]"
+          style={{ flex: "0 0 auto", width: "100%", paddingTop: 12 }}
         >
           <div className="flex flex-row lg:flex-col gap-2" style={{ minWidth: "min-content" }}>
             {results.map((r, i) => (
@@ -405,6 +441,7 @@ export default function FindPortMap({ origin, destination, height = 520 }) {
                 key={r.port}
                 onMouseEnter={() => setHovered(r.port)}
                 onMouseLeave={() => setHovered(null)}
+                onClick={() => setHovered(r.port)}
                 style={{
                   background: "white",
                   border: `1px solid ${hovered === r.port ? ACCENT_FASTEST : i === 0 ? ACCENT_FASTEST + "66" : COLORS.foamLine}`,
@@ -445,12 +482,15 @@ export default function FindPortMap({ origin, destination, height = 520 }) {
                 <div style={{ fontSize: 10.5, opacity: 0.65, color: COLORS.ink, marginTop: 8 }}>
                   {r.fastestBoat.operator}, departs {r.fastestBoat.depart} · ~{fmtMins(r.totalMin)} total
                 </div>
+                <div style={{ marginTop: 10, paddingTop: 10, borderTop: `1px solid ${COLORS.foamLine}` }}>
+                  <SeaConditionsBadge lat={r.lat} lng={r.lng} detailed />
+                </div>
                 <a
                   href={buildTransportLink(r.port, destination)}
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={(e) => e.stopPropagation()}
-                  style={{ display: "inline-block", marginTop: 8, fontSize: 11, fontWeight: 700, color: "white", background: COLORS.sea, padding: "5px 10px", borderRadius: 6, textDecoration: "none" }}
+                  style={{ display: "inline-block", marginTop: 10, fontSize: 11, fontWeight: 700, color: "white", background: COLORS.sea, padding: "5px 10px", borderRadius: 6, textDecoration: "none" }}
                 >
                   Compare on 12Go →
                 </a>
