@@ -4,7 +4,7 @@ import { REGIONS } from "@/data/regions";
 import { BALI_PORTS } from "@/data/ports";
 import { OPERATOR_POOL, PLANNER_DESTINATIONS } from "@/data/planner";
 import RegionCard from "@/components/RegionCard";
-import RouteNetworkMap from "@/components/RouteNetworkMap";
+import PortsOverviewMap from "@/components/PortsOverviewMap";
 import WaveDivider from "@/components/WaveDivider";
 import PoppyCard from "@/components/PoppyCard";
 import AverageConditionsWidget from "@/components/AverageConditionsWidget";
@@ -95,16 +95,19 @@ export default function IndonesiaHub() {
 
       <main className="relative left-1/2 right-1/2 -mx-[50vw] w-screen" style={{ background: "white", padding: "36px 20px 0" }}>
         <div style={{ maxWidth: 900, margin: "0 auto" }}>
-        {/* Route network diagram — plain, no card frame. */}
+        {/* Real Google Map showing every Bali port — replaces the earlier
+            hand-drawn SVG diagram, which capped out at "clean but obviously
+            not a real place." Actual geography looks better than my best
+            attempt at approximating it. */}
         <section style={{ marginBottom: 44 }}>
           <h2 style={{ fontFamily: "'Big Shoulders Display', sans-serif", fontWeight: 700, fontSize: 20, color: COLORS.sea, marginBottom: 4, textAlign: "center" }}>
-            Everywhere we connect
+            Where we operate
           </h2>
           <p style={{ fontSize: 13, color: COLORS.ink, opacity: 0.7, textAlign: "center", marginBottom: 16 }}>
-            Every port, every real route in our data — at a glance.
+            Every Bali departure port — tap a pin to see where it connects.
           </p>
           <div style={{ maxWidth: 640, margin: "0 auto" }}>
-            <RouteNetworkMap />
+            <PortsOverviewMap />
           </div>
         </section>
 
