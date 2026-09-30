@@ -20,7 +20,7 @@ const RISK_STYLE = {
 // detailed=false (default): compact badge, used on port cards.
 // detailed=true: badge plus a small breakdown of wave/swell numbers,
 // used inside the Trip Planner's per-port result cards.
-export default function SeaConditionsBadge({ lat, lng, detailed = false }) {
+export default function SeaConditionsBadge({ lat, lng, detailed = false, showDisclaimer = true }) {
   const [data, setData] = useState(null);
   const [error, setError] = useState(false);
 
@@ -83,10 +83,12 @@ export default function SeaConditionsBadge({ lat, lng, detailed = false }) {
           {data.waveHeight?.toFixed(1)}m waves · updated hourly
         </div>
       )}
-      <div style={{ fontSize: 10, opacity: 0.5, marginTop: 4, fontStyle: "italic" }}>
-        An estimate based on BMKG's published fast-boat/ferry wave thresholds and general reported patterns — not a
-        guarantee. The port authority and operator make the actual call on the day.
-      </div>
+      {showDisclaimer && (
+        <div style={{ fontSize: 10, opacity: 0.5, marginTop: 4, fontStyle: "italic" }}>
+          An estimate based on BMKG's published fast-boat/ferry wave thresholds and general reported patterns — not a
+          guarantee. The port authority and operator make the actual call on the day.
+        </div>
+      )}
     </div>
   );
 }

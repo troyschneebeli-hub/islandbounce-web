@@ -4,9 +4,9 @@ import { REGIONS } from "@/data/regions";
 import { BALI_PORTS } from "@/data/ports";
 import { OPERATOR_POOL, PLANNER_DESTINATIONS } from "@/data/planner";
 import RegionCard from "@/components/RegionCard";
-import PortsOverviewMap from "@/components/PortsOverviewMap";
 import WaveDivider from "@/components/WaveDivider";
 import PoppyCard from "@/components/PoppyCard";
+import { ROUTE_PAGES, ROUTE_SLUGS } from "@/data/routePages";
 import AverageConditionsWidget from "@/components/AverageConditionsWidget";
 
 export const metadata = {
@@ -80,37 +80,48 @@ export default function IndonesiaHub() {
           came here to click, styled as bold, popping buttons. */}
       <section className="relative left-1/2 right-1/2 -mx-[50vw] w-screen" style={{ background: "white", padding: "28px 20px 8px" }}>
         <div style={{ maxWidth: 900, margin: "0 auto" }}>
-          <div className="flex flex-wrap justify-center gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             {TOOLS.map((t) => (
-              <PoppyCard key={t.href} href={t.href} title={t.title} blurb={t.blurb} />
+              <PoppyCard key={t.href} href={t.href} title={t.title} blurb={t.blurb} width="100%" />
             ))}
             <PoppyCard
               href="/indonesia/destinations"
               title="Destination Guide"
               blurb="Real guides for the places we actually know well — Bali, the Gilis, Nusa & Lombok to start."
+              width="100%"
             />
+          </div>
+        </div>
+      </section>
+
+      {/* Popular routes — the actual target-keyword headings, right at the
+          top of the page for both visitors and Google, not buried lower down. */}
+      <section className="relative left-1/2 right-1/2 -mx-[50vw] w-screen" style={{ background: "white", padding: "8px 20px 32px" }}>
+        <div style={{ maxWidth: 900, margin: "0 auto", textAlign: "center" }}>
+          <h2 style={{ fontFamily: "'Big Shoulders Display', sans-serif", fontWeight: 700, fontSize: 20, color: COLORS.sea, marginBottom: 14 }}>
+            Popular routes
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3" style={{ maxWidth: 640, margin: "0 auto" }}>
+            {ROUTE_SLUGS.map((slug) => (
+              <Link
+                key={slug}
+                href={`/indonesia/routes/${slug}`}
+                style={{ display: "block", border: `1px solid ${COLORS.foamLine}`, borderRadius: 10, padding: "12px 16px", textDecoration: "none", textAlign: "left" }}
+              >
+                <h3 style={{ fontSize: 14.5, fontWeight: 700, color: COLORS.sea, margin: 0 }}>{ROUTE_PAGES[slug].name} →</h3>
+              </Link>
+            ))}
+          </div>
+          <div style={{ marginTop: 14 }}>
+            <Link href="/indonesia/routes" style={{ fontSize: 13, fontWeight: 700, color: COLORS.sea, textDecoration: "none", borderBottom: `1px solid ${COLORS.sea}55` }}>
+              See all routes
+            </Link>
           </div>
         </div>
       </section>
 
       <main className="relative left-1/2 right-1/2 -mx-[50vw] w-screen" style={{ background: "white", padding: "36px 20px 0" }}>
         <div style={{ maxWidth: 900, margin: "0 auto" }}>
-        {/* Real Google Map showing every Bali port — replaces the earlier
-            hand-drawn SVG diagram, which capped out at "clean but obviously
-            not a real place." Actual geography looks better than my best
-            attempt at approximating it. */}
-        <section style={{ marginBottom: 44 }}>
-          <h2 style={{ fontFamily: "'Big Shoulders Display', sans-serif", fontWeight: 700, fontSize: 20, color: COLORS.sea, marginBottom: 4, textAlign: "center" }}>
-            Where we operate
-          </h2>
-          <p style={{ fontSize: 13, color: COLORS.ink, opacity: 0.7, textAlign: "center", marginBottom: 16 }}>
-            Every Bali departure port — tap a pin to see where it connects.
-          </p>
-          <div style={{ maxWidth: 640, margin: "0 auto" }}>
-            <PortsOverviewMap />
-          </div>
-        </section>
-
         {/* Seasonal note — plain text block, no box, sized and colored for real readability. */}
         <section style={{ maxWidth: 620, margin: "0 auto 44px" }} className="flex items-start gap-4">
           <div style={{ fontSize: 24, lineHeight: 1 }}>🌊</div>

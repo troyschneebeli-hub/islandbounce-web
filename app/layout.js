@@ -1,9 +1,10 @@
 import "./globals.css";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
+import { SITE_URL } from "@/lib/site";
 
 export const metadata = {
-  metadataBase: new URL("https://islandbouncetravel.com"),
+  metadataBase: new URL(SITE_URL),
   title: {
     default: "IslandBounce — Compare boats. Find your island. Go properly.",
     template: "%s | IslandBounce",
@@ -20,10 +21,22 @@ export const viewport = {
   initialScale: 1,
 };
 
+// Tells Google directly what our official name and logo are, so it has
+// what it needs to show the logo in search results or a Knowledge Panel —
+// showing it is always Google's own call, this just makes it possible.
+const organizationLd = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "IslandBounce",
+  url: SITE_URL,
+  logo: `${SITE_URL}/images/logo.png`,
+};
+
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body>
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationLd).replace(/</g, "\\u003c") }} />
         <div style={{ minHeight: "100%" }}>
           <Nav />
           {children}
