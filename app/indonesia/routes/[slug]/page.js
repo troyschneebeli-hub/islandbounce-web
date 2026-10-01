@@ -152,7 +152,9 @@ export default function RoutePage({ params }) {
               Check availability and book on 12Go →
             </a>
             <p style={{ fontSize: 11.5, color: COLORS.ink, opacity: 0.6, marginTop: 10 }}>
-              IslandBounce may earn a commission when you book through links on this site, at no extra cost to you.
+              We're a comparison site, not the operator — schedules, boat condition and on-the-day organization are
+              the operator's responsibility, not ours. IslandBounce may earn a commission when you book through
+              links on this site, at no extra cost to you.
             </p>
           </section>
 

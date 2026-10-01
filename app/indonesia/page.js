@@ -80,16 +80,10 @@ export default function IndonesiaHub() {
           came here to click, styled as bold, popping buttons. */}
       <section className="relative left-1/2 right-1/2 -mx-[50vw] w-screen" style={{ background: "white", padding: "28px 20px 8px" }}>
         <div style={{ maxWidth: 900, margin: "0 auto" }}>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {TOOLS.map((t) => (
               <PoppyCard key={t.href} href={t.href} title={t.title} blurb={t.blurb} width="100%" />
             ))}
-            <PoppyCard
-              href="/indonesia/destinations"
-              title="Destination Guide"
-              blurb="Real guides for the places we actually know well — Bali, the Gilis, Nusa & Lombok to start."
-              width="100%"
-            />
           </div>
         </div>
       </section>

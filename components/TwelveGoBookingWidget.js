@@ -11,9 +11,14 @@ import { TWELVEGO_WHITELABEL_URL } from "@/lib/twelveGoWidget";
 // either 12Go directly, or to our own white-label subdomain once it's live
 // (TWELVEGO_WHITELABEL_URL set) — same search, better destination once
 // booking.islandbouncetravel.com is active.
+function todayISO() {
+  return new Date().toISOString().slice(0, 10);
+}
+
 export default function TwelveGoBookingWidget() {
   const [from, setFrom] = useState(BALI_PORTS[0].name);
   const [to, setTo] = useState(PLANNER_DESTINATIONS[0]);
+  const [date, setDate] = useState("");
 
   const inputStyle = {
     padding: "11px 12px",
@@ -25,11 +30,16 @@ export default function TwelveGoBookingWidget() {
     width: "100%",
   };
 
-  // Once the white-label domain is live, send people to our own branded
-  // subdomain instead of straight to 12Go's site — a real from/to search
-  // there isn't available until we confirm 12Go's white-label URL
-  // parameters, so this links to the homepage of our own subdomain for now.
-  const href = TWELVEGO_WHITELABEL_URL || buildTransportLink(from, to);
+  // Once the white-label domain is live (TWELVEGO_WHITELABEL_URL set),
+  // build the SAME route+date link but pointed at our own subdomain
+  // instead of 12go.asia — the actual search selections now carry through
+  // either way, not just when using the plain 12Go link. Whether the
+  // white-label domain honors this exact URL shape is unverified (see the
+  // comment on buildTransportLink) — needs a real test once the
+  // certificate issue is resolved.
+  const href = TWELVEGO_WHITELABEL_URL
+    ? buildTransportLink(from, to, date || undefined, TWELVEGO_WHITELABEL_URL)
+    : buildTransportLink(from, to, date || undefined);
   const isOwnDomain = Boolean(TWELVEGO_WHITELABEL_URL);
 
   return (
@@ -51,6 +61,17 @@ export default function TwelveGoBookingWidget() {
             ))}
           </select>
         </label>
+        <label className="flex-1" style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, color: COLORS.sea, letterSpacing: 1 }}>
+          DATE (OPTIONAL)
+          <input
+            type="date"
+            value={date}
+            min={todayISO()}
+            onChange={(e) => setDate(e.target.value)}
+            className="mt-1 w-full"
+            style={inputStyle}
+          />
+        </label>
       </div>
       <a
         href={href}
@@ -62,8 +83,8 @@ export default function TwelveGoBookingWidget() {
       </a>
       <p style={{ fontSize: 11, color: COLORS.ink, opacity: 0.55, marginTop: 12, textAlign: "center" }}>
         {isOwnDomain
-          ? "Opens our own booking site to complete your booking. IslandBounce may earn a commission at no extra cost to you."
-          : "Opens 12Go in a new tab to complete your booking. IslandBounce may earn a commission at no extra cost to you."}
+          ? "We're a comparison site, not the operator — this opens our own booking site to complete your booking. IslandBounce may earn a commission at no extra cost to you."
+          : "We're a comparison site, not the operator — this opens 12Go in a new tab to complete your booking. IslandBounce may earn a commission at no extra cost to you."}
       </p>
     </div>
   );
