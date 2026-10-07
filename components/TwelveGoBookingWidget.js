@@ -4,7 +4,7 @@ import { useState } from "react";
 import { COLORS } from "@/lib/theme";
 import { BALI_PORTS } from "@/data/ports";
 import { PLANNER_DESTINATIONS } from "@/data/planner";
-import { buildTransportLink } from "@/lib/affiliateLinks";
+import { bookingLink } from "@/lib/bookingLink";
 import { TWELVEGO_WHITELABEL_URL } from "@/lib/twelveGoWidget";
 
 // A real, working search using the site's own port data. Deep-links to
@@ -38,9 +38,7 @@ export default function TwelveGoBookingWidget({ initialTo } = {}) {
   // white-label domain honors this exact URL shape is unverified (see the
   // comment on buildTransportLink) — needs a real test once the
   // certificate issue is resolved.
-  const href = TWELVEGO_WHITELABEL_URL
-    ? buildTransportLink(from, to, date || undefined, TWELVEGO_WHITELABEL_URL)
-    : buildTransportLink(from, to, date || undefined);
+  const href = bookingLink(from, to, date);
   const isOwnDomain = Boolean(TWELVEGO_WHITELABEL_URL);
 
   return (

@@ -2,8 +2,11 @@
 
 import { useEffect, useRef, useState } from "react";
 import { BALI_PORTS, ISLAND_PORTS } from "@/data/ports";
-import { BOAT_ROUTES, genDepartures, CHECKIN_BUFFER_MIN, fmtMins } from "@/data/planner";
-import { buildTransportLink } from "@/lib/affiliateLinks";
+import { BOAT_ROUTES, CHECKIN_BUFFER_MIN, fmtMins } from "@/data/planner";
+import Link from "next/link";
+import { portDepartures } from "@/lib/portDepartures";
+import { formatDate } from "@/lib/timetable";
+import { bookingLink } from "@/lib/bookingLink";
 import { COLORS } from "@/lib/theme";
 import { loadGoogleMaps } from "@/components/AddressAutocomplete";
 import SeaConditionsBadge from "@/components/SeaConditionsBadge";
@@ -104,7 +107,19 @@ function lerpLatLng(a, b, t) {
   return { lat: a.lat + (b.lat - a.lat) * t, lng: a.lng + (b.lng - a.lng) * t };
 }
 
-export default function FindPortMap({ origin, destination }) {
+// Boat timing for one port card. Done at render time (not when the route is
+// calculated) so changing the travel date updates which season's departures
+// show, without redrawing the map.
+function withBoatInfo(r, date) {
+  const day = date || new Date().toISOString().slice(0, 10);
+  const departures = portDepartures(r.port, r.destination, day);
+  const cfg = BOAT_ROUTES[r.port]?.[r.destination];
+  const boatMin = departures.hasReal ? departures.fastestMin : cfg ? cfg.duration : 0;
+  return { ...r, departures, boatMin, boatIsEstimate: !departures.hasReal, totalMin: r.driveMin + CHECKIN_BUFFER_MIN + boatMin };
+}
+
+/** @param {{ origin?: any, destination?: any, date?: string }} props */
+export default function FindPortMap({ origin, destination, date }) {
   const mapRef = useRef(null);
   const mapInstance = useRef(null);
   const routesRef = useRef([]); // [{ port, isFastest, glow, line, cancelDraw, fullPath }]
@@ -299,12 +314,10 @@ export default function FindPortMap({ origin, destination }) {
       }
 
       const computed = withDrive.map((o) => {
-        const cfg = BOAT_ROUTES[o.port.name][destination];
-        const boats = genDepartures(o.port.name, destination, cfg);
-        const fastestBoat = boats.reduce((a, b) => (a.boatMin < b.boatMin ? a : b));
         const driveMin = Math.round(o.driveSeconds / 60);
         return {
           port: o.port.name,
+          destination,
           lat: o.port.lat,
           lng: o.port.lng,
           connects: o.port.connects,
@@ -312,8 +325,6 @@ export default function FindPortMap({ origin, destination }) {
           driveText: o.driveText,
           distanceText: o.distanceText,
           scooterMin: Math.max(5, Math.round(driveMin * 0.75)),
-          fastestBoat,
-          totalMin: driveMin + CHECKIN_BUFFER_MIN + fastestBoat.boatMin,
         };
       });
       setResults(computed);
@@ -410,6 +421,10 @@ export default function FindPortMap({ origin, destination }) {
     );
   }
 
+  // Real departures from the verified timetables where we have them, never
+  // invented times; crossing times marked "~" are estimates.
+  const cards = results.map((r) => withBoatInfo(r, date));
+
   return (
     <div className="flex flex-col lg:flex-row gap-4">
       <div
@@ -436,7 +451,7 @@ export default function FindPortMap({ origin, destination }) {
           style={{ flex: "0 0 auto", width: "100%", paddingTop: 12 }}
         >
           <div className="flex flex-row lg:flex-col gap-2" style={{ minWidth: "min-content" }}>
-            {results.map((r, i) => (
+            {cards.map((r, i) => (
               <div
                 key={r.port}
                 onMouseEnter={() => setHovered(r.port)}
@@ -476,24 +491,58 @@ export default function FindPortMap({ origin, destination }) {
                   </div>
                   <div>
                     <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 9, opacity: 0.6, color: ACCENT_FASTEST, letterSpacing: 0.5 }}>BOAT</div>
-                    <div style={{ fontFamily: "'Big Shoulders Display', sans-serif", fontWeight: 700, fontSize: 16, color: ACCENT_FASTEST }}>{fmtMins(r.fastestBoat.boatMin)}</div>
+                    <div style={{ fontFamily: "'Big Shoulders Display', sans-serif", fontWeight: 700, fontSize: 16, color: ACCENT_FASTEST }}>{r.boatIsEstimate ? "~" : ""}{fmtMins(r.boatMin)}</div>
                   </div>
                 </div>
-                <div style={{ fontSize: 10.5, opacity: 0.65, color: COLORS.ink, marginTop: 8 }}>
-                  {r.fastestBoat.operator}, departs {r.fastestBoat.depart} · ~{fmtMins(r.totalMin)} total
+                <div style={{ marginTop: 10 }}>
+                  <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 9, opacity: 0.6, color: COLORS.sea, letterSpacing: 0.5, marginBottom: 3 }}>BOATS DEPART</div>
+                  {r.departures.hasReal ? (
+                    <>
+                      {r.departures.groups.map((g) => (
+                        <div key={g.operator} style={{ fontSize: 11.5, color: COLORS.ink, lineHeight: 1.5 }}>
+                          <strong>{g.operator}</strong> {g.times.join(" · ")}
+                        </div>
+                      ))}
+                      <div style={{ fontSize: 10, opacity: 0.55, color: COLORS.ink, marginTop: 3 }}>
+                        Checked {formatDate(r.departures.checked)}
+                        {r.departures.routeSlug && (
+                          <>
+                            {" · "}
+                            <Link
+                              href={`/indonesia/routes/${r.departures.routeSlug}`}
+                              onClick={(e) => e.stopPropagation()}
+                              style={{ color: COLORS.sea, fontWeight: 700 }}
+                            >
+                              Full timetable
+                            </Link>
+                          </>
+                        )}
+                      </div>
+                    </>
+                  ) : (
+                    <div style={{ fontSize: 11.5, opacity: 0.7, color: COLORS.ink, lineHeight: 1.45 }}>
+                      Times coming soon. We're confirming this timetable with operators.
+                    </div>
+                  )}
+                  <div style={{ fontSize: 10.5, opacity: 0.65, color: COLORS.ink, marginTop: 6 }}>
+                    ~{fmtMins(r.totalMin)} total (drive + check-in + boat)
+                  </div>
                 </div>
                 <div style={{ marginTop: 10, paddingTop: 10, borderTop: `1px solid ${COLORS.foamLine}` }}>
                   <SeaConditionsBadge lat={r.lat} lng={r.lng} detailed />
                 </div>
                 <a
-                  href={buildTransportLink(r.port, destination)}
+                  href={bookingLink(r.port, r.destination, date)}
                   target="_blank"
-                  rel="noopener noreferrer"
+                  rel="sponsored noopener noreferrer"
                   onClick={(e) => e.stopPropagation()}
-                  style={{ display: "inline-block", marginTop: 10, fontSize: 11, fontWeight: 700, color: "white", background: COLORS.sea, padding: "5px 10px", borderRadius: 6, textDecoration: "none" }}
+                  style={{ display: "block", textAlign: "center", marginTop: 12, background: COLORS.coral, color: "white", fontWeight: 700, fontSize: 13, padding: "9px 12px", borderRadius: 999, textDecoration: "none" }}
                 >
-                  Compare on 12Go →
+                  Book this route{date ? ` · ${formatDate(date)}` : ""} →
                 </a>
+                <div style={{ fontSize: 9.5, opacity: 0.55, color: COLORS.ink, marginTop: 5, textAlign: "center" }}>
+                  Opens our booking page · we may earn a commission
+                </div>
               </div>
             ))}
           </div>

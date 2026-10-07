@@ -48,6 +48,7 @@ function PlannerContent() {
   );
   const [origin, setOrigin] = useState(null); // { lat, lng, label } — only set once a real place is picked
   const [activeDestination, setActiveDestination] = useState(null); // destination actually being searched, vs the dropdown's current value
+  const [date, setDate] = useState(""); // optional, "YYYY-MM-DD"
   const [error, setError] = useState("");
 
   function handleFind() {
@@ -89,6 +90,18 @@ function PlannerContent() {
           </div>
         </label>
 
+        <label className="sm:w-[170px]" style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, color: COLORS.sea, letterSpacing: 1 }}>
+          TRAVEL DATE
+          <input
+            type="date"
+            value={date}
+            min={new Date().toISOString().slice(0, 10)}
+            onChange={(e) => setDate(e.target.value)}
+            className="mt-1 w-full"
+            style={inputStyle}
+          />
+        </label>
+
         <label className="flex-1" style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, color: COLORS.sea, letterSpacing: 1 }}>
           WHERE ARE YOU HEADED?
           <select value={destination} onChange={(e) => setDestination(e.target.value)} className="mt-1 w-full" style={inputStyle}>
@@ -120,12 +133,15 @@ function PlannerContent() {
       </div>
       {error && <div style={{ fontSize: 12, color: COLORS.coralDeep, marginBottom: 14 }}>{error}</div>}
 
-      <FindPortMap origin={origin} destination={activeDestination} />
+      <FindPortMap origin={origin} destination={activeDestination} date={date} />
 
       <p style={{ fontSize: 11, color: COLORS.ink, opacity: 0.5, marginTop: 16, maxWidth: 700 }}>
         Car routes and times are live from Google Maps. Scooter times are estimated at ~75% of car drive time —
-        verify locally, especially at night or in rain. Boat departures, operators, and fares are estimated
-        schedules for planning purposes — verify before booking.
+        verify locally, especially at night or in rain. Departure times come from each operator's own published
+        timetable, with the date we last checked; where a port shows "coming soon" we haven't confirmed one yet.
+        Crossing times marked ~ are estimates. Always confirm with the operator before you travel. The Book button
+        opens our booking page with your route and date filled in. IslandBounce is a comparison site, not the
+        operator, and may earn a commission when you book, at no extra cost to you.
       </p>
     </PlannerShell>
   );
