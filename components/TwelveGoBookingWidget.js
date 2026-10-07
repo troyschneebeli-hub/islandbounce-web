@@ -15,9 +15,10 @@ function todayISO() {
   return new Date().toISOString().slice(0, 10);
 }
 
-export default function TwelveGoBookingWidget() {
+/** @param {{ initialTo?: string }} [props] */
+export default function TwelveGoBookingWidget({ initialTo } = {}) {
   const [from, setFrom] = useState(BALI_PORTS[0].name);
-  const [to, setTo] = useState(PLANNER_DESTINATIONS[0]);
+  const [to, setTo] = useState(PLANNER_DESTINATIONS.includes(initialTo) ? initialTo : PLANNER_DESTINATIONS[0]);
   const [date, setDate] = useState("");
 
   const inputStyle = {

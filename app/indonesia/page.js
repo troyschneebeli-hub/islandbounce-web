@@ -9,6 +9,7 @@ import PoppyCard from "@/components/PoppyCard";
 import { ROUTE_PAGES, ROUTE_SLUGS } from "@/data/routePages";
 import AverageConditionsWidget from "@/components/AverageConditionsWidget";
 import TripPlanner from "@/components/TripPlanner";
+import HubBooking from "@/components/HubBooking";
 
 export const metadata = {
   title: "Indonesia",
@@ -63,6 +64,20 @@ export default function IndonesiaHub() {
         {/* The Trip Planner, front and center under the heading. */}
         <div style={{ maxWidth: 1100, margin: "0 auto" }}>
           <TripPlanner />
+        </div>
+
+        {/* Booking, right under the planner: pick a route and date, then straight
+            through to live availability and checkout. */}
+        <div style={{ maxWidth: 640, margin: "28px auto 0", textAlign: "center" }}>
+          <h2 style={{ fontFamily: "'Big Shoulders Display', sans-serif", fontWeight: 800, fontSize: 26, color: COLORS.seaDeep, marginBottom: 4 }}>
+            Ready to book?
+          </h2>
+          <p style={{ color: COLORS.seaDeep, opacity: 0.75, fontSize: 14, margin: "0 0 14px" }}>
+            Pick your route and date to see live availability and prices.
+          </p>
+          <div style={{ textAlign: "left" }}>
+            <HubBooking />
+          </div>
         </div>
 
         <div style={{ maxWidth: 700, margin: "0 auto", paddingBottom: 34, textAlign: "center" }}>
