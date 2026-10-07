@@ -8,6 +8,7 @@ import WaveDivider from "@/components/WaveDivider";
 import PoppyCard from "@/components/PoppyCard";
 import { ROUTE_PAGES, ROUTE_SLUGS } from "@/data/routePages";
 import AverageConditionsWidget from "@/components/AverageConditionsWidget";
+import TripPlanner from "@/components/TripPlanner";
 
 export const metadata = {
   title: "Indonesia",
@@ -15,7 +16,6 @@ export const metadata = {
 };
 
 const TOOLS = [
-  { href: "/indonesia/planner", title: "Trip Planner", blurb: "Type your address, pick a destination — every exit port's real drive time and boat crossing, drawn on an interactive map." },
   { href: "/indonesia/ports", title: "All Ports", blurb: "Every harbor across Bali, the Gilis, Nusa & Lombok." },
 ];
 
@@ -47,20 +47,27 @@ export default function IndonesiaHub() {
         <div style={{ maxWidth: 700, margin: "0 auto 18px" }}>
           <AverageConditionsWidget />
         </div>
-        <div style={{ maxWidth: 700, margin: "0 auto", paddingBottom: 34, textAlign: "center" }}>
+        <div style={{ maxWidth: 700, margin: "0 auto", paddingBottom: 24, textAlign: "center" }}>
           <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 11, color: COLORS.skyDeep, letterSpacing: 2, marginBottom: 10 }}>
             INDONESIA
           </div>
           <h1 style={{ fontFamily: "'Big Shoulders Display', sans-serif", fontWeight: 800, fontSize: "clamp(28px, 5vw, 44px)", color: COLORS.seaDeep, lineHeight: 1.05 }}>
             Bali, Gili Islands, Nusa & Lombok
           </h1>
-          <p style={{ color: COLORS.seaDeep, opacity: 0.75, maxWidth: 480, margin: "12px auto 0", fontSize: 15 }}>
-            Every short crossing in the region, compared side by side — plus tools to work out exactly how to get
-            there from where you're staying.
+          <p style={{ color: COLORS.seaDeep, opacity: 0.75, maxWidth: 520, margin: "12px auto 0", fontSize: 15 }}>
+            Type where you're staying and where you're headed. See the real drive to every port that gets you there,
+            and the boat crossing from each.
           </p>
+        </div>
 
+        {/* The Trip Planner, front and center under the heading. */}
+        <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+          <TripPlanner />
+        </div>
+
+        <div style={{ maxWidth: 700, margin: "0 auto", paddingBottom: 34, textAlign: "center" }}>
           {/* Quick stats — real counts from the site's own data, not invented numbers. */}
-          <div className="flex flex-wrap justify-center gap-x-10 gap-y-3" style={{ marginTop: 26 }}>
+          <div className="flex flex-wrap justify-center gap-x-10 gap-y-3" style={{ marginTop: 30 }}>
             {[
               { n: BALI_PORTS.length, label: "Bali ports tracked" },
               { n: OPERATOR_POOL.length, label: "operators compared" },
@@ -76,11 +83,10 @@ export default function IndonesiaHub() {
         <WaveDivider into="white" height={70} />
       </section>
 
-      {/* Tools, right at the top — the two things most people actually
-          came here to click, styled as bold, popping buttons. */}
+      {/* Other tools. The Trip Planner itself now lives in the hero above. */}
       <section className="relative left-1/2 right-1/2 -mx-[50vw] w-screen" style={{ background: "white", padding: "28px 20px 8px" }}>
         <div style={{ maxWidth: 900, margin: "0 auto" }}>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div style={{ maxWidth: 440, margin: "0 auto" }}>
             {TOOLS.map((t) => (
               <PoppyCard key={t.href} href={t.href} title={t.title} blurb={t.blurb} width="100%" />
             ))}

@@ -30,7 +30,7 @@ export default function BookPage() {
           <TwelveGoBookingWidget />
           <p style={{ fontSize: 12, color: COLORS.ink, opacity: 0.6, textAlign: "center", marginTop: 24 }}>
             Not sure which route you need yet? Use the{" "}
-            <a href="/indonesia/planner" style={{ color: COLORS.sea, fontWeight: 700 }}>
+            <a href="/indonesia" style={{ color: COLORS.sea, fontWeight: 700 }}>
               Trip Planner
             </a>{" "}
             to compare drive and boat times first.

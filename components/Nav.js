@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { COLORS } from "@/lib/theme";
 import { isRegionPath, activeRegionFromPath } from "@/data/regions";
@@ -12,7 +13,6 @@ const COVER_ITEMS = [
 ];
 
 const regionItems = (slug) => [
-  [`/${slug}/planner`, "Trip Planner"],
   [`/${slug}/book`, "Book"],
   [`/${slug}/split-charter`, "Split Charters"],
   [`/${slug}/ports`, "All Ports"],
@@ -35,14 +35,20 @@ export default function Nav() {
     <header style={{ background: bg, position: "relative" }}>
       <div className="flex items-center justify-between" style={{ padding: "14px 24px" }}>
         <div className="flex items-center gap-3">
-          <Link href="/" className="flex items-center gap-2" style={{ textDecoration: "none" }} onClick={() => setMenuOpen(false)}>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-              <path d="M3 17c1.5 1.3 3 1.3 4.5 0s3-1.3 4.5 0 3 1.3 4.5 0 3-1.3 4.5 0" stroke={brandColor} strokeWidth="1.6" strokeLinecap="round" />
-              <path d="M5 14l1.5-7.5L15 8l-2 6" stroke={COLORS.coral} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-            <span style={{ fontFamily: "'Big Shoulders Display', sans-serif", fontWeight: 800, fontSize: 20, color: brandColor, letterSpacing: 1 }}>
-              ISLANDBOUNCE
-            </span>
+          <Link href="/" aria-label="IslandBounce home" className="flex items-center" style={{ textDecoration: "none" }} onClick={() => setMenuOpen(false)}>
+            {/* Light-coloured version of the logo: the standard one has a dark green wordmark
+                that would disappear against this dark header. Trimmed of empty margins so it
+                stays readable at header size. unoptimized: it's a small static PNG, no need
+                for Next to resize it. */}
+            <Image
+              src="/images/logo-light.png"
+              alt="IslandBounce"
+              width={1010}
+              height={148}
+              priority
+              unoptimized
+              className="h-[28px] sm:h-[34px] w-auto"
+            />
           </Link>
           {inRegion && region && (
             <>

@@ -19,7 +19,7 @@ export default function PortCard({ port }) {
         </div>
       )}
       <Link
-        href="/indonesia/planner"
+        href="/indonesia"
         style={{ fontSize: 12, fontWeight: 700, color: COLORS.sea, background: "none", border: `1px solid ${COLORS.sea}`, padding: "6px 12px", borderRadius: 6, textDecoration: "none", display: "inline-block" }}
       >
         Plan a route from here →

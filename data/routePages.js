@@ -29,7 +29,7 @@ const CHECKIN_TEXT =
   "Eka Jaya asks passengers to check in an hour before departure. For other operators, check the time on your ticket.";
 
 const PLANNER_CTA = (to) => ({
-  href: to ? `/indonesia/planner?to=${encodeURIComponent(to)}` : "/indonesia/planner",
+  href: to ? `/indonesia?to=${encodeURIComponent(to)}` : "/indonesia",
   label: "Open the Trip Planner →",
 });
 

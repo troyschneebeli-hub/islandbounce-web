@@ -1,4 +1,6 @@
+import Link from "next/link";
 import { COLORS } from "@/lib/theme";
+import { CONTACT_EMAIL } from "@/lib/site";
 
 export default function Footer() {
   return (
@@ -9,9 +11,13 @@ export default function Footer() {
       </div>
       <div style={{ opacity: 0.5 }}>
         &copy; {new Date().getFullYear()} IslandBounce, a ClankINC brand. ·{" "}
-        <a href="mailto:troy@islandbouncetravel.com" style={{ color: "inherit" }}>
+        <a href={`mailto:${CONTACT_EMAIL}`} style={{ color: "inherit" }}>
           Get in touch
-        </a>
+        </a>{" "}
+        ·{" "}
+        <Link href="/privacy" style={{ color: "inherit" }}>
+          Privacy
+        </Link>
       </div>
     </footer>
   );

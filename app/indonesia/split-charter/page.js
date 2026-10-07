@@ -2,22 +2,37 @@
 
 import { useState } from "react";
 import { COLORS } from "@/lib/theme";
+import { CONTACT_EMAIL } from "@/lib/site";
+import { submitWaitlist, buildWaitlistMailto } from "@/lib/waitlist";
 
 export default function SplitCharterPage() {
   const [email, setEmail] = useState("");
   const [route, setRoute] = useState("Nusa Penida day charter");
-  const [sent, setSent] = useState(false);
+  const [sent, setSent] = useState(""); // "" | "saved" | "mailto"
+  const [sending, setSending] = useState(false);
   const [error, setError] = useState("");
 
   async function handleRegister() {
-    if (!email) {
-      setError("Enter an email so we can notify you.");
-      return;
-    }
     setError("");
-    // TODO: wire to a real endpoint (e.g. a serverless function that writes
-    // to a waitlist table or forwards to an email tool) once ready to go live.
-    setSent(true);
+    setSending(true);
+    const result = await submitWaitlist({
+      email,
+      route,
+      endpoint: process.env.NEXT_PUBLIC_WAITLIST_ENDPOINT,
+    });
+    setSending(false);
+    if (result.status === "invalid") {
+      setError("Enter a valid email so we can notify you.");
+    } else if (result.status === "error") {
+      setError(`Something went wrong saving that. Please try again, or email us at ${CONTACT_EMAIL}.`);
+    } else if (result.status === "saved") {
+      setSent("saved");
+    } else {
+      // No signup service configured yet: open the visitor's email app with a
+      // pre-filled message to us, so the email genuinely reaches us.
+      window.location.href = buildWaitlistMailto(CONTACT_EMAIL, result.email, route);
+      setSent("mailto");
+    }
   }
 
   return (
@@ -100,13 +115,18 @@ export default function SplitCharterPage() {
             <button
               type="button"
               onClick={handleRegister}
+              disabled={sending}
               style={{ background: COLORS.coral, color: "white", fontWeight: 700, fontSize: 14, padding: "10px 18px", borderRadius: 6, border: "none", cursor: "pointer", whiteSpace: "nowrap" }}
             >
-              Notify me
+              {sending ? "Sending…" : "Notify me"}
             </button>
           </div>
         ) : (
-          <div style={{ fontSize: 14, color: COLORS.sea, fontWeight: 600 }}>You&apos;re on the list for {route}.</div>
+          <div style={{ fontSize: 14, color: COLORS.sea, fontWeight: 600 }}>
+            {sent === "saved"
+              ? <>You&apos;re on the list for {route}.</>
+              : <>Your email app should have opened. Hit send to join the list for {route}. If nothing opened, email us at {CONTACT_EMAIL}.</>}
+          </div>
         )}
         {error && <div style={{ fontSize: 12, color: COLORS.coralDeep, marginTop: 8 }}>{error}</div>}
       </div>

@@ -47,7 +47,7 @@ code changes needed.
 
 - `/indonesia/guide/[slug]` — Destination guide (currently `bali-gili-lombok`)
 - `/indonesia/find-port` — Find My Closest Port (real Google Maps driving times)
-- `/indonesia/planner` — Trip Planner (drive + boat math)
+- `/indonesia` — hub page, with the Trip Planner (drive + boat math) embedded under the heading (`components/TripPlanner.js`); `/indonesia/planner` redirects here
 - `/indonesia/compare` — Quick boat comparison tool
 - `/indonesia/ports` — All Ports directory
 - `/indonesia/split-charter` — Split-charter waitlist
