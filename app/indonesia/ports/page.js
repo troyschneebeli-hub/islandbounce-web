@@ -5,6 +5,7 @@ import PortCard from "@/components/PortCard";
 export const metadata = {
   title: "All Ports — Indonesia",
   description: "Every harbor covering Bali, the Gili Islands, Nusa Penida, Nusa Lembongan, and Lombok.",
+  alternates: { canonical: "/indonesia/ports" },
 };
 
 export default function PortsPage() {

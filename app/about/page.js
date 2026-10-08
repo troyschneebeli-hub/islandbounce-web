@@ -3,6 +3,7 @@ import { COLORS } from "@/lib/theme";
 export const metadata = {
   title: "Why IslandBounce",
   description: "How IslandBounce works, what's verified vs. researched, and our affiliate disclosure.",
+  alternates: { canonical: "/about" },
 };
 
 export default function AboutPage() {
@@ -24,8 +25,8 @@ export default function AboutPage() {
         no extra cost to you. That&apos;s how the site stays free and independent.
       </p>
       <div style={{ background: COLORS.foam, borderRadius: 10, padding: 18, fontSize: 13, opacity: 0.85 }}>
-        <strong>Disclosure:</strong> IslandBounce participates in affiliate programs including 12Go, Klook, Viator, and
-        GetYourGuide. We aim to personally verify every route we recommend, and we&apos;ll always tell you plainly if
+        <strong>Disclosure:</strong> IslandBounce participates in the 12Go affiliate program, and may join other travel
+        affiliate programs in future. We aim to personally verify every route we recommend, and we&apos;ll always tell you plainly if
         one hasn&apos;t been checked firsthand yet.
       </div>
 
@@ -36,14 +37,14 @@ export default function AboutPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4" style={{ marginBottom: 24 }}>
           <div style={{ background: "white", border: `1px solid ${COLORS.foamLine}`, borderRadius: 10, padding: 16 }}>
             <div style={{ fontWeight: 700, fontSize: 15 }}>Troy</div>
-            <div style={{ fontSize: 12.5, opacity: 0.65, marginBottom: 8 }}>Co-Founder &amp; Head of Customer Relations</div>
+            <div style={{ fontSize: 12.5, opacity: 0.65, marginBottom: 8 }}>Co-Founder</div>
             <a href="mailto:troy@islandbouncetravel.com" style={{ color: COLORS.sea, fontWeight: 600, textDecoration: "none", fontSize: 13 }}>
               troy@islandbouncetravel.com
             </a>
           </div>
           <div style={{ background: "white", border: `1px solid ${COLORS.foamLine}`, borderRadius: 10, padding: 16 }}>
             <div style={{ fontWeight: 700, fontSize: 15 }}>Boston</div>
-            <div style={{ fontSize: 12.5, opacity: 0.65, marginBottom: 8 }}>Co-Founder &amp; Head of Web &amp; Marketing</div>
+            <div style={{ fontSize: 12.5, opacity: 0.65, marginBottom: 8 }}>Co-Founder</div>
             <a href="mailto:boston@islandbouncetravel.com" style={{ color: COLORS.sea, fontWeight: 600, textDecoration: "none", fontSize: 13 }}>
               boston@islandbouncetravel.com
             </a>

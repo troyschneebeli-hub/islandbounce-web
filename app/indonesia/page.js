@@ -2,7 +2,7 @@ import Link from "next/link";
 import { COLORS } from "@/lib/theme";
 import { REGIONS } from "@/data/regions";
 import { BALI_PORTS } from "@/data/ports";
-import { OPERATOR_POOL, PLANNER_DESTINATIONS } from "@/data/planner";
+import { SAILINGS } from "@/data/timetables";
 import RegionCard from "@/components/RegionCard";
 import WaveDivider from "@/components/WaveDivider";
 import PoppyCard from "@/components/PoppyCard";
@@ -13,7 +13,12 @@ import TripPlanner from "@/components/TripPlanner";
 export const metadata = {
   title: "Indonesia",
   description: "Bali, the Gili Islands, Nusa Penida, and Lombok — boat routes, ports, and things to do.",
+  alternates: { canonical: "/indonesia" },
 };
+
+// Real counts from the verified timetable data (not the wider operator list).
+const VERIFIED_OPERATORS = new Set(SAILINGS.map((s) => s.operator)).size;
+const VERIFIED_ROUTES = new Set(SAILINGS.map((s) => `${s.from}|${s.to}`)).size;
 
 const TOOLS = [
   { href: "/indonesia/ports", title: "All Ports", blurb: "Every harbor across Bali, the Gilis, Nusa & Lombok." },
@@ -38,9 +43,17 @@ const FAQS = [
   },
 ];
 
+// FAQ structured data, built from the same list shown on the page.
+const faqLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: FAQS.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })),
+};
+
 export default function IndonesiaHub() {
   return (
     <div>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqLd).replace(/</g, "\\u003c") }} />
       {/* Blue hero, matching the homepage's exact cover-page treatment
           instead of the deep-teal "in a destination" look used elsewhere. */}
       <section style={{ background: `linear-gradient(180deg, ${COLORS.skyLight} 0%, ${COLORS.sky} 100%)`, padding: "48px 20px 0" }}>
@@ -70,8 +83,8 @@ export default function IndonesiaHub() {
           <div className="flex flex-wrap justify-center gap-x-10 gap-y-3" style={{ marginTop: 30 }}>
             {[
               { n: BALI_PORTS.length, label: "Bali ports tracked" },
-              { n: OPERATOR_POOL.length, label: "operators compared" },
-              { n: PLANNER_DESTINATIONS.length, label: "destinations covered" },
+              { n: VERIFIED_OPERATORS, label: "operators with verified timetables" },
+              { n: VERIFIED_ROUTES, label: "routes with real times" },
             ].map((s) => (
               <div key={s.label} style={{ textAlign: "center" }}>
                 <div style={{ fontFamily: "'Big Shoulders Display', sans-serif", fontWeight: 800, fontSize: 26, color: COLORS.seaDeep }}>{s.n}</div>

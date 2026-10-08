@@ -3,6 +3,7 @@ import { COLORS } from "@/lib/theme";
 import { REGIONS } from "@/data/regions";
 import WaveDivider from "@/components/WaveDivider";
 import RegionCard from "@/components/RegionCard";
+import IslandRequest from "@/components/IslandRequest";
 
 export default function CoverPage() {
   return (
@@ -37,8 +38,8 @@ export default function CoverPage() {
         <div style={{ maxWidth: 780, margin: "0 auto" }} className="grid grid-cols-1 sm:grid-cols-3 gap-6">
           {[
             { n: "01", title: "Pick a spot", blurb: "Where you're staying, where you're headed." },
-            { n: "02", title: "We compare", blurb: "Every port, every boat, real times." },
-            { n: "03", title: "You book", blurb: "Straight to the operator. No markup." },
+            { n: "02", title: "We compare", blurb: "Real timetables, checked against each operator's own." },
+            { n: "03", title: "You book", blurb: "Through a trusted booking platform, at no extra cost to you." },
           ].map((s) => (
             <div key={s.n} style={{ textAlign: "center" }}>
               <div style={{ fontFamily: "'Big Shoulders Display', sans-serif", fontWeight: 800, fontSize: 34, color: COLORS.brass, marginBottom: 2 }}>{s.n}</div>
@@ -56,14 +57,15 @@ export default function CoverPage() {
               Where we operate
             </h2>
             <p style={{ fontSize: 13, opacity: 0.6, marginBottom: 18 }}>
-              Starting deep in one country before expanding — each destination gets its own dedicated toolset.
+              We're going deep on Indonesia first. Tell us where you'd like us to go next.
             </p>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {REGIONS.map((r) => (
+          <div style={{ maxWidth: 360, margin: "0 auto" }}>
+            {REGIONS.filter((r) => r.status === "active").map((r) => (
               <RegionCard key={r.slug} region={r} />
             ))}
           </div>
+          <IslandRequest />
         </div>
       </section>
 

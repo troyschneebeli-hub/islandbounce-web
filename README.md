@@ -45,7 +45,7 @@ flipping its `status` to `"active"` in `data/regions.js` and building out
 `app/philippines/`; the cover page and nav pick it up automatically, no nav
 code changes needed.
 
-- `/indonesia/guide/[slug]` — Destination guide (currently `bali-gili-lombok`)
+- `/indonesia/destinations` — Places we cover (island blurbs). The old `/indonesia/guide/*` pages were retired and redirect here.
 - `/indonesia/find-port` — Find My Closest Port (real Google Maps driving times)
 - `/indonesia` — hub page, with the Trip Planner (drive + boat math) embedded under the heading (`components/TripPlanner.js`); `/indonesia/planner` redirects here
 - `/indonesia/compare` — Quick boat comparison tool
@@ -94,9 +94,9 @@ data/regions.js       Region registry (drives cover page grid + Nav switching)
 3. ~~Swap the Trip Planner's area-based drive-time estimates for real geocoding/routing~~ —
    done for point-to-point lookups via the new **Find My Closest Port** page
    (`/indonesia/find-port`), which calls Google's Distance Matrix API server-side
-   (`app/api/closest-port/route.js`). Requires `GOOGLE_MAPS_API_KEY` in
-   `.env.local` with the Distance Matrix API enabled and billing set up in
-   Google Cloud Console. The Trip Planner itself still uses the area-based
+   (REMOVED Oct 2026: those server routes were unused by the site and exposed a
+   paid key with no rate limit. The planner now uses the browser-side Google
+   Maps key only, so `GOOGLE_MAPS_API_KEY` is no longer needed.) The Trip Planner itself still uses the area-based
    `DRIVE_TIMES` table in `data/planner.js` — worth revisiting whether to
    replace that with the same live API now that it's wired in, or keep it
    for speed/cost reasons (Distance Matrix is billed per request).

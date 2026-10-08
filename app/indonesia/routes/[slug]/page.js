@@ -1,12 +1,12 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { COLORS } from "@/lib/theme";
-import { SITE_URL } from "@/lib/site";
+import { SITE_URL, CONTACT_EMAIL } from "@/lib/site";
 import { SAILINGS } from "@/data/timetables";
 import { ROUTE_PAGES, ROUTE_SLUGS } from "@/data/routePages";
 import { BALI_PORTS, ISLAND_PORTS } from "@/data/ports";
 import { buildTransportLink } from "@/lib/affiliateLinks";
-import { selectSailings, groupByPair, summarize, describeDurations, lastChecked, formatDate, rangeText, shortPort } from "@/lib/timetable";
+import { selectSailings, groupByPair, summarize, describeDurations, lastChecked, formatDate, isStale, rangeText, shortPort } from "@/lib/timetable";
 import WaveDivider from "@/components/WaveDivider";
 import RouteTimetable from "@/components/RouteTimetable";
 import SeaConditionsBadge from "@/components/SeaConditionsBadge";
@@ -54,6 +54,7 @@ export default function RoutePage({ params }) {
   const groups = groupByPair(active);
   const upcomingGroups = groupByPair(upcoming);
   const checked = lastChecked([...active, ...upcoming]);
+  const stale = isStale(checked, new Date().toISOString().slice(0, 10));
   const ctx = { ...summary, durations: hasData ? describeDurations(summary, route) : "" };
   const lead = hasData
     ? route.lead(ctx)
@@ -127,6 +128,21 @@ export default function RoutePage({ params }) {
             <p style={{ ...para, fontSize: 13, opacity: 0.7 }}>
               Copied from each operator&apos;s own published timetable{checked ? ` and last checked ${formatDate(checked)}` : ""}. Operators change
               schedules, so confirm when you book. Fares aren&apos;t shown because we haven&apos;t verified them yet.
+            </p>
+            {stale && (
+              <p style={{ ...para, fontSize: 13, background: "#FFF2CC", color: "#8A5A00", borderRadius: 8, padding: "8px 12px" }}>
+                These times were last checked a while ago, so they may have changed. Please confirm with the operator before you travel.
+              </p>
+            )}
+            <p style={{ ...para, fontSize: 12.5, opacity: 0.75 }}>
+              Spotted a time that&apos;s wrong?{" "}
+              <a
+                href={`mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(`Timetable correction: ${route.name}`)}`}
+                style={{ color: COLORS.sea, fontWeight: 700 }}
+              >
+                Tell us
+              </a>{" "}
+              and we&apos;ll fix it.
             </p>
             {hasData ? (
               <RouteTimetable groups={groups} />

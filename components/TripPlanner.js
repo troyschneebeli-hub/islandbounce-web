@@ -4,6 +4,7 @@ import { Suspense, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { COLORS } from "@/lib/theme";
 import { PLANNER_DESTINATIONS } from "@/data/planner";
+import { START_POINTS } from "@/lib/startPoints";
 import AddressAutocomplete from "@/components/AddressAutocomplete";
 import FindPortMap from "@/components/FindPortMap";
 
@@ -49,6 +50,7 @@ function PlannerContent() {
   const [origin, setOrigin] = useState(null); // { lat, lng, label } — only set once a real place is picked
   const [activeDestination, setActiveDestination] = useState(null); // destination actually being searched, vs the dropdown's current value
   const [date, setDate] = useState(""); // optional, "YYYY-MM-DD"
+  const [leaveAt, setLeaveAt] = useState(""); // optional, "HH:MM": when they set off
   const [error, setError] = useState("");
 
   function handleFind() {
@@ -56,6 +58,14 @@ function PlannerContent() {
       setError("Pick your address from the suggestions list — typing alone isn't enough, the map needs real coordinates.");
       return;
     }
+    setError("");
+    setActiveDestination(destination);
+  }
+
+  // One tap on a popular starting point fills the address and runs the search.
+  function pickStart(p) {
+    setAddress(p.formatted);
+    setOrigin({ lat: p.lat, lng: p.lng, label: p.formatted });
     setError("");
     setActiveDestination(destination);
   }
@@ -73,8 +83,21 @@ function PlannerContent() {
 
   return (
     <PlannerShell>
-      <div className="flex flex-col sm:flex-row gap-3" style={{ marginBottom: 20 }}>
-        <label className="flex-1" style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, color: COLORS.sea, letterSpacing: 1 }}>
+      <div className="flex flex-wrap items-center gap-2" style={{ marginBottom: 14 }}>
+        <span style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, color: COLORS.sea, letterSpacing: 1 }}>QUICK START</span>
+        {START_POINTS.map((p) => (
+          <button
+            key={p.label}
+            type="button"
+            onClick={() => pickStart(p)}
+            style={{ fontSize: 12.5, fontWeight: 600, color: COLORS.sea, background: COLORS.foam, border: `1px solid ${COLORS.foamLine}`, borderRadius: 999, padding: "6px 12px", cursor: "pointer" }}
+          >
+            {p.label}
+          </button>
+        ))}
+      </div>
+      <div className="flex flex-col sm:flex-row sm:flex-wrap gap-3" style={{ marginBottom: 20 }}>
+        <label className="flex-1 sm:min-w-[220px]" style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, color: COLORS.sea, letterSpacing: 1 }}>
           YOUR ADDRESS OR HOTEL
           <div className="mt-1">
             <AddressAutocomplete
@@ -102,7 +125,12 @@ function PlannerContent() {
           />
         </label>
 
-        <label className="flex-1" style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, color: COLORS.sea, letterSpacing: 1 }}>
+        <label className="sm:w-[140px]" style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, color: COLORS.sea, letterSpacing: 1 }}>
+          I SET OFF AT
+          <input type="time" value={leaveAt} onChange={(e) => setLeaveAt(e.target.value)} className="mt-1 w-full" style={inputStyle} />
+        </label>
+
+        <label className="flex-1 sm:min-w-[200px]" style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, color: COLORS.sea, letterSpacing: 1 }}>
           WHERE ARE YOU HEADED?
           <select value={destination} onChange={(e) => setDestination(e.target.value)} className="mt-1 w-full" style={inputStyle}>
             {PLANNER_DESTINATIONS.map((d) => (
@@ -133,12 +161,13 @@ function PlannerContent() {
       </div>
       {error && <div style={{ fontSize: 12, color: COLORS.coralDeep, marginBottom: 14 }}>{error}</div>}
 
-      <FindPortMap origin={origin} destination={activeDestination} date={date} />
+      <FindPortMap origin={origin} destination={activeDestination} date={date} leaveAt={leaveAt} />
 
       <p style={{ fontSize: 11, color: COLORS.ink, opacity: 0.5, marginTop: 16, maxWidth: 700 }}>
         Car routes and times are live from Google Maps. Scooter times are estimated at ~75% of car drive time —
         verify locally, especially at night or in rain. Departure times come from each operator's own published
         timetable, with the date we last checked; where a port shows "coming soon" we haven't confirmed one yet.
+        If you add the time you set off, each departure is marked by whether you'd reach the port in time.
         Crossing times marked ~ are estimates. Always confirm with the operator before you travel. The Book button
         opens our booking page with your route and date filled in. IslandBounce is a comparison site, not the
         operator, and may earn a commission when you book, at no extra cost to you.

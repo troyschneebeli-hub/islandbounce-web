@@ -14,6 +14,7 @@ const COVER_ITEMS = [
 
 const regionItems = (slug) => [
   [`/${slug}/book`, "Book"],
+  [`/${slug}/destinations`, "Places"],
   [`/${slug}/split-charter`, "Split Charters"],
   [`/${slug}/ports`, "All Ports"],
 ];
@@ -32,7 +33,7 @@ export default function Nav() {
   const items = inRegion && region ? regionItems(region.slug) : COVER_ITEMS;
 
   return (
-    <header style={{ background: bg, position: "relative" }}>
+    <header style={{ background: bg, position: "sticky", top: 0, zIndex: 40, boxShadow: "0 2px 12px rgba(6, 47, 44, 0.18)" }}>
       <div className="flex items-center justify-between" style={{ padding: "14px 24px" }}>
         <div className="flex items-center gap-3">
           <Link href="/" aria-label="IslandBounce home" className="flex items-center" style={{ textDecoration: "none" }} onClick={() => setMenuOpen(false)}>

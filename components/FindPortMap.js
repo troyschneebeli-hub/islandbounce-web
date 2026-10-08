@@ -7,6 +7,18 @@ import Link from "next/link";
 import { portDepartures } from "@/lib/portDepartures";
 import { formatDate } from "@/lib/timetable";
 import { bookingLink } from "@/lib/bookingLink";
+import { annotateDepartures } from "@/lib/canMake";
+
+// Respect the visitor's "reduce motion" setting: no looping boat, pulse or
+// flowing-dash animations; routes just appear and the boat sits mid-crossing.
+const prefersReducedMotion = () =>
+  typeof window !== "undefined" && typeof window.matchMedia === "function" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+const STATUS_STYLE = {
+  ok: { color: "#1F7A4D", fontWeight: 700, title: "You'd get there in time" },
+  tight: { color: "#B7791F", fontWeight: 700, title: "Tight: you'd only just make check-in" },
+  missed: { color: "#B3402A", textDecoration: "line-through", opacity: 0.75, title: "Too early to make from your start time" },
+};
 import { COLORS } from "@/lib/theme";
 import { loadGoogleMaps } from "@/components/AddressAutocomplete";
 import SeaConditionsBadge from "@/components/SeaConditionsBadge";
@@ -62,6 +74,11 @@ function easeInOutSine(t) {
 }
 
 function animateRouteDrawIn(fullPath, glow, line, duration, delay) {
+  if (prefersReducedMotion()) {
+    glow.setPath(fullPath);
+    line.setPath(fullPath);
+    return () => {};
+  }
   let rafId;
   const timeoutId = setTimeout(() => {
     const start = performance.now();
@@ -83,6 +100,10 @@ function animateRouteDrawIn(fullPath, glow, line, duration, delay) {
 }
 
 function tweenStrokeOpacity(polyline, toOpacity, duration = 250) {
+  if (prefersReducedMotion()) {
+    polyline.setOptions({ strokeOpacity: toOpacity });
+    return;
+  }
   const fromOpacity = polyline.get("strokeOpacity") ?? toOpacity;
   const start = performance.now();
   function frame(now) {
@@ -110,16 +131,19 @@ function lerpLatLng(a, b, t) {
 // Boat timing for one port card. Done at render time (not when the route is
 // calculated) so changing the travel date updates which season's departures
 // show, without redrawing the map.
-function withBoatInfo(r, date) {
+function withBoatInfo(r, date, leaveAt) {
   const day = date || new Date().toISOString().slice(0, 10);
   const departures = portDepartures(r.port, r.destination, day);
   const cfg = BOAT_ROUTES[r.port]?.[r.destination];
   const boatMin = departures.hasReal ? departures.fastestMin : cfg ? cfg.duration : 0;
-  return { ...r, departures, boatMin, boatIsEstimate: !departures.hasReal, totalMin: r.driveMin + CHECKIN_BUFFER_MIN + boatMin };
+  const can = leaveAt && departures.hasReal
+    ? annotateDepartures(departures.groups, { leaveAt, driveMin: r.driveMin, bufferMin: CHECKIN_BUFFER_MIN })
+    : null;
+  return { ...r, departures, can, boatMin, boatIsEstimate: !departures.hasReal, totalMin: r.driveMin + CHECKIN_BUFFER_MIN + boatMin };
 }
 
-/** @param {{ origin?: any, destination?: any, date?: string }} props */
-export default function FindPortMap({ origin, destination, date }) {
+/** @param {{ origin?: any, destination?: any, date?: string, leaveAt?: string }} props */
+export default function FindPortMap({ origin, destination, date, leaveAt }) {
   const mapRef = useRef(null);
   const mapInstance = useRef(null);
   const routesRef = useRef([]); // [{ port, isFastest, glow, line, cancelDraw, fullPath }]
@@ -225,7 +249,13 @@ export default function FindPortMap({ origin, destination, date }) {
       });
       pulseRafRef.current = requestAnimationFrame(pulseFrame);
     }
-    pulseRafRef.current = requestAnimationFrame(pulseFrame);
+    if (prefersReducedMotion()) {
+      // A single static ring instead of the looping pulse.
+      pulse1.setRadius(450);
+      pulse1.setOptions({ strokeOpacity: 0.35 });
+    } else {
+      pulseRafRef.current = requestAnimationFrame(pulseFrame);
+    }
 
     const candidatePorts = BALI_PORTS.filter((p) => BOAT_ROUTES[p.name]?.[destination]);
     if (candidatePorts.length === 0) {
@@ -308,9 +338,11 @@ export default function FindPortMap({ origin, destination, date }) {
           fastestRoute.line.setOptions({ icons: [{ icon: { path: "M 0,-1 0,1", strokeOpacity: 1, strokeColor: "#FFFFFF", scale: 3 }, offset: `${flowOffset}%`, repeat: "60px" }] });
           flowRafRef.current = requestAnimationFrame(flowFrame);
         }
-        setTimeout(() => {
-          flowRafRef.current = requestAnimationFrame(flowFrame);
-        }, 900);
+        if (!prefersReducedMotion()) {
+          setTimeout(() => {
+            flowRafRef.current = requestAnimationFrame(flowFrame);
+          }, 900);
+        }
       }
 
       const computed = withDrive.map((o) => {
@@ -374,6 +406,14 @@ export default function FindPortMap({ origin, destination, date }) {
         const bobCycles = 3.5; // side-to-side oscillations across one crossing
         const FADE_FRACTION = 0.07; // fraction of the cycle spent fading in/out at the seam
 
+        if (prefersReducedMotion()) {
+          // Static boat mid-crossing, pointing the right way, instead of the loop.
+          s.boatMarker.setPosition(lerpLatLng(s.from, s.to, 0.5));
+          s.boatMarker.setIcon({ ...s.iconBase, rotation: s.heading });
+          s.boatMarker.setOpacity(1);
+          return;
+        }
+
         function boatFrame(now) {
           const t = ((now - start) % s.cycle) / s.cycle;
           const eased = easeInOutSine(t);
@@ -423,7 +463,7 @@ export default function FindPortMap({ origin, destination, date }) {
 
   // Real departures from the verified timetables where we have them, never
   // invented times; crossing times marked "~" are estimates.
-  const cards = results.map((r) => withBoatInfo(r, date));
+  const cards = results.map((r) => withBoatInfo(r, date, leaveAt));
 
   return (
     <div className="flex flex-col lg:flex-row gap-4">
@@ -500,9 +540,35 @@ export default function FindPortMap({ origin, destination, date }) {
                     <>
                       {r.departures.groups.map((g) => (
                         <div key={g.operator} style={{ fontSize: 11.5, color: COLORS.ink, lineHeight: 1.5 }}>
-                          <strong>{g.operator}</strong> {g.times.join(" · ")}
+                          <strong>{g.operator}</strong>{" "}
+                          {r.can
+                            ? g.times.map((t, i) => {
+                                const st = r.can.items.find((x) => x.operator === g.operator && x.time === t)?.status;
+                                const { title, ...css } = STATUS_STYLE[st] || {};
+                                return (
+                                  <span key={t}>
+                                    {i > 0 && " · "}
+                                    <span title={title} style={css}>{t}</span>
+                                  </span>
+                                );
+                              })
+                            : g.times.join(" · ")}
                         </div>
                       ))}
+                      {r.can && (
+                        <div style={{ fontSize: 11.5, color: COLORS.ink, marginTop: 4 }}>
+                          {r.can.next ? (
+                            <>
+                              Next boat you can make: <strong style={{ color: "#1F7A4D" }}>{r.can.next.time}</strong> ({r.can.next.operator})
+                            </>
+                          ) : (
+                            <strong style={{ color: "#B3402A" }}>No boat from here you can make from that start time.</strong>
+                          )}
+                          <div style={{ fontSize: 9.5, opacity: 0.6, marginTop: 2 }}>
+                            Green = in time · amber = tight · struck through = too early to make
+                          </div>
+                        </div>
+                      )}
                       <div style={{ fontSize: 10, opacity: 0.55, color: COLORS.ink, marginTop: 3 }}>
                         Checked {formatDate(r.departures.checked)}
                         {r.departures.routeSlug && (
@@ -518,6 +584,11 @@ export default function FindPortMap({ origin, destination, date }) {
                           </>
                         )}
                       </div>
+                      {r.departures.stale && (
+                        <div style={{ fontSize: 10.5, color: "#8A5A00", background: "#FFF2CC", borderRadius: 6, padding: "4px 8px", marginTop: 5 }}>
+                          Last checked a while ago, so these times may have changed. Confirm with the operator.
+                        </div>
+                      )}
                     </>
                   ) : (
                     <div style={{ fontSize: 11.5, opacity: 0.7, color: COLORS.ink, lineHeight: 1.45 }}>
