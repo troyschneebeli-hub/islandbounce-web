@@ -204,13 +204,8 @@ function PlannerContent() {
 
       <FindPortMap origin={origin} destination={activeDestination} date={date} returnDate={isReturn ? returnDate : ""} travellers={travellers} />
 
-      <p style={{ fontSize: 11, color: T.muted, marginTop: 16, maxWidth: 700 }}>
-        Car and walking routes are live from Google Maps. Scooter times are estimated at ~75% of car drive time —
-        verify locally, especially at night or in rain. Starting on a Gili? The islands are car free, so we show the
-        walk to the harbour. Departure times are compiled from operators and booking
-        platforms and can change, so always confirm with the operator before you travel. Crossing times marked ~
-        are estimates. The Book button opens our booking page with your route and date filled in. Your travel dates and number of travellers are filled in for you. IslandBounce is a
-        comparison site, not the operator.
+      <p style={{ fontSize: 11, color: T.muted, marginTop: 14, maxWidth: 700 }}>
+        All check-ins are 1 hour before departure. Scooter times are estimates, so confirm before you travel.
       </p>
     </PlannerShell>
   );
