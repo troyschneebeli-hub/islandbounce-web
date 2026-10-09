@@ -298,7 +298,7 @@ export default function FindPortMap({ origin, destination, date, returnDate, tra
       const withDrive = outcomes.filter((o) => o.driveSeconds != null);
       withDrive.sort((a, b) => a.driveSeconds - b.driveSeconds);
       if (withDrive.length === 0) {
-        setNotice("We couldn't find a route from there to a harbour. Check the address, or pick one of the quick-start places.");
+        setNotice("We couldn't find a route from there to a harbour. Check the address and try again.");
         setCalculating(false);
         return;
       }

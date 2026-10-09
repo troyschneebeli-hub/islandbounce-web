@@ -5,7 +5,6 @@ import { useSearchParams } from "next/navigation";
 import { COLORS } from "@/lib/theme";
 import { PLANNER_DESTINATIONS, destinationsFor } from "@/data/planner";
 import { originRegion } from "@/lib/originRegion";
-import { START_POINTS } from "@/lib/startPoints";
 import AddressAutocomplete from "@/components/AddressAutocomplete";
 import FindPortMap from "@/components/FindPortMap";
 
@@ -87,7 +86,7 @@ function PlannerContent() {
       return;
     }
     if (isReturn && (!date || !returnDate)) {
-      setError("For a return trip, pick both your travel date and your return date.");
+      setError("For a return trip, pick both your travel date and your return date, or switch Trip to One way.");
       return;
     }
     if (isReturn && returnDate < date) {
@@ -97,17 +96,6 @@ function PlannerContent() {
     setError("");
     setDestination(shownDestination);
     setActiveDestination(shownDestination);
-  }
-
-  // One tap on a popular starting point fills the address and runs the search.
-  function pickStart(p) {
-    setAddress(p.formatted);
-    setOrigin({ lat: p.lat, lng: p.lng, label: p.formatted });
-    setError("");
-    const opts = destinationsFor(originRegion(p));
-    const dest = opts.includes(destination) ? destination : opts[0];
-    setDestination(dest);
-    setActiveDestination(dest);
   }
 
   const inputStyle = {
@@ -123,19 +111,6 @@ function PlannerContent() {
 
   return (
     <PlannerShell>
-      <div className="flex flex-wrap items-center gap-2" style={{ marginBottom: 14 }}>
-        <span style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, color: T.label, letterSpacing: 1 }}>QUICK START</span>
-        {START_POINTS.map((p) => (
-          <button
-            key={p.label}
-            type="button"
-            onClick={() => pickStart(p)}
-            style={{ fontSize: 12.5, fontWeight: 600, color: T.chipText, background: T.chipBg, border: `1px solid ${T.chipBorder}`, borderRadius: 999, padding: "6px 12px", cursor: "pointer" }}
-          >
-            {p.label}
-          </button>
-        ))}
-      </div>
       <div className="flex flex-col sm:flex-row sm:flex-wrap gap-3" style={{ marginBottom: 20 }}>
         <label className="flex-1 sm:min-w-[220px]" style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, color: T.label, letterSpacing: 1 }}>
           YOUR ADDRESS OR HOTEL
@@ -165,30 +140,27 @@ function PlannerContent() {
           />
         </label>
 
-        <div className="sm:w-[170px]" style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, color: T.label, letterSpacing: 1 }}>
-          <label style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer", height: 18 }}>
-            <input
-              type="checkbox"
-              checked={isReturn}
-              onChange={(e) => setIsReturn(e.target.checked)}
-              style={{ width: 16, height: 16, accentColor: COLORS.coral }}
-            />
-            RETURN TRIP
-          </label>
-          {isReturn ? (
+        <label className="sm:w-[130px]" style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, color: T.label, letterSpacing: 1 }}>
+          TRIP
+          <select value={isReturn ? "return" : "oneway"} onChange={(e) => setIsReturn(e.target.value === "return")} className="mt-1 w-full" style={inputStyle}>
+            <option value="oneway">One way</option>
+            <option value="return">Return</option>
+          </select>
+        </label>
+
+        {isReturn && (
+          <label className="sm:w-[170px]" style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, color: T.label, letterSpacing: 1 }}>
+            RETURN DATE
             <input
               type="date"
-              aria-label="Return date"
               value={returnDate}
               min={date || todayStr}
               onChange={(e) => setReturnDate(e.target.value)}
               className="mt-1 w-full"
               style={inputStyle}
             />
-          ) : (
-            <div className="mt-1" style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, letterSpacing: 0, color: T.muted, padding: "11px 0" }}>One way</div>
-          )}
-        </div>
+          </label>
+        )}
 
         <label className="sm:w-[120px]" style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, color: T.label, letterSpacing: 1 }}>
           TRAVELLERS
