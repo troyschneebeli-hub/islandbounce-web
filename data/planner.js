@@ -25,6 +25,40 @@ export const DRIVE_TIMES = {
 // individual boat, with its own operator, departure time, and price, so
 // results show the real schedule, not a range.
 export const BOAT_ROUTES = {
+  // Departing from a Gili (timetable crossing times, which include any stops).
+  "Gili Trawangan": {
+    "Padang Bai": { duration: 90, priceLow: 18, priceHigh: 30, count: 1 },
+    "Sanur": { duration: 225, priceLow: 25, priceHigh: 40, count: 1 },
+    "Benoa / Nusa Dua": { duration: 135, priceLow: 30, priceHigh: 45, count: 1 },
+    "Nusa Penida": { duration: 235, priceLow: 30, priceHigh: 45, count: 1 },
+    "Nusa Lembongan": { duration: 165, priceLow: 30, priceHigh: 45, count: 1 },
+  },
+  "Gili Air": {
+    "Padang Bai": { duration: 100, priceLow: 18, priceHigh: 30, count: 1 },
+    "Sanur": { duration: 195, priceLow: 25, priceHigh: 40, count: 1 },
+    "Benoa / Nusa Dua": { duration: 220, priceLow: 30, priceHigh: 45, count: 1 },
+    "Nusa Penida": { duration: 160, priceLow: 30, priceHigh: 45, count: 1 },
+    "Nusa Lembongan": { duration: 135, priceLow: 30, priceHigh: 45, count: 1 },
+  },
+  "Gili Meno": {
+    "Padang Bai": { duration: 120, priceLow: 18, priceHigh: 30, count: 1 },
+    "Benoa / Nusa Dua": { duration: 200, priceLow: 30, priceHigh: 45, count: 1 },
+    "Nusa Penida": { duration: 180, priceLow: 30, priceHigh: 45, count: 1 },
+    "Nusa Lembongan": { duration: 175, priceLow: 30, priceHigh: 45, count: 1 },
+  },
+  // Departing from the Nusa islands (timetable crossing times, which include any stops).
+  "Nusa Penida": {
+    "Gili Trawangan": { duration: 155, priceLow: 30, priceHigh: 45, count: 1 },
+    "Gili Air": { duration: 230, priceLow: 30, priceHigh: 45, count: 1 },
+    "Gili Meno": { duration: 190, priceLow: 30, priceHigh: 45, count: 1 },
+    "Bangsal (Lombok)": { duration: 260, priceLow: 30, priceHigh: 45, count: 1 },
+  },
+  "Nusa Lembongan": {
+    "Gili Trawangan": { duration: 125, priceLow: 30, priceHigh: 45, count: 1 },
+    "Gili Air": { duration: 200, priceLow: 30, priceHigh: 45, count: 1 },
+    "Gili Meno": { duration: 170, priceLow: 30, priceHigh: 45, count: 1 },
+    "Bangsal (Lombok)": { duration: 230, priceLow: 30, priceHigh: 45, count: 1 },
+  },
   Sanur: {
     "Gili Trawangan": { duration: 105, priceLow: 20, priceHigh: 35, count: 8 },
     "Gili Air": { duration: 105, priceLow: 20, priceHigh: 35, count: 7 },
@@ -76,6 +110,17 @@ export const PLANNER_DESTINATIONS = [
   "Nusa Lembongan",
   "Bangsal (Lombok)",
 ];
+
+// Where you can head to depending on where you start. Starting on a Gili, the
+// boats go back to Bali or over to the Nusas.
+export const GILI_START_DESTINATIONS = ["Padang Bai", "Sanur", "Benoa / Nusa Dua", "Nusa Penida", "Nusa Lembongan"];
+
+export function destinationsFor(region) {
+  if (region === "gili") return GILI_START_DESTINATIONS;
+  // No boats between the Nusas in our data, so don't offer them from a Nusa start.
+  if (region === "nusa") return PLANNER_DESTINATIONS.filter((d) => !d.startsWith("Nusa "));
+  return PLANNER_DESTINATIONS;
+}
 
 export function fmtMins(total) {
   const h = Math.floor(total / 60);

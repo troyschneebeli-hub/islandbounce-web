@@ -35,10 +35,6 @@ const FAQS = [
     a: "Rough seas (most common in wet season, roughly November to March) are the usual cause. Operators typically rebook you onto their next available departure at no extra cost — but policies vary, so check the specific operator's terms before you pay.",
   },
   {
-    q: "Fast boat vs. public ferry — what's the difference?",
-    a: "Fast boats are quicker and pricier, running specific tourist routes a few times a day. The public ferry (like Padang Bai → Lembar) is slower, much cheaper, and runs around the clock — a solid backup when fast boats are cancelled or fully booked.",
-  },
-  {
     q: "Does IslandBounce sell tickets directly?",
     a: "No — we compare real options and send you to the operator or booking platform to actually pay.",
   },
@@ -154,8 +150,7 @@ export default function IndonesiaHub() {
             <div style={{ fontSize: 14, color: COLORS.ink, opacity: 0.78, lineHeight: 1.65 }}>
               Roughly April to October tends to be drier with calmer seas — generally the more reliable window for
               fast boats. November to March brings the wet season, and rougher water means delays and
-              cancellations are more common. Neither is a hard rule — check conditions closer to your trip, and
-              keep the public ferry to Lembar in mind as a weather-reliable backup.
+              cancellations are more common. Neither is a hard rule — check conditions closer to your trip.
             </div>
           </div>
         </section>

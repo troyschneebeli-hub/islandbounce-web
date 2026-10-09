@@ -2,8 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 import { BALI_PORTS, ISLAND_PORTS } from "@/data/ports";
+import { giliPortFor, isOnNusa } from "@/lib/originRegion";
 import { BOAT_ROUTES, CHECKIN_BUFFER_MIN, fmtMins } from "@/data/planner";
-import Link from "next/link";
 import { portDepartures } from "@/lib/portDepartures";
 import { formatDate } from "@/lib/timetable";
 import { bookingLink } from "@/lib/bookingLink";
@@ -14,7 +14,6 @@ const prefersReducedMotion = () =>
   typeof window !== "undefined" && typeof window.matchMedia === "function" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 // A card lists at most this many operators; the rest are one tap away in the full timetable.
-const MAX_OPERATOR_LINES = 4;
 
 import { COLORS } from "@/lib/theme";
 import { loadGoogleMaps } from "@/components/AddressAutocomplete";
@@ -61,7 +60,7 @@ const BOAT_ICON_PATH =
 
 // Derived from the shared ISLAND_PORTS list in data/ports.js — one source
 // of truth for these coordinates instead of a second local copy.
-const DESTINATION_COORDS = Object.fromEntries(ISLAND_PORTS.map((p) => [p.name, { lat: p.lat, lng: p.lng }]));
+const DESTINATION_COORDS = Object.fromEntries([...BALI_PORTS, ...ISLAND_PORTS].map((p) => [p.name, { lat: p.lat, lng: p.lng }]));
 
 function easeOutCubic(t) {
   return 1 - Math.pow(1 - t, 3);
@@ -136,8 +135,8 @@ function withBoatInfo(r, date) {
   return { ...r, departures, boatMin, boatIsEstimate: !departures.hasReal, totalMin: r.driveMin + CHECKIN_BUFFER_MIN + boatMin };
 }
 
-/** @param {{ origin?: any, destination?: any, date?: string }} props */
-export default function FindPortMap({ origin, destination, date }) {
+/** @param {{ origin?: any, destination?: any, date?: string, returnDate?: string, travellers?: number }} props */
+export default function FindPortMap({ origin, destination, date, returnDate, travellers }) {
   const mapRef = useRef(null);
   const mapInstance = useRef(null);
   const routesRef = useRef([]); // [{ port, isFastest, glow, line, cancelDraw, fullPath }]
@@ -146,7 +145,8 @@ export default function FindPortMap({ origin, destination, date }) {
   const pulseCirclesRef = useRef([]);
   const pulseRafRef = useRef(null);
   const flowRafRef = useRef(null);
-  const [error, setError] = useState("");
+  const [error, setError] = useState(""); // fatal: map unavailable
+  const [notice, setNotice] = useState(""); // no route for this start/destination; map stays up
   const [loaded, setLoaded] = useState(false);
   const [calculating, setCalculating] = useState(false);
   const [results, setResults] = useState([]);
@@ -251,12 +251,24 @@ export default function FindPortMap({ origin, destination, date }) {
       pulseRafRef.current = requestAnimationFrame(pulseFrame);
     }
 
-    const candidatePorts = BALI_PORTS.filter((p) => BOAT_ROUTES[p.name]?.[destination]);
+    // Where the traveller starts decides which harbours we use: a Gili (walk to
+    // that island's harbour), a Nusa island (drive to its harbour) or Bali (drive).
+    const giliPort = giliPortFor(origin);
+    const fromGili = !!giliPort;
+    const fromNusa = !fromGili && isOnNusa(origin);
+    const pool = fromGili ? [giliPort] : fromNusa ? ISLAND_PORTS.filter((p) => p.region === "nusa") : BALI_PORTS;
+    const candidatePorts = pool.filter((p) => BOAT_ROUTES[p.name]?.[destination]);
     if (candidatePorts.length === 0) {
-      setError(`No Bali port in our data has a route to ${destination} yet.`);
+      setNotice(
+        fromGili
+          ? `We don't list a boat from ${giliPort.name} to ${destination} yet. Try Padang Bai or Sanur.`
+          : fromNusa
+          ? `We don't list a boat from the Nusa islands to ${destination} yet. Try a Gili as your destination.`
+          : `No Bali port in our data has a route to ${destination} yet.`
+      );
       return;
     }
-    setError("");
+    setNotice("");
     setCalculating(true);
 
     const directionsService = new maps.DirectionsService();
@@ -270,7 +282,7 @@ export default function FindPortMap({ origin, destination, date }) {
         (port) =>
           new Promise((resolve) => {
             directionsService.route(
-              { origin: { lat: origin.lat, lng: origin.lng }, destination: { lat: port.lat, lng: port.lng }, travelMode: maps.TravelMode.DRIVING },
+              { origin: { lat: origin.lat, lng: origin.lng }, destination: { lat: port.lat, lng: port.lng }, travelMode: fromGili ? maps.TravelMode.WALKING : maps.TravelMode.DRIVING, avoidFerries: true },
               (result, status) => {
                 if (status === "OK" && result) {
                   const leg = result.routes[0].legs[0];
@@ -285,6 +297,11 @@ export default function FindPortMap({ origin, destination, date }) {
     ).then((outcomes) => {
       const withDrive = outcomes.filter((o) => o.driveSeconds != null);
       withDrive.sort((a, b) => a.driveSeconds - b.driveSeconds);
+      if (withDrive.length === 0) {
+        setNotice("We couldn't find a route from there to a harbour. Check the address, or pick one of the quick-start places.");
+        setCalculating(false);
+        return;
+      }
 
       withDrive.forEach((o, i) => {
         const isFastest = i === 0;
@@ -350,7 +367,8 @@ export default function FindPortMap({ origin, destination, date }) {
           driveMin,
           driveText: o.driveText,
           distanceText: o.distanceText,
-          scooterMin: Math.max(5, Math.round(driveMin * 0.75)),
+          walking: fromGili,
+          scooterMin: fromGili ? null : Math.max(5, Math.round(driveMin * 0.75)),
         };
       });
       setResults(computed);
@@ -471,6 +489,11 @@ export default function FindPortMap({ origin, destination, date }) {
             Loading map…
           </div>
         )}
+        {notice && (
+          <div style={{ position: "absolute", left: 12, right: 12, top: 12, background: "rgba(255,255,255,0.96)", color: COLORS.coralDeep, fontSize: 12.5, fontWeight: 600, padding: "10px 14px", borderRadius: 10, zIndex: 10, border: `1px solid ${COLORS.foamLine}`, textAlign: "center" }}>
+            {notice}
+          </div>
+        )}
         {calculating && (
           <div style={{ position: "absolute", top: 12, left: 12, background: "rgba(255,255,255,0.92)", color: COLORS.sea, fontSize: 11.5, fontWeight: 600, padding: "6px 12px", borderRadius: 999, zIndex: 10, border: `1px solid ${COLORS.foamLine}` }}>
             Calculating routes…
@@ -508,89 +531,47 @@ export default function FindPortMap({ origin, destination, date }) {
                   boxShadow: hovered === r.port ? `0 4px 16px ${ACCENT_FASTEST}33` : "0 1px 3px rgba(0,0,0,0.04)",
                 }}
               >
-                {i === 0 && (
+                {i === 0 && cards.length > 1 && (
                   <div style={{ position: "absolute", top: -9, left: 12, background: ACCENT_FASTEST, color: "white", fontSize: 9.5, fontWeight: 800, padding: "2px 7px", borderRadius: 999, letterSpacing: 0.5 }}>
                     FASTEST
                   </div>
                 )}
                 <div style={{ fontWeight: 700, fontSize: 15, color: COLORS.ink, marginBottom: 8 }}>{r.port}</div>
-                <div className="grid grid-cols-3 gap-2">
+                <div className={r.walking ? "grid grid-cols-2 gap-2" : "grid grid-cols-3 gap-2"}>
                   <div>
-                    <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 9, opacity: 0.6, color: COLORS.sea, letterSpacing: 0.5 }}>CAR</div>
+                    <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 9, opacity: 0.6, color: COLORS.sea, letterSpacing: 0.5 }}>{r.walking ? "WALK" : "CAR"}</div>
                     <div style={{ fontFamily: "'Big Shoulders Display', sans-serif", fontWeight: 700, fontSize: 16, color: COLORS.ink }}>{r.driveText}</div>
                   </div>
-                  <div>
-                    <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 9, opacity: 0.6, color: COLORS.sea, letterSpacing: 0.5 }}>SCOOTER</div>
-                    <div style={{ fontFamily: "'Big Shoulders Display', sans-serif", fontWeight: 700, fontSize: 16, color: COLORS.ink }}>{fmtMins(r.scooterMin)}</div>
-                  </div>
+                  {!r.walking && (
+                    <div>
+                      <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 9, opacity: 0.6, color: COLORS.sea, letterSpacing: 0.5 }}>SCOOTER</div>
+                      <div style={{ fontFamily: "'Big Shoulders Display', sans-serif", fontWeight: 700, fontSize: 16, color: COLORS.ink }}>{fmtMins(r.scooterMin)}</div>
+                    </div>
+                  )}
                   <div>
                     <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 9, opacity: 0.6, color: ACCENT_FASTEST, letterSpacing: 0.5 }}>BOAT</div>
                     <div style={{ fontFamily: "'Big Shoulders Display', sans-serif", fontWeight: 700, fontSize: 16, color: ACCENT_FASTEST }}>{r.boatIsEstimate ? "~" : ""}{fmtMins(r.boatMin)}</div>
                   </div>
                 </div>
-                <div style={{ marginTop: 10 }}>
-                  <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 9, opacity: 0.6, color: COLORS.sea, letterSpacing: 0.5, marginBottom: 3 }}>BOATS DEPART</div>
-                  {r.departures.hasReal ? (
-                    <>
-                      {r.departures.groups.slice(0, MAX_OPERATOR_LINES).map((g) => (
-                        <div key={g.operator} style={{ fontSize: 11.5, color: COLORS.ink, lineHeight: 1.5 }}>
-                          <strong>{g.operator}</strong>{" "}
-                          {g.times.join(" · ")}
-                        </div>
-                      ))}
-                      {r.departures.groups.length > MAX_OPERATOR_LINES && (
-                        <div style={{ fontSize: 11.5, color: COLORS.ink, opacity: 0.75, lineHeight: 1.5 }}>
-                          + {r.departures.groups.length - MAX_OPERATOR_LINES} more{" "}
-                          {r.departures.routeSlug ? (
-                            <Link href={`/indonesia/routes/${r.departures.routeSlug}`} onClick={(e) => e.stopPropagation()} style={{ color: COLORS.sea, fontWeight: 700 }}>
-                              in the full timetable
-                            </Link>
-                          ) : (
-                            "operators"
-                          )}
-                        </div>
-                      )}
-                      <div style={{ fontSize: 10, opacity: 0.55, color: COLORS.ink, marginTop: 3 }}>
-                        Updated {formatDate(r.departures.checked)}
-                        {r.departures.routeSlug && (
-                          <>
-                            {" · "}
-                            <Link
-                              href={`/indonesia/routes/${r.departures.routeSlug}`}
-                              onClick={(e) => e.stopPropagation()}
-                              style={{ color: COLORS.sea, fontWeight: 700 }}
-                            >
-                              Full timetable
-                            </Link>
-                          </>
-                        )}
-                      </div>
-                      {r.departures.stale && (
-                        <div style={{ fontSize: 10.5, color: "#8A5A00", background: "#FFF2CC", borderRadius: 6, padding: "4px 8px", marginTop: 5 }}>
-                          These times were last updated a while ago and may have changed. Confirm with the operator.
-                        </div>
-                      )}
-                    </>
-                  ) : (
-                    <div style={{ fontSize: 11.5, opacity: 0.8, color: COLORS.ink, lineHeight: 1.45 }}>
-                      Timetable coming soon.
-                    </div>
-                  )}
-                  <div style={{ fontSize: 10.5, opacity: 0.65, color: COLORS.ink, marginTop: 6 }}>
-                    ~{fmtMins(r.totalMin)} total (drive + check-in + boat)
-                  </div>
+                <div style={{ marginTop: 10, fontSize: 11.5, color: COLORS.ink, opacity: 0.75 }}>
+                  About {fmtMins(r.totalMin)} door to door
                 </div>
+                {r.walking && (
+                  <div style={{ marginTop: 4, fontSize: 11, color: COLORS.ink, opacity: 0.6 }}>The Gilis are car free, so it's a walk (or a bike or cidomo ride) to the harbour.</div>
+                )}
                 <div style={{ marginTop: 10, paddingTop: 10, borderTop: `1px solid ${COLORS.foamLine}` }}>
                   <SeaConditionsBadge lat={r.lat} lng={r.lng} detailed />
                 </div>
                 <a
-                  href={bookingLink(r.port, r.destination, date)}
+                  href={bookingLink(r.port, r.destination, date, returnDate, travellers)}
                   target="_blank"
                   rel="sponsored noopener noreferrer"
                   onClick={(e) => e.stopPropagation()}
                   style={{ display: "block", textAlign: "center", marginTop: 12, background: COLORS.coral, color: "white", fontWeight: 700, fontSize: 13, padding: "9px 12px", borderRadius: 999, textDecoration: "none" }}
                 >
-                  Book this route{date ? ` · ${formatDate(date)}` : ""} →
+                  {date && returnDate
+                    ? `Book return trip · ${formatDate(date)} – ${formatDate(returnDate)} →`
+                    : `Book this route${date ? ` · ${formatDate(date)}` : ""} →`}
                 </a>
               </div>
             ))}

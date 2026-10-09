@@ -4,7 +4,7 @@ import PortCard from "@/components/PortCard";
 
 export const metadata = {
   title: "All Ports — Indonesia",
-  description: "Every harbor covering Bali, the Gili Islands, Nusa Penida, Nusa Lembongan, and Lombok.",
+  description: "Every harbor covering Bali, the Gili Islands, Nusa Penida, Nusa Lembongan, and Bangsal on Lombok.",
   alternates: { canonical: "/indonesia/ports" },
 };
 
@@ -15,7 +15,7 @@ export default function PortsPage() {
         All Ports
       </h1>
       <p style={{ fontSize: 13.5, opacity: 0.65, marginBottom: 28, maxWidth: 600 }}>
-        Every harbor covering Bali, the Gili Islands, Nusa Penida, Nusa Lembongan, and Lombok — which port you leave from
+        Every harbor covering Bali, the Gili Islands, Nusa Penida, Nusa Lembongan, and Bangsal on Lombok — which port you leave from
         changes your options a lot more than most people realize.
       </p>
 
@@ -29,7 +29,7 @@ export default function PortsPage() {
       </div>
 
       <h2 style={{ fontFamily: "'Big Shoulders Display', sans-serif", fontWeight: 700, fontSize: 20, color: COLORS.sea, marginBottom: 12 }}>
-        Gili Islands, Nusa & Lombok harbors
+        Gili Islands, Nusa & Bangsal harbors
       </h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {ISLAND_PORTS.map((p) => (

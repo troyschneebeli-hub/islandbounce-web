@@ -3,7 +3,8 @@
 import { Suspense, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { COLORS } from "@/lib/theme";
-import { PLANNER_DESTINATIONS } from "@/data/planner";
+import { PLANNER_DESTINATIONS, destinationsFor } from "@/data/planner";
+import { originRegion } from "@/lib/originRegion";
 import { START_POINTS } from "@/lib/startPoints";
 import AddressAutocomplete from "@/components/AddressAutocomplete";
 import FindPortMap from "@/components/FindPortMap";
@@ -68,15 +69,34 @@ function PlannerContent() {
   const [origin, setOrigin] = useState(null); // { lat, lng, label } — only set once a real place is picked
   const [activeDestination, setActiveDestination] = useState(null); // destination actually being searched, vs the dropdown's current value
   const [date, setDate] = useState(""); // optional, "YYYY-MM-DD"
+  const [travellers, setTravellers] = useState(2);
+  const [isReturn, setIsReturn] = useState(false);
+  const [returnDate, setReturnDate] = useState(""); // "YYYY-MM-DD", only used when isReturn
   const [error, setError] = useState("");
+
+  // The destination list depends on where you start: from a Gili the boats go
+  // back to Bali or across to the Nusas.
+  const region = originRegion(origin);
+  const destinationOptions = destinationsFor(region);
+  const shownDestination = destinationOptions.includes(destination) ? destination : destinationOptions[0];
+  const todayStr = new Date().toISOString().slice(0, 10);
 
   function handleFind() {
     if (!origin) {
       setError("Pick your address from the suggestions list — typing alone isn't enough, the map needs real coordinates.");
       return;
     }
+    if (isReturn && (!date || !returnDate)) {
+      setError("For a return trip, pick both your travel date and your return date.");
+      return;
+    }
+    if (isReturn && returnDate < date) {
+      setError("Your return date is before your travel date. Check the dates.");
+      return;
+    }
     setError("");
-    setActiveDestination(destination);
+    setDestination(shownDestination);
+    setActiveDestination(shownDestination);
   }
 
   // One tap on a popular starting point fills the address and runs the search.
@@ -84,7 +104,10 @@ function PlannerContent() {
     setAddress(p.formatted);
     setOrigin({ lat: p.lat, lng: p.lng, label: p.formatted });
     setError("");
-    setActiveDestination(destination);
+    const opts = destinationsFor(originRegion(p));
+    const dest = opts.includes(destination) ? destination : opts[0];
+    setDestination(dest);
+    setActiveDestination(dest);
   }
 
   const inputStyle = {
@@ -142,10 +165,44 @@ function PlannerContent() {
           />
         </label>
 
+        <div className="sm:w-[170px]" style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, color: T.label, letterSpacing: 1 }}>
+          <label style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer", height: 18 }}>
+            <input
+              type="checkbox"
+              checked={isReturn}
+              onChange={(e) => setIsReturn(e.target.checked)}
+              style={{ width: 16, height: 16, accentColor: COLORS.coral }}
+            />
+            RETURN TRIP
+          </label>
+          {isReturn ? (
+            <input
+              type="date"
+              aria-label="Return date"
+              value={returnDate}
+              min={date || todayStr}
+              onChange={(e) => setReturnDate(e.target.value)}
+              className="mt-1 w-full"
+              style={inputStyle}
+            />
+          ) : (
+            <div className="mt-1" style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, letterSpacing: 0, color: T.muted, padding: "11px 0" }}>One way</div>
+          )}
+        </div>
+
+        <label className="sm:w-[120px]" style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, color: T.label, letterSpacing: 1 }}>
+          TRAVELLERS
+          <select value={travellers} onChange={(e) => setTravellers(Number(e.target.value))} className="mt-1 w-full" style={inputStyle}>
+            {[1, 2, 3, 4, 5, 6, 7, 8].map((n) => (
+              <option key={n} value={n}>{n}</option>
+            ))}
+          </select>
+        </label>
+
         <label className="flex-1 sm:min-w-[200px]" style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, color: T.label, letterSpacing: 1 }}>
           WHERE ARE YOU HEADED?
-          <select value={destination} onChange={(e) => setDestination(e.target.value)} className="mt-1 w-full" style={inputStyle}>
-            {PLANNER_DESTINATIONS.map((d) => (
+          <select value={shownDestination} onChange={(e) => setDestination(e.target.value)} className="mt-1 w-full" style={inputStyle}>
+            {destinationOptions.map((d) => (
               <option key={d}>{d}</option>
             ))}
           </select>
@@ -173,13 +230,14 @@ function PlannerContent() {
       </div>
       {error && <div style={{ fontSize: 12, color: T.error, marginBottom: 14 }}>{error}</div>}
 
-      <FindPortMap origin={origin} destination={activeDestination} date={date} />
+      <FindPortMap origin={origin} destination={activeDestination} date={date} returnDate={isReturn ? returnDate : ""} travellers={travellers} />
 
       <p style={{ fontSize: 11, color: T.muted, marginTop: 16, maxWidth: 700 }}>
-        Car routes and times are live from Google Maps. Scooter times are estimated at ~75% of car drive time —
-        verify locally, especially at night or in rain. Departure times are compiled from operators and booking
+        Car and walking routes are live from Google Maps. Scooter times are estimated at ~75% of car drive time —
+        verify locally, especially at night or in rain. Starting on a Gili? The islands are car free, so we show the
+        walk to the harbour. Departure times are compiled from operators and booking
         platforms and can change, so always confirm with the operator before you travel. Crossing times marked ~
-        are estimates. The Book button opens our booking page with your route and date filled in. IslandBounce is a
+        are estimates. The Book button opens our booking page with your route and date filled in. Your travel dates and number of travellers are filled in for you. IslandBounce is a
         comparison site, not the operator.
       </p>
     </PlannerShell>

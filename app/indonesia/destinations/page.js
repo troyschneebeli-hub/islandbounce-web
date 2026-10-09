@@ -52,7 +52,7 @@ const PLACES = [
     photo: { src: "/images/indonesia/lombok.jpg", alt: "A turquoise bay with a pale sand beach and hills behind, on the Lombok coast" },
     tagline: "Bali's bigger, quieter neighbor",
     blurb:
-      "The main gateway to the Gilis (most boats land at Bangsal), but genuinely worth time on its own — Mount Rinjani for trekkers, beaches with a fraction of Bali's crowds, and Senggigi as the main tourist strip on the west coast if you want a base with some infrastructure.",
+      "The main gateway to the Gilis (most boats land at Bangsal), but genuinely worth time on its own — Mount Rinjani for trekkers, beaches with a fraction of Bali's crowds.",
   },
   {
     name: "Sanur",
