@@ -32,13 +32,95 @@ const MAP_STYLE = [
 const reduced = () =>
   typeof window !== "undefined" && typeof window.matchMedia === "function" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-// Teardrop pin as an inline SVG, so there are no image files to host.
-function pinIcon(maps, color, scale = 1) {
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="34" height="44" viewBox="0 0 34 44"><path d="M17 1C8.7 1 2 7.5 2 15.6 2 26 17 43 17 43s15-17 15-27.4C32 7.5 25.3 1 17 1z" fill="${color}" stroke="#fff" stroke-width="2.5"/><circle cx="17" cy="15.5" r="5.5" fill="#fff"/></svg>`;
-  return {
-    url: "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(svg),
-    scaledSize: new maps.Size(34 * scale, 44 * scale),
-    anchor: new maps.Point(17 * scale, 43 * scale),
+// Where each marker's photo bubble sits relative to its true harbour, in pixels.
+// Most ports sit just above their spot like a pin. The harbours that are packed
+// together (the three Gilis and Bangsal, and the south Bali cluster) are pushed
+// out into open water and joined to their real position by a line.
+const DEFAULT_OFFSET = { dx: 0, dy: -36 };
+const OFFSETS = {
+  "Gili Trawangan": { dx: -84, dy: -46 },
+  "Gili Meno": { dx: -4, dy: -96 },
+  "Gili Air": { dx: 74, dy: -62 },
+  "Bangsal (Lombok)": { dx: 88, dy: 38 },
+  "Padang Bai": { dx: 62, dy: -52 },
+  Kusamba: { dx: -10, dy: -66 },
+  "Nusa Lembongan": { dx: -62, dy: 38 },
+  "Nusa Penida": { dx: 64, dy: 36 },
+  Sanur: { dx: -30, dy: -62 },
+  Serangan: { dx: -92, dy: -26 },
+  "Benoa / Nusa Dua": { dx: -48, dy: 92 },
+};
+
+// A round photo marker drawn on the map. A small dot marks the real harbour, a
+// line runs out to the photo bubble, and the bubble pops in when the map loads.
+function makePortOverlayClass(maps) {
+  return class PortOverlay extends maps.OverlayView {
+    constructor(port, color, photoSrc, delayMs, onClick) {
+      super();
+      this.port = port;
+      this.color = color;
+      this.photoSrc = photoSrc;
+      this.delayMs = delayMs;
+      this.onClick = onClick;
+      this.el = null;
+      this.selected = false;
+    }
+    onAdd() {
+      const el = document.createElement("div");
+      el.className = "pp";
+      el.style.setProperty("--pp-color", this.color);
+      el.innerHTML =
+        '<div class="pp-pulse"></div><div class="pp-line"></div><div class="pp-dot"></div>' +
+        '<button type="button" class="pp-bubble" aria-label="' + this.port.name.replace(/"/g, "") + '">' +
+        '<span class="pp-photo"></span><span class="pp-label"></span></button>';
+      el.querySelector(".pp-label").textContent = this.port.name;
+      const bubble = el.querySelector(".pp-bubble");
+      bubble.style.animationDelay = this.delayMs + "ms";
+      const photo = el.querySelector(".pp-photo");
+      if (this.photoSrc) {
+        const img = new Image();
+        img.onload = () => { photo.style.backgroundImage = 'url("' + this.photoSrc + '")'; };
+        img.src = this.photoSrc;
+      } else {
+        photo.classList.add("pp-empty");
+      }
+      el.addEventListener("click", (e) => { e.stopPropagation(); this.onClick(this.port.name); });
+      el.addEventListener("mousedown", (e) => e.stopPropagation());
+      this.el = el;
+      this.getPanes().overlayMouseTarget.appendChild(el);
+      this.setSelected(this.selected);
+    }
+    draw() {
+      const proj = this.getProjection();
+      if (!proj || !this.el) return;
+      const pt = proj.fromLatLngToDivPixel(new maps.LatLng(this.port.lat, this.port.lng));
+      if (!pt) return;
+      this.el.style.left = pt.x + "px";
+      this.el.style.top = pt.y + "px";
+      // Close in and the harbours spread out on their own, so the lines shorten.
+      const zoom = this.getMap() ? this.getMap().getZoom() || 9 : 9;
+      const f = zoom >= 12 ? 0.45 : zoom >= 11 ? 0.7 : 1;
+      const o = OFFSETS[this.port.name] || DEFAULT_OFFSET;
+      const dx = o.dx * f, dy = o.dy * f;
+      const len = Math.hypot(dx, dy);
+      const ang = (Math.atan2(dy, dx) * 180) / Math.PI;
+      this.el.style.setProperty("--dx", dx + "px");
+      this.el.style.setProperty("--dy", dy + "px");
+      const line = this.el.querySelector(".pp-line");
+      line.style.width = len + "px";
+      line.style.transform = "rotate(" + ang + "deg)";
+    }
+    onRemove() {
+      if (this.el && this.el.parentNode) this.el.parentNode.removeChild(this.el);
+      this.el = null;
+    }
+    setSelected(on) {
+      this.selected = on;
+      if (this.el) {
+        this.el.classList.toggle("pp-on", on);
+        this.el.style.zIndex = on ? "100" : "";
+      }
+    }
   };
 }
 
@@ -79,7 +161,6 @@ export default function PortsExplorer() {
   const mapRef = useRef(null);
   const mapObj = useRef(null);
   const markers = useRef({});
-  const pulse = useRef({ circles: [], raf: null });
   const [loaded, setLoaded] = useState(false);
   const [mapFailed, setMapFailed] = useState(false);
   const [selected, setSelected] = useState(null);
@@ -109,66 +190,38 @@ export default function PortsExplorer() {
         mapObj.current = map;
         const bounds = new maps.LatLngBounds();
         ALL.forEach((p) => bounds.extend({ lat: p.lat, lng: p.lng }));
-        map.fitBounds(bounds, 60);
+        map.fitBounds(bounds, { top: 140, bottom: 70, left: 90, right: 100 });
 
-        // Pins drop in one after another.
+        // Photo markers pop in one after another.
+        const PortOverlay = makePortOverlayClass(maps);
         ALL.forEach((p, i) => {
           const color = p.region === "bali" ? COLORS.sea : COLORS.coral;
-          const place = () => {
-            if (cancelled) return;
-            const m = new maps.Marker({
-              position: { lat: p.lat, lng: p.lng },
-              map,
-              title: p.name,
-              icon: pinIcon(maps, color),
-              animation: reduced() ? null : maps.Animation.DROP,
-              zIndex: 10,
-            });
-            m.addListener("click", () => setSelected(p.name));
-            markers.current[p.name] = { m, color };
-          };
-          if (reduced()) place();
-          else setTimeout(place, 250 + i * 90);
+          const info = PORT_PHOTOS[p.name];
+          const ov = new PortOverlay(p, color, info ? info.src : null, reduced() ? 0 : 250 + i * 90, (name) => setSelected(name));
+          ov.setMap(map);
+          markers.current[p.name] = ov;
+        });
+        maps.event.addListener(map, "zoom_changed", () => {
+          Object.values(markers.current).forEach((ov) => ov.draw());
         });
         setLoaded(true);
       })
       .catch(() => setMapFailed(true));
     return () => {
       cancelled = true;
-      if (pulse.current.raf) cancelAnimationFrame(pulse.current.raf);
+      Object.values(markers.current).forEach((ov) => ov.setMap(null));
+      markers.current = {};
     };
   }, []);
 
-  // When a port is chosen: enlarge its pin, glide the map to it, pulse a ring.
+  // When a port is chosen: highlight its marker and glide the map to it.
   useEffect(() => {
-    const maps = typeof window !== "undefined" && window.google && window.google.maps;
-    if (!loaded || !maps || !mapObj.current) return;
-    Object.entries(markers.current).forEach(([name, { m, color }]) => {
-      const on = name === selected;
-      m.setIcon(pinIcon(maps, on ? COLORS.coralDeep : color, on ? 1.3 : 1));
-      m.setZIndex(on ? 100 : 10);
-    });
-    pulse.current.circles.forEach((c) => c.setMap(null));
-    pulse.current.circles = [];
-    if (pulse.current.raf) cancelAnimationFrame(pulse.current.raf);
+    if (!loaded || !mapObj.current) return;
+    Object.entries(markers.current).forEach(([name, ov]) => ov.setSelected(name === selected));
     if (!port) return;
-    const center = { lat: port.lat, lng: port.lng };
     const map = mapObj.current;
-    map.panTo(center);
+    map.panTo({ lat: port.lat, lng: port.lng });
     if ((map.getZoom() || 0) < 10) setTimeout(() => map.setZoom(10), reduced() ? 0 : 350);
-    if (reduced()) return;
-    const ring = new maps.Circle({ map, center, radius: 1, strokeColor: COLORS.coral, strokeOpacity: 0.6, strokeWeight: 2, fillOpacity: 0, zIndex: 5 });
-    pulse.current.circles = [ring];
-    const start = performance.now();
-    const CYCLE = 2000;
-    const MAX = 3500;
-    const frame = (now) => {
-      const t = ((now - start) % CYCLE) / CYCLE;
-      ring.setRadius(t * MAX);
-      ring.setOptions({ strokeOpacity: 0.6 * (1 - t) });
-      pulse.current.raf = requestAnimationFrame(frame);
-    };
-    pulse.current.raf = requestAnimationFrame(frame);
   }, [selected, loaded]); // eslint-disable-line react-hooks/exhaustive-deps
 
   function choose(name) {
@@ -180,7 +233,7 @@ export default function PortsExplorer() {
     if (maps && mapObj.current) {
       const bounds = new maps.LatLngBounds();
       ALL.forEach((p) => bounds.extend({ lat: p.lat, lng: p.lng }));
-      mapObj.current.fitBounds(bounds, 60);
+      mapObj.current.fitBounds(bounds, { top: 140, bottom: 70, left: 90, right: 100 });
     }
   }
 
@@ -253,6 +306,24 @@ export default function PortsExplorer() {
   return (
     <div>
       <style>{`
+        .pp{position:absolute;width:0;height:0}
+        .pp-dot{position:absolute;left:-5px;top:-5px;width:10px;height:10px;border-radius:50%;background:var(--pp-color);border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.35);box-sizing:content-box;margin:-2px 0 0 -2px}
+        .pp-line{position:absolute;left:0;top:-1px;height:2px;background:var(--pp-color);transform-origin:0 50%;opacity:.85;border-radius:2px}
+        .pp-pulse{position:absolute;left:-14px;top:-14px;width:28px;height:28px;border-radius:50%;border:2px solid #FF6B4D;opacity:0;pointer-events:none}
+        .pp-on .pp-pulse{animation:ppPulse 1.8s ease-out infinite}
+        .pp-bubble{position:absolute;left:0;top:0;width:50px;height:50px;margin:-25px 0 0 -25px;transform:translate(var(--dx),var(--dy)) scale(1);padding:0;border:none;background:none;cursor:pointer;border-radius:50%;animation:ppPop .5s cubic-bezier(.2,1.4,.4,1) backwards;transition:transform .25s cubic-bezier(.2,1.2,.4,1)}
+        .pp-photo{display:block;width:100%;height:100%;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 2px var(--pp-color),0 4px 12px rgba(0,0,0,.35);background:var(--pp-color) center/cover no-repeat;box-sizing:border-box}
+        .pp-empty{background:linear-gradient(160deg,#0B4F4A,#062F2C)}
+        .pp-label{position:absolute;left:50%;top:100%;transform:translate(-50%,6px);white-space:nowrap;background:#fff;color:#0B4F4A;font:700 11px 'Inter',sans-serif;padding:3px 8px;border-radius:999px;box-shadow:0 2px 8px rgba(0,0,0,.25);pointer-events:none;transition:background .2s,color .2s}
+        .pp-bubble:hover{transform:translate(var(--dx),var(--dy)) scale(1.14)}
+        .pp-on .pp-label{background:#FF6B4D;color:#fff}
+        .pp-on .pp-bubble{transform:translate(var(--dx),var(--dy)) scale(1.28)}
+        .pp-on .pp-photo{box-shadow:0 0 0 3px #FF6B4D,0 6px 16px rgba(0,0,0,.4)}
+        .pp-on .pp-line{background:#FF6B4D}
+        .pp-on .pp-dot{background:#FF6B4D}
+        @keyframes ppPop{from{opacity:0;transform:translate(var(--dx),var(--dy)) scale(.2)}to{opacity:1;transform:translate(var(--dx),var(--dy)) scale(1)}}
+        @keyframes ppPulse{0%{opacity:.8;transform:scale(.6)}100%{opacity:0;transform:scale(3.2)}}
+        @media(prefers-reduced-motion:reduce){.pp-bubble{animation:none;transition:none}.pp-on .pp-pulse{animation:none;opacity:.5}}
         .pe-card{animation:peSlide .45s cubic-bezier(.2,.8,.2,1) both}
         .pe-rise{animation:peRise .5s ease both}
         .pe-card .pe-photo{animation:peZoom 1.6s ease-out both}
@@ -279,7 +350,7 @@ export default function PortsExplorer() {
           )}
           {!port && loaded && (
             <div style={{ position: "absolute", left: 14, top: 14, background: "rgba(255,255,255,0.94)", color: COLORS.sea, fontSize: 12, fontWeight: 600, padding: "7px 12px", borderRadius: 999, border: `1px solid ${COLORS.foamLine}` }}>
-              Tap a pin to explore a port
+              Tap a photo to explore a port
             </div>
           )}
           {port && <div className="pe-overlay">{card}</div>}
