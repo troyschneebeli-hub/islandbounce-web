@@ -80,6 +80,124 @@ export const ROUTE_PAGES = {
     ],
     faqs: (c) => [
       {
+        q: "How long is the fast boat from Gili Trawangan to Bali?",
+        a: `Crossing times are ${c.durations}. Times differ by port and by departure, so check the Duration column above and confirm with the operator.`,
+      },
+      {
+        q: "What time is the first boat from Gili Trawangan to Bali?",
+        a: `The earliest departure is ${c.earliest} and the latest is ${c.latest}. Timetables change, so check with the operator before planning around one boat.`,
+      },
+      {
+        q: "Which operators run boats from Gili Trawangan to Bali?",
+        a: `We list ${joinOps(c.operators)}. We add more operators as we get their timetables.`,
+      },
+      CANCEL_FAQ("Gili Trawangan", "Bali"),
+      BOOK_FAQ,
+    ],
+  },
+
+  "bali-to-gili-islands": {
+    slug: "bali-to-gili-islands",
+    region: "Gili Islands",
+    name: "Bali to the Gili Islands",
+    h1: "Bali to the Gili Islands by fast boat",
+    metaTitle: "Bali to Gili Islands Fast Boat: Times, Operators & Sea Conditions",
+    metaDescription:
+      "Compare fast boats from Bali to Gili Trawangan, Gili Air and Gili Meno from Padang Bai, Sanur, Benoa and Serangan, with times, operators and live sea conditions.",
+    blurb: "Every fast boat from Bali to the Gilis in one table, with operators, crossing times and live sea conditions.",
+    fromLabel: "Bali",
+    toLabel: "Gili Islands",
+    fromPorts: BALI_MAINLAND,
+    toPorts: ["Gili Trawangan", "Gili Air", "Gili Meno"],
+    conditionPorts: ["Padang Bai", "Serangan", "Gili Trawangan"],
+    bookFrom: "Padang Bai",
+    bookTo: "Gili Trawangan",
+    related: ["gili-trawangan-to-bali", "gili-air-to-bali", "bali-to-lombok-ferry"],
+    lead: (c) =>
+      `Fast boats run from ${joinList(c.fromNames)} to ${joinList(c.toNames)}. We list ${plural(c.count, "departure")} with ${joinOps(c.operators)}, ` +
+      `leaving between ${c.earliest} and ${c.latest}. Gili Trawangan is the main stop and has the most boats.`,
+    sections: [
+      {
+        heading: "Which Gili island?",
+        paragraphs: [
+          "Gili Trawangan is the biggest and busiest of the three, with the most nightlife and the most boat options. Gili Air is quieter but still well connected. Gili Meno is the smallest and quietest, with fewer direct services.",
+          "None of the Gilis has cars or motorbikes, so once you land you'll get around on foot, by bicycle or by horse cart (cidomo).",
+        ],
+      },
+      {
+        heading: "Choosing your departure port",
+        paragraphs: [
+          "Padang Bai, on Bali's east coast, usually has the shortest crossing, but it's a longer drive from the airport and south Bali.",
+          "Serangan and Benoa / Nusa Dua are in south Bali, closer to the airport and Sanur. Crossings from there are longer, and some boats call at other ports or islands on the way.",
+          "Put your hotel into the Trip Planner to see real driving times to every port and weigh them against the boat time.",
+        ],
+        cta: PLANNER_CTA("Gili Trawangan"),
+      },
+      {
+        heading: "Stops on the way",
+        paragraphs: [
+          "Some fast boats run a circuit, calling at more than one port or island. Where we know a boat stops elsewhere, it's shown in the Notes column, and those stops add to your crossing time.",
+        ],
+      },
+      { heading: "Checking in", paragraphs: [CHECKIN_TEXT] },
+    ],
+    faqs: (c) => [
+      {
+        q: "How long does the fast boat from Bali to the Gili Islands take?",
+        a: `Crossing times are: ${c.durations}. Boats that call at other ports on the way take longer, so compare the Duration and Notes columns.`,
+      },
+      {
+        q: "Which operators go from Bali to the Gili Islands?",
+        a: `We list ${joinOps(c.operators)}. We add more operators as we get their timetables.`,
+      },
+      {
+        q: "Which Bali port is best for the Gilis?",
+        a: "Padang Bai usually has the shortest crossing, while Serangan and Benoa / Nusa Dua are closer to the airport and south Bali. The right one depends on where you're staying: the Trip Planner shows real driving times to each.",
+      },
+      {
+        q: "Are there direct boats, or do they stop on the way?",
+        a: "Both exist. Some boats run a circuit and call at other ports or islands on the way to the Gilis. Where we know about those stops, they're listed in the Notes column above.",
+      },
+      CANCEL_FAQ("Bali", "the Gili Islands"),
+      BOOK_FAQ,
+    ],
+  },
+
+  "bali-to-lombok-ferry": {
+    slug: "bali-to-lombok-ferry",
+    region: "Lombok",
+    name: "Bali to Lombok",
+    h1: "Bali to Lombok by fast boat",
+    metaTitle: "Bali to Lombok Fast Boat to Bangsal: Options and Operators",
+    metaDescription:
+      "Fast boats from Bali to Bangsal on Lombok, the gateway to the Gili Islands. Compare operators and book your crossing.",
+    blurb: "Fast boats from Bali to Bangsal on Lombok, with operators compared.",
+    fromLabel: "Bali",
+    toLabel: "Lombok",
+    fromPorts: BALI_MAINLAND,
+    toPorts: LOMBOK_PORTS,
+    conditionPorts: ["Padang Bai", "Bangsal (Lombok)"],
+    bookFrom: "Bali",
+    bookTo: "Lombok",
+    related: ["bali-to-gili-islands", "gili-trawangan-to-bali", "gili-air-to-bali"],
+    lead: (c) =>
+      `Fast boats cross from Bali to Bangsal, the Lombok port for the Gili Islands. ` +
+      `We list ${plural(c.count, "departure")} with ${joinOps(c.operators)}, leaving between ${c.earliest} and ${c.latest}.`,
+    sections: [
+      {
+        heading: "Crossing to Bangsal",
+        paragraphs: [
+          "Fast boats run from Bali's harbours to Bangsal, the main gateway to the Gili Islands and north-west Lombok. Most people leave from Padang Bai or Sanur, depending on where they're staying.",
+          "From Bangsal you can carry on by road or by short boat to the Gilis, and the timetable above lists every departure we compare.",
+        ],
+      },
+      {
+        heading: "Flying instead?",
+        paragraphs: ["There are also short flights between Bali and Lombok. This page covers the crossing by sea."],
+      },
+    ],
+    faqs: (c) => [
+      {
         q: "Is there a fast boat from Bali to Lombok?",
         a: `Yes. Fast boats run from Bali to Bangsal on Lombok. We list ${plural(c.count, "departure")} so far.`,
       },
@@ -153,7 +271,128 @@ export const ROUTE_PAGES = {
       BOOK_FAQ,
     ],
   },
+
+  "nusa-penida-to-gili-islands": {
+    slug: "nusa-penida-to-gili-islands",
+    region: "Nusa Islands",
+    name: "Nusa Penida to the Gili Islands",
+    h1: "Nusa Penida to the Gili Islands by fast boat",
+    metaTitle: "Nusa Penida to Gili Islands Fast Boat: Times & Operators",
+    metaDescription:
+      "Fast boat times from Nusa Penida to Gili Trawangan, Gili Air and Gili Meno, with operators and live sea conditions.",
+    blurb: "Fast boats from Nusa Penida to the Gilis, with operators, crossing times and sea conditions.",
+    fromLabel: "Nusa Penida",
+    toLabel: "Gili Islands",
+    fromPorts: ["Nusa Penida"],
+    toPorts: ["Gili Trawangan", "Gili Air", "Gili Meno"],
+    conditionPorts: ["Nusa Penida", "Gili Trawangan"],
+    bookFrom: "Nusa Penida",
+    bookTo: "Gili Trawangan",
+    related: ["nusa-lembongan-to-gili-islands", "bali-to-gili-islands", "gili-trawangan-to-bali"],
+    lead: (c) =>
+      `Fast boats run from Nusa Penida to ${joinList(c.toNames)}. We list ${plural(c.count, "departure")} with ${joinOps(c.operators)}, ` +
+      `leaving between ${c.earliest} and ${c.latest}. Crossing times: ${c.durations}.`,
+    sections: [
+      {
+        heading: "Going straight from Nusa to the Gilis",
+        paragraphs: [
+          "You don't have to go back to Bali first. A small number of fast boats run from Nusa Penida to the Gili Islands, so you can carry on from the cliffs to the beaches without a night on the mainland.",
+          "There are only a few departures a day, mostly in the morning, so check the times before you plan your day on Nusa Penida around one of them.",
+        ],
+      },
+      {
+        heading: "Why the crossing takes a while",
+        paragraphs: [
+          "Some boats call at more than one Gili on the way, and those stops add to the crossing. Where we know a boat stops elsewhere, it's shown in the Notes column.",
+        ],
+      },
+      {
+        heading: "Getting to the harbour",
+        paragraphs: [
+          "Nusa Penida is large and the roads are rough, so allow plenty of time to reach the harbour from your accommodation. Most people go by scooter or a hired driver.",
+          CHECKIN_TEXT,
+        ],
+        cta: PLANNER_CTA("Gili Trawangan"),
+      },
+    ],
+    faqs: (c) => [
+      {
+        q: "Can I go from Nusa Penida to the Gili Islands without going back to Bali?",
+        a: `Yes. We list ${plural(c.count, "direct departure")} from Nusa Penida to the Gilis, with ${joinOps(c.operators)}.`,
+      },
+      {
+        q: "How long is the fast boat from Nusa Penida to the Gili Islands?",
+        a: `Crossing times are ${c.durations}. Boats that call at other islands on the way take longer, so compare the Duration and Notes columns.`,
+      },
+      {
+        q: "What time is the first boat from Nusa Penida to the Gilis?",
+        a: `The earliest departure is ${c.earliest} and the latest is ${c.latest}. Timetables change, so check with the operator before planning around one boat.`,
+      },
+      CANCEL_FAQ("Nusa Penida", "the Gili Islands"),
+      BOOK_FAQ,
+    ],
+  },
+
+  "nusa-lembongan-to-gili-islands": {
+    slug: "nusa-lembongan-to-gili-islands",
+    region: "Nusa Islands",
+    name: "Nusa Lembongan to the Gili Islands",
+    h1: "Nusa Lembongan to the Gili Islands by fast boat",
+    metaTitle: "Nusa Lembongan to Gili Islands Fast Boat: Times & Operators",
+    metaDescription:
+      "Fast boat times from Nusa Lembongan to Gili Trawangan, Gili Air and Gili Meno, with operators and live sea conditions.",
+    blurb: "Fast boats from Nusa Lembongan to the Gilis, with operators, crossing times and sea conditions.",
+    fromLabel: "Nusa Lembongan",
+    toLabel: "Gili Islands",
+    fromPorts: ["Nusa Lembongan"],
+    toPorts: ["Gili Trawangan", "Gili Air", "Gili Meno"],
+    conditionPorts: ["Nusa Lembongan", "Gili Trawangan"],
+    bookFrom: "Nusa Lembongan",
+    bookTo: "Gili Trawangan",
+    related: ["nusa-penida-to-gili-islands", "bali-to-gili-islands", "gili-trawangan-to-bali"],
+    lead: (c) =>
+      `Fast boats run from Nusa Lembongan to ${joinList(c.toNames)}. We list ${plural(c.count, "departure")} with ${joinOps(c.operators)}, ` +
+      `leaving between ${c.earliest} and ${c.latest}. Crossing times: ${c.durations}.`,
+    sections: [
+      {
+        heading: "Going straight from Lembongan to the Gilis",
+        paragraphs: [
+          "You can cross from Nusa Lembongan to the Gili Islands without returning to Bali. Only a few boats a day make the crossing, mostly in the morning, so it's worth fixing the time before you plan the rest of your stay.",
+        ],
+      },
+      {
+        heading: "Which Gili?",
+        paragraphs: [
+          "Gili Trawangan is the liveliest and has the most boats, Gili Air is the calm middle ground, and Gili Meno is the quietest. The Gilis have no cars or motorbikes, so you'll get around on foot, by bicycle or by horse cart.",
+        ],
+      },
+      {
+        heading: "Getting to the harbour and boarding",
+        paragraphs: [
+          "Lembongan is small, so the harbour is usually a short ride from where you're staying. Allow extra time with luggage.",
+          CHECKIN_TEXT,
+        ],
+        cta: PLANNER_CTA("Gili Trawangan"),
+      },
+    ],
+    faqs: (c) => [
+      {
+        q: "Is there a boat from Nusa Lembongan to the Gili Islands?",
+        a: `Yes. We list ${plural(c.count, "departure")} from Nusa Lembongan to the Gilis, with ${joinOps(c.operators)}.`,
+      },
+      {
+        q: "How long is the fast boat from Nusa Lembongan to the Gili Islands?",
+        a: `Crossing times are ${c.durations}. Boats that call at other islands on the way take longer, so compare the Duration and Notes columns.`,
+      },
+      {
+        q: "What time is the first boat from Nusa Lembongan to the Gilis?",
+        a: `The earliest departure is ${c.earliest} and the latest is ${c.latest}. Timetables change, so check with the operator before planning around one boat.`,
+      },
+      CANCEL_FAQ("Nusa Lembongan", "the Gili Islands"),
+      BOOK_FAQ,
+    ],
+  },
 };
 
 export const ROUTE_SLUGS = Object.keys(ROUTE_PAGES);
-export const REGION_ORDER = ["Gili Islands", "Lombok"];
+export const REGION_ORDER = ["Gili Islands", "Nusa Islands", "Lombok"];
