@@ -75,9 +75,6 @@ export const PLANNER_DESTINATIONS = [
   "Nusa Penida",
   "Nusa Lembongan",
   "Bangsal (Lombok)",
-  "Senggigi (Lombok)",
-  "Lembar (Lombok)",
-  "Gili Gede (SW Lombok)",
 ];
 
 export function fmtMins(total) {

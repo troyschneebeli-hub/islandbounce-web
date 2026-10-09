@@ -9,12 +9,12 @@ import { COLORS } from "@/lib/theme";
 // looks broken or generic. See public/images/indonesia/README.md for
 // where to actually get photos you have the right to use.
 const SLOTS = [
-  { path: "/images/indonesia/harbor.jpg", label: "Padang Bai harbour", alt: "Aerial view of Padang Bai harbour in Bali with ferries at the pier", kind: "boat" },
-  { path: "/images/indonesia/gilis.jpg", label: "The Gilis", alt: "Aerial view of a Gili island ringed by turquoise water and reef", kind: "beach" },
-  { path: "/images/indonesia/nusa-penida.jpg", label: "Nusa Penida", alt: "Green clifftops and sea stacks on the coast of Nusa Penida", kind: "temple" },
-  { path: "/images/indonesia/broken-beach.jpg", label: "Broken Beach", alt: "Aerial view of the Broken Beach sea arch on Nusa Penida, with a path around the rim", kind: "beach" },
+  { path: "/images/indonesia/gilis.jpg", label: "Gili Trawangan", alt: "Aerial view of a Gili island ringed by turquoise water and reef", kind: "beach" },
   { path: "/images/indonesia/gili-air.jpg", label: "Gili Air", alt: "Wide aerial view of Gili Air with its beach fringe, reef and boats offshore", kind: "beach" },
-  { path: "/images/indonesia/sanur.jpg", label: "Sanur", alt: "Two Balinese pavilions on a stone jetty off Sanur beach", kind: "boat" },
+  { path: "/images/indonesia/meno.jpg", label: "Gili Meno", alt: "Aerial view of Gili Meno with its white-sand beach and salt lake", kind: "beach" },
+  { path: "/images/indonesia/nusa-penida.jpg", label: "Nusa Penida", alt: "Green clifftops and sea stacks on the coast of Nusa Penida", kind: "temple" },
+  { path: "/images/indonesia/lembongan.jpg", label: "Nusa Lembongan", alt: "Aerial view of the yellow bridge over the channel at Nusa Lembongan, with boats below", kind: "boat" },
+  { path: "/images/indonesia/lombok.jpg", label: "Lombok", alt: "A turquoise bay with a pale sand beach and hills behind, on the Lombok coast", kind: "beach" },
 ];
 
 function PlaceholderTile({ kind }) {
