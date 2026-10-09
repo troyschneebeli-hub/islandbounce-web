@@ -23,6 +23,9 @@ TURNAROUND = "Bangsal (Lombok)"
 FLAG_TEXT = ("Published time differs from this operator's other departures on this route "
              "— confirm when booking.")
 FLAG_CHECKIN = "Published check-in time looks unusual — confirm when booking."
+# Rows we're not sure about are PUBLISHED but labelled, never silently mixed in with confirmed ones.
+NOTE_THIRD_PARTY = "From a booking-site listing"
+NOTE_UNCONFIRMED = "Not confirmed by the operator yet"
 
 # Season text in the sheet -> validity window (inclusive). Unknown text fails
 # loudly so a new season label can't silently publish with no dates.
@@ -31,6 +34,9 @@ SEASONS = {
     "July - Sept '26": ("2026-07-01", "2026-09-30"),
     "Oct '26": ("2026-10-01", "2026-10-31"),
     "July '26 - Oct '26": ("2026-07-01", "2026-10-31"),
+    "27 Jun - 31 Oct '26": ("2026-06-27", "2026-10-31"),   # Eka Jaya, schedule starting 27 June 2026
+    "From 1 Nov '26": ("2026-11-01", None),                # Eka Jaya, schedule starting November 2026 (open-ended)
+    "Confirmed by operator: valid all season": (None, None),
     "Confirmed on operator's website": (None, None),
     "Not stated on source": (None, None),
     "": (None, None),
@@ -46,6 +52,15 @@ def hhmm(v):
     if not m:
         raise ValueError(f"Unrecognised time value: {v!r}")
     return f"{int(m.group(1)):02d}:{m.group(2)}"
+
+def minus_minutes(hhmm_str, mins):
+    h, m = int(hhmm_str[:2]), int(hhmm_str[3:])
+    t = (h * 60 + m - mins) % (24 * 60)
+    return f"{t // 60:02d}:{t % 60:02d}"
+
+# Check-in is 1 hour before departure. Eka Jaya publishes exactly that for all
+# 138 of its sailings, and the site applies the same rule to every other boat.
+CHECKIN_MINUTES = 60
 
 def iso(v):
     if isinstance(v, date):
@@ -97,6 +112,7 @@ def main(path):
     skipped = {}   # rows kept in the sheet but not published (no arrival time yet)
     held = {}      # rows whose arrival is an ESTIMATE: kept in the sheet, held back from the site
     parked = {}    # rows marked 'Not currently operating': kept in the sheet, ignored by the site
+    unconfirmed = {}  # rows marked 'Unconfirmed': kept in the sheet, held back until the operator confirms
 
     # ---- Direct Sailings --------------------------------------------------
     ws = wb["Direct Sailings"]
@@ -104,7 +120,11 @@ def main(path):
         op, frm, ci, dep, to, arr = (ws.cell(r, c).value for c in (1, 2, 3, 4, 5, 6))
         if not op or not frm or not to or str(op).lower().startswith("example"):
             continue
-        if str(ws.cell(r, 23).value or "").startswith("Not currently operating"):
+        status = str(ws.cell(r, 23).value or "")
+        src_text = str(ws.cell(r, 11).value or "")
+        third_party = src_text.startswith("Third-party listing")
+        unconf = status.startswith("Unconfirmed") or third_party
+        if status.startswith("Not currently operating"):
             parked[op] = parked.get(op, 0) + 1
             continue
         if not hhmm(dep) or not hhmm(arr):
@@ -121,12 +141,15 @@ def main(path):
         sailings.append({
             "id": sid(op, frm, to, hhmm(dep), v_from or "any"),
             "operator": op, "from": frm, "to": to,
-            "checkIn": hhmm(ci), "departs": hhmm(dep), "arrives": hhmm(arr),
+            "checkIn": hhmm(ci) or minus_minutes(hhmm(dep), CHECKIN_MINUTES), "departs": hhmm(dep), "arrives": hhmm(arr),
             "via": [], "kind": "direct",
-            "season": None if s_text in ("Not stated on source", "") else s_text,
+            "season": None if s_text in ("Not stated on source", "Confirmed by operator: valid all season", "") else s_text,
             "validFrom": v_from, "validTo": v_to,
             "source": ws.cell(r, 11).value, "verified": iso(ws.cell(r, 12).value),
             "flag": flag_text if flagged else None,
+            "confidence": "unconfirmed" if unconf else "confirmed",
+            "note": (NOTE_THIRD_PARTY if third_party else NOTE_UNCONFIRMED) if unconf else None,
+            "boat": ws.cell(r, 9).value or None,
         })
 
     # ---- Schedule Data (multi-stop circuits) ------------------------------
@@ -145,10 +168,14 @@ def main(path):
 
     for rid in order:
         rt = routes[rid]
-        if str(rt["season"] or "").startswith("PENDING CONFIRMATION"):
+        is_pending = str(rt["season"] or "").startswith("PENDING CONFIRMATION")
+        if is_pending:
             pending[rt["operator"]] = pending.get(rt["operator"], 0) + 1
-            continue
-        s_text, v_from, v_to = season(rt["season"])
+            s_text, v_from, v_to = "", None, None
+        else:
+            s_text, v_from, v_to = season(rt["season"])
+        circuit_third_party = str(rt["source"] or "").startswith("Third-party listing")
+        circuit_unconf = is_pending or circuit_third_party
         stops = rt["stops"]
         # outbound = up to and including the first Bangsal stop
         end = next((i for i, s in enumerate(stops) if s[0] == TURNAROUND), len(stops) - 1)
@@ -163,11 +190,14 @@ def main(path):
                 sailings.append({
                     "id": sid(rt["operator"], p_i, p_j, dep_i, rid),
                     "operator": rt["operator"], "from": p_i, "to": p_j,
-                    "checkIn": None, "departs": dep_i, "arrives": arr_j,
+                    "checkIn": minus_minutes(dep_i, CHECKIN_MINUTES), "departs": dep_i, "arrives": arr_j,
                     "via": [s[0] for s in out[i + 1: j]], "kind": "circuit",
-                    "season": None if s_text in ("Not stated on source", "Confirmed on operator's website", "") else s_text,
+                    "season": None if s_text in ("Not stated on source", "Confirmed on operator's website", "Confirmed by operator: valid all season", "") else s_text,
                     "validFrom": v_from, "validTo": v_to,
                     "source": rt["source"], "verified": rt["verified"], "flag": None,
+                    "confidence": "unconfirmed" if circuit_unconf else "confirmed",
+                    "note": (NOTE_THIRD_PARTY if circuit_third_party else NOTE_UNCONFIRMED) if circuit_unconf else None,
+                    "boat": None,
                 })
 
     sailings = merge_adjacent(sailings)
@@ -200,8 +230,12 @@ def main(path):
     print(f"Wrote {out_path}: {len(sailings)} sailings, updated {updated}")
     for (op, kind), n in by_op.items():
         print(f"  {op} ({kind}): {n}")
-    for op, n in pending.items():
-        print(f"  PENDING CONFIRMATION: {n} {op} circuit(s) held back — not published until confirmed.")
+    unconf_by_op = {}
+    for s in sailings:
+        if s["confidence"] == "unconfirmed":
+            unconf_by_op[s["operator"]] = unconf_by_op.get(s["operator"], 0) + 1
+    for op, n in unconf_by_op.items():
+        print(f"  UNCONFIRMED (published, labelled on the site): {n} {op} sailings")
     for op, n in parked.items():
         print(f"  NOT OPERATING: {n} {op} rows are marked 'Not currently operating'; ignored by the site.")
     for op, n in held.items():

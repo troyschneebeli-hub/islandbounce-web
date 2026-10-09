@@ -58,7 +58,7 @@ export default function RoutePage({ params }) {
   const ctx = { ...summary, durations: hasData ? describeDurations(summary, route) : "" };
   const lead = hasData
     ? route.lead(ctx)
-    : "We haven't verified a current timetable for this route yet. We only list departures we've checked against the operator's own published timetable.";
+    : "We're adding a current timetable for this route. Check back soon, or compare options on 12Go below.";
   const faqs = hasData ? route.faqs(ctx) : [];
 
   const url = `${SITE_URL}/indonesia/routes/${route.slug}`;
@@ -82,10 +82,10 @@ export default function RoutePage({ params }) {
 
   const stats = hasData
     ? [
-        { n: summary.count, label: "verified departures" },
+        { n: summary.count, label: "departures" },
         { n: rangeText(Math.min(...summary.pairs.map((p) => p.min)), Math.max(...summary.pairs.map((p) => p.max))), label: "crossing time" },
-        { n: summary.operators.length, label: summary.operators.length === 1 ? "operator checked" : "operators checked" },
-        ...(checked ? [{ n: formatDate(checked), label: "timetables checked" }] : []),
+        { n: summary.operators.length, label: summary.operators.length === 1 ? "operator" : "operators" },
+        ...(checked ? [{ n: formatDate(checked), label: "timetables updated" }] : []),
       ]
     : [];
 
@@ -126,12 +126,13 @@ export default function RoutePage({ params }) {
           <section style={{ marginBottom: 40 }}>
             <h2 style={h2}>{route.name} fast boat times</h2>
             <p style={{ ...para, fontSize: 13, opacity: 0.7 }}>
-              Copied from each operator&apos;s own published timetable{checked ? ` and last checked ${formatDate(checked)}` : ""}. Operators change
-              schedules, so confirm when you book. Fares aren&apos;t shown because we haven&apos;t verified them yet.
+              Times are compiled from operators&apos; own timetables and booking platforms{checked ? ` and were last updated ${formatDate(checked)}` : ""}.
+              Please check in 1 hour before departure. Operators change schedules, so confirm when you book. Fares vary by operator and season, so check
+              the booking page for current prices.
             </p>
             {stale && (
               <p style={{ ...para, fontSize: 13, background: "#FFF2CC", color: "#8A5A00", borderRadius: 8, padding: "8px 12px" }}>
-                These times were last checked a while ago, so they may have changed. Please confirm with the operator before you travel.
+                These times were last updated a while ago and may have changed. Please confirm with the operator before you travel.
               </p>
             )}
             <p style={{ ...para, fontSize: 12.5, opacity: 0.75 }}>
@@ -147,7 +148,7 @@ export default function RoutePage({ params }) {
             {hasData ? (
               <RouteTimetable groups={groups} />
             ) : (
-              <p style={para}>There&apos;s nothing verified to show yet. Check back soon, or compare options on 12Go below.</p>
+              <p style={para}>There&apos;s nothing to show yet. Check back soon, or compare options on 12Go below.</p>
             )}
             {upcomingGroups.length > 0 && (
               <div style={{ marginTop: 8 }}>
@@ -169,8 +170,7 @@ export default function RoutePage({ params }) {
             </a>
             <p style={{ fontSize: 11.5, color: COLORS.ink, opacity: 0.6, marginTop: 10 }}>
               We're a comparison site, not the operator — schedules, boat condition and on-the-day organization are
-              the operator's responsibility, not ours. IslandBounce may earn a commission when you book through
-              links on this site, at no extra cost to you.
+              the operator's responsibility, not ours.
             </p>
           </section>
 
@@ -244,8 +244,8 @@ export default function RoutePage({ params }) {
           </section>
 
           <p style={{ fontSize: 12, color: COLORS.ink, opacity: 0.6, lineHeight: 1.6 }}>
-            How we check: we copy departure times from each operator&apos;s own published timetable, date-stamp them, and list only what we&apos;ve verified. Where
-            we haven&apos;t confirmed something, such as fares, we say so.
+            How we compile this: we collect departure times from operators&apos; own timetables and booking platforms, date-stamp them, and update them
+            when operators tell us about changes.
           </p>
         </div>
       </div>

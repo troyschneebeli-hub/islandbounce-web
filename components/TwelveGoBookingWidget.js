@@ -82,8 +82,8 @@ export default function TwelveGoBookingWidget({ initialTo } = {}) {
       </a>
       <p style={{ fontSize: 11, color: COLORS.ink, opacity: 0.55, marginTop: 12, textAlign: "center" }}>
         {isOwnDomain
-          ? "We're a comparison site, not the operator — this opens our own booking site to complete your booking. IslandBounce may earn a commission at no extra cost to you."
-          : "We're a comparison site, not the operator — this opens 12Go in a new tab to complete your booking. IslandBounce may earn a commission at no extra cost to you."}
+          ? "We're a comparison site, not the operator — this opens our own booking site to complete your booking."
+          : "We're a comparison site, not the operator — this opens 12Go in a new tab to complete your booking."}
       </p>
     </div>
   );

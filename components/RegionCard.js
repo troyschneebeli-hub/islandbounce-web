@@ -1,12 +1,20 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { COLORS } from "@/lib/theme";
 import { COUNTRY_ART, COUNTRY_BG } from "@/components/CountryArt";
 
 export default function RegionCard({ region }) {
   const [imgFailed, setImgFailed] = useState(false);
+  const imgRef = useRef(null);
+  // If the photo file is missing, the browser can report the failure before the page's
+  // JavaScript has attached onError (so React never hears about it) and a broken-image
+  // icon would stay. Checking once after load makes the flag-art fallback reliable.
+  useEffect(() => {
+    const el = imgRef.current;
+    if (el && el.complete && el.naturalWidth === 0) setImgFailed(true);
+  }, []);
   const showPhoto = region.photo && !imgFailed;
   const active = region.status === "active";
   const Art = COUNTRY_ART[region.name];
@@ -27,6 +35,7 @@ export default function RegionCard({ region }) {
         // and it takes over from the flag automatically.
         // eslint-disable-next-line @next/next/no-img-element
         <img
+          ref={imgRef}
           src={region.photo}
           alt=""
           onError={() => setImgFailed(true)}

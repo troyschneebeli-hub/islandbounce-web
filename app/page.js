@@ -38,7 +38,7 @@ export default function CoverPage() {
         <div style={{ maxWidth: 780, margin: "0 auto" }} className="grid grid-cols-1 sm:grid-cols-3 gap-6">
           {[
             { n: "01", title: "Pick a spot", blurb: "Where you're staying, where you're headed." },
-            { n: "02", title: "We compare", blurb: "Real timetables, checked against each operator's own." },
+            { n: "02", title: "We compare", blurb: "Real timetables from operators and booking platforms." },
             { n: "03", title: "You book", blurb: "Through a trusted booking platform, at no extra cost to you." },
           ].map((s) => (
             <div key={s.n} style={{ textAlign: "center" }}>
@@ -79,9 +79,8 @@ export default function CoverPage() {
             Insight from people who know these places
           </h2>
           <p style={{ fontSize: 14, lineHeight: 1.6, opacity: 0.8 }}>
-            No generic listing. We&apos;re building this from real, on-the-ground knowledge of these islands — and
-            being upfront about what&apos;s firsthand-verified versus what&apos;s still being confirmed, route by
-            route.
+            No generic listing. We&apos;re building this from real, on-the-ground knowledge of these islands, adding
+            firsthand detail route by route.
           </p>
           <Link
             href="/about"

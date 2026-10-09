@@ -6,7 +6,7 @@ import WaveDivider from "@/components/WaveDivider";
 export const metadata = {
   title: "Bali, Gili & Lombok Fast Boat Routes",
   description:
-    "Fast boat and ferry routes between Bali, the Gili Islands and Lombok, with departure times checked against each operator's own timetable.",
+    "Fast boat and ferry routes between Bali, the Gili Islands and Lombok, with departure times and operators.",
   alternates: { canonical: "/indonesia/routes" },
 };
 
@@ -22,7 +22,7 @@ export default function RoutesIndex() {
             Fast boat routes
           </h1>
           <p style={{ color: COLORS.seaDeep, opacity: 0.8, margin: "12px auto 0", fontSize: 15, lineHeight: 1.6 }}>
-            Every route below lists real departures we&apos;ve checked against the operator&apos;s own timetable, with live sea conditions for each port.
+            Every route below lists real departures and operators, plus live sea conditions for each port.
           </p>
         </div>
         <WaveDivider into="white" height={64} />

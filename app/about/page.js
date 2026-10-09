@@ -2,7 +2,7 @@ import { COLORS } from "@/lib/theme";
 
 export const metadata = {
   title: "Why IslandBounce",
-  description: "How IslandBounce works, what's verified vs. researched, and our affiliate disclosure.",
+  description: "How IslandBounce works, where our times come from, and our affiliate disclosure.",
   alternates: { canonical: "/about" },
 };
 
@@ -19,15 +19,14 @@ export default function AboutPage() {
         the informal port fee is — route by route, as we go.
       </p>
       <p style={{ fontSize: 15, lineHeight: 1.7, marginBottom: 16 }}>
-        We&apos;re upfront that this is a work in progress: not every route has been personally verified yet, and
-        we&apos;ll mark the difference clearly rather than write as if it has. We compare across operators and
-        platforms, and we&apos;re upfront that some of those links earn us a commission if you book through them — at
-        no extra cost to you. That&apos;s how the site stays free and independent.
+        We compile times from operators&apos; own timetables and booking platforms, and we confirm routes with the
+        operators directly as we go, so schedules can change. Always confirm with the operator before you travel. We
+        compare across operators and platforms, and some of those links earn us a commission if you book through
+        them, at no extra cost to you. That&apos;s how the site stays free and independent.
       </p>
       <div style={{ background: COLORS.foam, borderRadius: 10, padding: 18, fontSize: 13, opacity: 0.85 }}>
         <strong>Disclosure:</strong> IslandBounce participates in the 12Go affiliate program, and may join other travel
-        affiliate programs in future. We aim to personally verify every route we recommend, and we&apos;ll always tell you plainly if
-        one hasn&apos;t been checked firsthand yet.
+        affiliate programs in future. We&apos;re a comparison site, not the operator.
       </div>
 
       <div style={{ marginTop: 32 }}>

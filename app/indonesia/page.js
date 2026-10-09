@@ -1,9 +1,8 @@
 import Link from "next/link";
 import { COLORS } from "@/lib/theme";
-import { REGIONS } from "@/data/regions";
 import { BALI_PORTS } from "@/data/ports";
 import { SAILINGS } from "@/data/timetables";
-import RegionCard from "@/components/RegionCard";
+import IslandRequest from "@/components/IslandRequest";
 import WaveDivider from "@/components/WaveDivider";
 import PoppyCard from "@/components/PoppyCard";
 import { ROUTE_PAGES, ROUTE_SLUGS } from "@/data/routePages";
@@ -16,9 +15,9 @@ export const metadata = {
   alternates: { canonical: "/indonesia" },
 };
 
-// Real counts from the verified timetable data (not the wider operator list).
-const VERIFIED_OPERATORS = new Set(SAILINGS.map((s) => s.operator)).size;
-const VERIFIED_ROUTES = new Set(SAILINGS.map((s) => `${s.from}|${s.to}`)).size;
+// Real counts from the timetable data we list.
+const LISTED_OPERATORS = new Set(SAILINGS.map((s) => s.operator)).size;
+const LISTED_ROUTES = new Set(SAILINGS.map((s) => `${s.from}|${s.to}`)).size;
 
 const TOOLS = [
   { href: "/indonesia/ports", title: "All Ports", blurb: "Every harbor across Bali, the Gilis, Nusa & Lombok." },
@@ -39,7 +38,7 @@ const FAQS = [
   },
   {
     q: "Does IslandBounce sell tickets directly?",
-    a: "No — we compare real options and send you to the operator or booking platform to actually pay. IslandBounce may earn a commission when you book through links on this site, at no extra cost to you.",
+    a: "No — we compare real options and send you to the operator or booking platform to actually pay.",
   },
 ];
 
@@ -83,8 +82,8 @@ export default function IndonesiaHub() {
           <div className="flex flex-wrap justify-center gap-x-10 gap-y-3" style={{ marginTop: 30 }}>
             {[
               { n: BALI_PORTS.length, label: "Bali ports tracked" },
-              { n: VERIFIED_OPERATORS, label: "operators with verified timetables" },
-              { n: VERIFIED_ROUTES, label: "routes with real times" },
+              { n: LISTED_OPERATORS, label: "operators compared" },
+              { n: LISTED_ROUTES, label: "routes with times" },
             ].map((s) => (
               <div key={s.label} style={{ textAlign: "center" }}>
                 <div style={{ fontFamily: "'Big Shoulders Display', sans-serif", fontWeight: 800, fontSize: 26, color: COLORS.seaDeep }}>{s.n}</div>
@@ -197,15 +196,8 @@ export default function IndonesiaHub() {
           own closing section exactly. */}
       <div className="relative left-1/2 right-1/2 -mx-[50vw] w-screen" style={{ background: COLORS.foam, padding: "8px 20px 48px" }}>
         <div style={{ maxWidth: 900, margin: "0 auto" }}>
-          <p style={{ fontSize: 13, color: COLORS.ink, opacity: 0.65, marginBottom: 16, textAlign: "center" }}>
-            IslandBounce covers more of Southeast Asia than just Indonesia
-          </p>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4" style={{ marginBottom: 16 }}>
-            {REGIONS.map((r) => (
-              <RegionCard key={r.slug} region={r} />
-            ))}
-          </div>
-          <div style={{ textAlign: "center" }}>
+          <IslandRequest />
+          <div style={{ textAlign: "center", marginTop: 16 }}>
             <Link href="/" style={{ fontSize: 13, fontWeight: 700, color: COLORS.sea, textDecoration: "none", borderBottom: `1px solid ${COLORS.sea}55` }}>
               Visit the main IslandBounce site →
             </Link>

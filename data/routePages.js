@@ -33,6 +33,12 @@ const PLANNER_CTA = (to) => ({
   label: "Open the Trip Planner →",
 });
 
+// Names of operators for the intro and FAQs: the first few, then "and N more operators".
+function joinOps(list, max = 5) {
+  if (list.length <= max) return joinList(list);
+  return `${list.slice(0, max).join(", ")} and ${list.length - max} more operators`;
+}
+
 export const ROUTE_PAGES = {
   "gili-trawangan-to-bali": {
     slug: "gili-trawangan-to-bali",
@@ -41,7 +47,7 @@ export const ROUTE_PAGES = {
     h1: "Gili Trawangan to Bali by fast boat",
     metaTitle: "Gili Trawangan to Bali Fast Boat: Times & Sea Conditions",
     metaDescription:
-      "Fast boat times from Gili Trawangan to Bali's Padang Bai and Benoa / Nusa Dua, checked against each operator's own timetable, with live sea conditions.",
+      "Fast boat times from Gili Trawangan to Bali's Padang Bai and Benoa / Nusa Dua, with live sea conditions.",
     blurb: "Departures back to Bali from Gili Trawangan, with crossing times and live sea conditions.",
     fromLabel: "Gili Trawangan",
     toLabel: "Bali",
@@ -52,7 +58,7 @@ export const ROUTE_PAGES = {
     bookTo: "Bali",
     related: ["bali-to-gili-islands", "gili-air-to-bali", "bali-to-lombok-ferry"],
     lead: (c) =>
-      `Fast boats run from Gili Trawangan to ${joinList(c.toNames)}. We've verified ${plural(c.count, "departure")} with ${joinList(c.operators)}, ` +
+      `Fast boats run from Gili Trawangan to ${joinList(c.toNames)}. We list ${plural(c.count, "departure")} with ${joinOps(c.operators)}, ` +
       `leaving between ${c.earliest} and ${c.latest}. Crossing times: ${c.durations}.`,
     sections: [
       {
@@ -75,15 +81,15 @@ export const ROUTE_PAGES = {
     faqs: (c) => [
       {
         q: "How long is the fast boat from Gili Trawangan to Bali?",
-        a: `In the timetables we've checked, crossing times are ${c.durations}. Times differ by port and by departure, so check the Duration column above and confirm with the operator.`,
+        a: `Crossing times are ${c.durations}. Times differ by port and by departure, so check the Duration column above and confirm with the operator.`,
       },
       {
         q: "What time is the first boat from Gili Trawangan to Bali?",
-        a: `In the timetables we've verified, the earliest departure is ${c.earliest} and the latest is ${c.latest}. Timetables change, so check with the operator before planning around one boat.`,
+        a: `The earliest departure is ${c.earliest} and the latest is ${c.latest}. Timetables change, so check with the operator before planning around one boat.`,
       },
       {
         q: "Which operators run boats from Gili Trawangan to Bali?",
-        a: `So far we've verified ${joinList(c.operators)}. We add each operator only once we've checked its own published timetable, so more will appear here over time.`,
+        a: `We list ${joinOps(c.operators)}. We add more operators as we get their timetables.`,
       },
       CANCEL_FAQ("Gili Trawangan", "Bali"),
       BOOK_FAQ,
@@ -97,8 +103,8 @@ export const ROUTE_PAGES = {
     h1: "Bali to the Gili Islands by fast boat",
     metaTitle: "Bali to Gili Islands & Gili Trawangan: Fast Boat Times",
     metaDescription:
-      "Fast boats from Padang Bai, Serangan and Benoa / Nusa Dua to Gili Trawangan, Air and Meno: times and operators, checked against each operator's timetable.",
-    blurb: "Every verified departure from Bali to Gili Trawangan, Gili Air and Gili Meno, by port and operator.",
+      "Fast boats from Padang Bai, Serangan and Benoa / Nusa Dua to Gili Trawangan, Air and Meno: times and operators.",
+    blurb: "Every departure from Bali to Gili Trawangan, Gili Air and Gili Meno, by port and operator.",
     fromLabel: "Bali",
     toLabel: "the Gili Islands",
     fromPorts: BALI_MAINLAND,
@@ -108,7 +114,7 @@ export const ROUTE_PAGES = {
     bookTo: "Gili Trawangan",
     related: ["gili-trawangan-to-bali", "gili-air-to-bali", "bali-to-lombok-ferry"],
     lead: (c) =>
-      `Fast boats run from ${joinList(c.fromNames)} to ${joinList(c.toNames)}. We've verified ${plural(c.count, "departure")} with ${joinList(c.operators)}, ` +
+      `Fast boats run from ${joinList(c.fromNames)} to ${joinList(c.toNames)}. We list ${plural(c.count, "departure")} with ${joinOps(c.operators)}, ` +
       `leaving between ${c.earliest} and ${c.latest}. Gili Trawangan is the main stop and has the most boats.`,
     sections: [
       {
@@ -141,11 +147,11 @@ export const ROUTE_PAGES = {
     faqs: (c) => [
       {
         q: "How long does the fast boat from Bali to the Gili Islands take?",
-        a: `In the timetables we've checked, crossing times are: ${c.durations}. Boats that call at other ports on the way take longer, so compare the Duration and Notes columns.`,
+        a: `Crossing times are: ${c.durations}. Boats that call at other ports on the way take longer, so compare the Duration and Notes columns.`,
       },
       {
         q: "Which operators go from Bali to the Gili Islands?",
-        a: `So far we've verified ${joinList(c.operators)}. We add each operator only once we've checked its own published timetable.`,
+        a: `We list ${joinOps(c.operators)}. We add more operators as we get their timetables.`,
       },
       {
         q: "Which Bali port is best for the Gilis?",
@@ -167,8 +173,8 @@ export const ROUTE_PAGES = {
     h1: "Bali to Lombok by ferry and fast boat",
     metaTitle: "Bali to Lombok Ferry & Fast Boat: Times and Options",
     metaDescription:
-      "Two ways to cross from Bali to Lombok: the public ferry to Lembar or fast boats to Bangsal and Senggigi, with times checked against each operator's site.",
-    blurb: "The public ferry to Lembar versus fast boats to Bangsal and Senggigi, with verified departures.",
+      "Two ways to cross from Bali to Lombok: the public ferry to Lembar or fast boats to Bangsal and Senggigi, with departure times.",
+    blurb: "The public ferry to Lembar versus fast boats to Bangsal and Senggigi, with departures and operators.",
     fromLabel: "Bali",
     toLabel: "Lombok",
     fromPorts: BALI_MAINLAND,
@@ -179,7 +185,7 @@ export const ROUTE_PAGES = {
     related: ["bali-to-gili-islands", "gili-trawangan-to-bali", "gili-air-to-bali"],
     lead: (c) =>
       `There are two ways to cross from Bali to Lombok by sea: the slow public ferry from Padang Bai to Lembar, and fast boats to ${joinList(c.toNames)}. ` +
-      `We've verified ${plural(c.count, "fast boat departure")} with ${joinList(c.operators)}, leaving between ${c.earliest} and ${c.latest}.`,
+      `We list ${plural(c.count, "fast boat departure")} with ${joinOps(c.operators)}, leaving between ${c.earliest} and ${c.latest}.`,
     sections: [
       {
         heading: "Two ways to cross",
@@ -202,15 +208,15 @@ export const ROUTE_PAGES = {
     faqs: (c) => [
       {
         q: "Is there a ferry from Bali to Lombok?",
-        a: `Yes, two kinds. A slow public ferry runs between Padang Bai and Lembar around the clock, and fast boats run to Bangsal and Senggigi. We've verified ${plural(c.count, "fast boat departure")} so far.`,
+        a: `Yes, two kinds. A slow public ferry runs between Padang Bai and Lembar around the clock, and fast boats run to Bangsal and Senggigi. We list ${plural(c.count, "fast boat departure")} so far.`,
       },
       {
         q: "How long does the Bali to Lombok fast boat take?",
-        a: `In the timetables we've checked, crossing times are ${c.durations}. The public ferry is much slower, so plan on several hours.`,
+        a: `Crossing times are ${c.durations}. The public ferry is much slower, so plan on several hours.`,
       },
       {
         q: "Is the public ferry cheaper than the fast boat?",
-        a: "The public ferry is generally the cheaper option, while fast boats cost more but save a lot of time. We haven't verified fares yet, so confirm the price when you book.",
+        a: "The public ferry is generally the cheaper option, while fast boats cost more but save a lot of time. Fares change by operator and season, so confirm the price when you book.",
       },
       {
         q: "Which Lombok port should I go to?",
@@ -227,7 +233,7 @@ export const ROUTE_PAGES = {
     h1: "Gili Air to Bali by fast boat",
     metaTitle: "Gili Air to Bali Fast Boat: Times & Sea Conditions",
     metaDescription:
-      "Fast boat times from Gili Air to Bali's Padang Bai and Benoa / Nusa Dua, checked against each operator's own timetable, with live sea conditions.",
+      "Fast boat times from Gili Air to Bali's Padang Bai and Benoa / Nusa Dua, with live sea conditions.",
     blurb: "Departures from Gili Air back to Bali, with crossing times and live sea conditions.",
     fromLabel: "Gili Air",
     toLabel: "Bali",
@@ -238,7 +244,7 @@ export const ROUTE_PAGES = {
     bookTo: "Bali",
     related: ["gili-trawangan-to-bali", "bali-to-gili-islands", "bali-to-lombok-ferry"],
     lead: (c) =>
-      `Fast boats run from Gili Air to ${joinList(c.toNames)}. We've verified ${plural(c.count, "departure")} with ${joinList(c.operators)}, ` +
+      `Fast boats run from Gili Air to ${joinList(c.toNames)}. We list ${plural(c.count, "departure")} with ${joinOps(c.operators)}, ` +
       `leaving between ${c.earliest} and ${c.latest}. Crossing times: ${c.durations}.`,
     sections: [
       {
@@ -264,11 +270,11 @@ export const ROUTE_PAGES = {
     faqs: (c) => [
       {
         q: "How long is the fast boat from Gili Air to Bali?",
-        a: `In the timetables we've checked, crossing times are ${c.durations}. Times differ by port and by departure, so check the Duration column above and confirm with the operator.`,
+        a: `Crossing times are ${c.durations}. Times differ by port and by departure, so check the Duration column above and confirm with the operator.`,
       },
       {
         q: "What time is the first boat from Gili Air to Bali?",
-        a: `In the timetables we've verified, the earliest departure is ${c.earliest} and the latest is ${c.latest}. Timetables change, so check with the operator before planning around one boat.`,
+        a: `The earliest departure is ${c.earliest} and the latest is ${c.latest}. Timetables change, so check with the operator before planning around one boat.`,
       },
       {
         q: "Do I have to go to Gili Trawangan first?",

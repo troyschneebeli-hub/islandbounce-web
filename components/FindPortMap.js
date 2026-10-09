@@ -7,18 +7,15 @@ import Link from "next/link";
 import { portDepartures } from "@/lib/portDepartures";
 import { formatDate } from "@/lib/timetable";
 import { bookingLink } from "@/lib/bookingLink";
-import { annotateDepartures } from "@/lib/canMake";
 
 // Respect the visitor's "reduce motion" setting: no looping boat, pulse or
 // flowing-dash animations; routes just appear and the boat sits mid-crossing.
 const prefersReducedMotion = () =>
   typeof window !== "undefined" && typeof window.matchMedia === "function" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-const STATUS_STYLE = {
-  ok: { color: "#1F7A4D", fontWeight: 700, title: "You'd get there in time" },
-  tight: { color: "#B7791F", fontWeight: 700, title: "Tight: you'd only just make check-in" },
-  missed: { color: "#B3402A", textDecoration: "line-through", opacity: 0.75, title: "Too early to make from your start time" },
-};
+// A card lists at most this many operators; the rest are one tap away in the full timetable.
+const MAX_OPERATOR_LINES = 4;
+
 import { COLORS } from "@/lib/theme";
 import { loadGoogleMaps } from "@/components/AddressAutocomplete";
 import SeaConditionsBadge from "@/components/SeaConditionsBadge";
@@ -131,19 +128,16 @@ function lerpLatLng(a, b, t) {
 // Boat timing for one port card. Done at render time (not when the route is
 // calculated) so changing the travel date updates which season's departures
 // show, without redrawing the map.
-function withBoatInfo(r, date, leaveAt) {
+function withBoatInfo(r, date) {
   const day = date || new Date().toISOString().slice(0, 10);
-  const departures = portDepartures(r.port, r.destination, day);
+  const departures = portDepartures(r.port, r.destination, day, undefined, new Date().toISOString().slice(0, 10));
   const cfg = BOAT_ROUTES[r.port]?.[r.destination];
   const boatMin = departures.hasReal ? departures.fastestMin : cfg ? cfg.duration : 0;
-  const can = leaveAt && departures.hasReal
-    ? annotateDepartures(departures.groups, { leaveAt, driveMin: r.driveMin, bufferMin: CHECKIN_BUFFER_MIN })
-    : null;
-  return { ...r, departures, can, boatMin, boatIsEstimate: !departures.hasReal, totalMin: r.driveMin + CHECKIN_BUFFER_MIN + boatMin };
+  return { ...r, departures, boatMin, boatIsEstimate: !departures.hasReal, totalMin: r.driveMin + CHECKIN_BUFFER_MIN + boatMin };
 }
 
-/** @param {{ origin?: any, destination?: any, date?: string, leaveAt?: string }} props */
-export default function FindPortMap({ origin, destination, date, leaveAt }) {
+/** @param {{ origin?: any, destination?: any, date?: string }} props */
+export default function FindPortMap({ origin, destination, date }) {
   const mapRef = useRef(null);
   const mapInstance = useRef(null);
   const routesRef = useRef([]); // [{ port, isFastest, glow, line, cancelDraw, fullPath }]
@@ -463,14 +457,14 @@ export default function FindPortMap({ origin, destination, date, leaveAt }) {
 
   // Real departures from the verified timetables where we have them, never
   // invented times; crossing times marked "~" are estimates.
-  const cards = results.map((r) => withBoatInfo(r, date, leaveAt));
+  const cards = results.map((r) => withBoatInfo(r, date));
 
   return (
     <div className="flex flex-col lg:flex-row gap-4">
       <div
         onClick={() => setHovered(null)}
         className="h-[340px] sm:h-[440px] lg:h-[520px]"
-        style={{ position: "relative", overflow: "hidden", flex: "1 1 auto", minWidth: 0 }}
+        style={{ position: "relative", overflow: "hidden", flex: "1 1 auto", minWidth: 0, borderRadius: 14 }}
       >
         {!loaded && (
           <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", background: "#F3ECDB", fontSize: 12.5, color: COLORS.sea, opacity: 0.7 }}>
@@ -538,39 +532,26 @@ export default function FindPortMap({ origin, destination, date, leaveAt }) {
                   <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 9, opacity: 0.6, color: COLORS.sea, letterSpacing: 0.5, marginBottom: 3 }}>BOATS DEPART</div>
                   {r.departures.hasReal ? (
                     <>
-                      {r.departures.groups.map((g) => (
+                      {r.departures.groups.slice(0, MAX_OPERATOR_LINES).map((g) => (
                         <div key={g.operator} style={{ fontSize: 11.5, color: COLORS.ink, lineHeight: 1.5 }}>
                           <strong>{g.operator}</strong>{" "}
-                          {r.can
-                            ? g.times.map((t, i) => {
-                                const st = r.can.items.find((x) => x.operator === g.operator && x.time === t)?.status;
-                                const { title, ...css } = STATUS_STYLE[st] || {};
-                                return (
-                                  <span key={t}>
-                                    {i > 0 && " · "}
-                                    <span title={title} style={css}>{t}</span>
-                                  </span>
-                                );
-                              })
-                            : g.times.join(" · ")}
+                          {g.times.join(" · ")}
                         </div>
                       ))}
-                      {r.can && (
-                        <div style={{ fontSize: 11.5, color: COLORS.ink, marginTop: 4 }}>
-                          {r.can.next ? (
-                            <>
-                              Next boat you can make: <strong style={{ color: "#1F7A4D" }}>{r.can.next.time}</strong> ({r.can.next.operator})
-                            </>
+                      {r.departures.groups.length > MAX_OPERATOR_LINES && (
+                        <div style={{ fontSize: 11.5, color: COLORS.ink, opacity: 0.75, lineHeight: 1.5 }}>
+                          + {r.departures.groups.length - MAX_OPERATOR_LINES} more{" "}
+                          {r.departures.routeSlug ? (
+                            <Link href={`/indonesia/routes/${r.departures.routeSlug}`} onClick={(e) => e.stopPropagation()} style={{ color: COLORS.sea, fontWeight: 700 }}>
+                              in the full timetable
+                            </Link>
                           ) : (
-                            <strong style={{ color: "#B3402A" }}>No boat from here you can make from that start time.</strong>
+                            "operators"
                           )}
-                          <div style={{ fontSize: 9.5, opacity: 0.6, marginTop: 2 }}>
-                            Green = in time · amber = tight · struck through = too early to make
-                          </div>
                         </div>
                       )}
                       <div style={{ fontSize: 10, opacity: 0.55, color: COLORS.ink, marginTop: 3 }}>
-                        Checked {formatDate(r.departures.checked)}
+                        Updated {formatDate(r.departures.checked)}
                         {r.departures.routeSlug && (
                           <>
                             {" · "}
@@ -586,13 +567,13 @@ export default function FindPortMap({ origin, destination, date, leaveAt }) {
                       </div>
                       {r.departures.stale && (
                         <div style={{ fontSize: 10.5, color: "#8A5A00", background: "#FFF2CC", borderRadius: 6, padding: "4px 8px", marginTop: 5 }}>
-                          Last checked a while ago, so these times may have changed. Confirm with the operator.
+                          These times were last updated a while ago and may have changed. Confirm with the operator.
                         </div>
                       )}
                     </>
                   ) : (
-                    <div style={{ fontSize: 11.5, opacity: 0.7, color: COLORS.ink, lineHeight: 1.45 }}>
-                      Times coming soon. We're confirming this timetable with operators.
+                    <div style={{ fontSize: 11.5, opacity: 0.8, color: COLORS.ink, lineHeight: 1.45 }}>
+                      Timetable coming soon.
                     </div>
                   )}
                   <div style={{ fontSize: 10.5, opacity: 0.65, color: COLORS.ink, marginTop: 6 }}>
@@ -611,9 +592,6 @@ export default function FindPortMap({ origin, destination, date, leaveAt }) {
                 >
                   Book this route{date ? ` · ${formatDate(date)}` : ""} →
                 </a>
-                <div style={{ fontSize: 9.5, opacity: 0.55, color: COLORS.ink, marginTop: 5, textAlign: "center" }}>
-                  Opens our booking page · we may earn a commission
-                </div>
               </div>
             ))}
           </div>

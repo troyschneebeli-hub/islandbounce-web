@@ -20,8 +20,12 @@ export default function RouteTimetable({ groups }) {
     <div>
       {groups.map((g) => {
         const durs = g.sailings.map((s) => durationMins(s.departs, s.arrives));
-        const fastest = Math.min(...durs);
-        const highlight = new Set(durs).size > 1; // only call out "fastest" when there's a real difference
+        // "Fastest" only goes to operators we've confirmed with (invisible to visitors), so an
+        // odd listing can't take the highlight; no confirmed rows means no highlight.
+        const isConf = g.sailings.map((s) => s.confidence !== "unconfirmed");
+        const confDurs = durs.filter((_, i) => isConf[i]);
+        const fastest = confDurs.length ? Math.min(...confDurs) : null;
+        const highlight = new Set(confDurs).size > 1; // only call out "fastest" when there's a real difference
         return (
           <div key={`${g.from}|${g.to}`} style={{ marginBottom: 28 }}>
             <h3 style={{ fontWeight: 700, fontSize: 16, color: COLORS.sea, marginBottom: 6 }}>
@@ -44,8 +48,9 @@ export default function RouteTimetable({ groups }) {
                 </thead>
                 <tbody>
                   {g.sailings.map((s, i) => {
-                    const isFastest = highlight && durs[i] === fastest;
+                    const isFastest = highlight && isConf[i] && durs[i] === fastest;
                     const notes = [];
+                    if (s.boat && /van|bus|shuttle/i.test(s.boat)) notes.push(`Includes a road transfer (${s.boat})`);
                     if (s.via.length) notes.push(`Also stops at ${s.via.map(shortPort).join(", ")}`);
                     const label = seasonLabel(s);
                     if (label) notes.push(`Runs ${label}`);

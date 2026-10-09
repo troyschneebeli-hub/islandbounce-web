@@ -15,9 +15,27 @@ import FindPortMap from "@/components/FindPortMap";
 // useSearchParams() needs a Suspense boundary in the App Router (or the
 // production build fails). The fallback reserves roughly the card's height so
 // the page doesn't jump when the planner appears.
+// Planner colours. "sea" is the site's deep teal (the same as the header), with
+// sand text and a coral button; "sand" is a lighter alternative. To switch,
+// change PLANNER_THEME. Everything inside the white cards keeps its own colours.
+const THEMES = {
+  sea: {
+    bg: COLORS.sea, label: COLORS.sand, muted: "rgba(240, 231, 211, 0.72)", error: "#FFB8A8",
+    chipBg: "rgba(240, 231, 211, 0.10)", chipBorder: "rgba(240, 231, 211, 0.32)", chipText: COLORS.sand,
+    fieldBorder: "transparent", shadow: "0 14px 44px rgba(6, 47, 44, 0.38)",
+  },
+  sand: {
+    bg: COLORS.sand, label: COLORS.sea, muted: "rgba(14, 42, 41, 0.6)", error: COLORS.coralDeep,
+    chipBg: "white", chipBorder: COLORS.foamLine, chipText: COLORS.sea,
+    fieldBorder: COLORS.foamLine, shadow: "0 14px 44px rgba(6, 47, 44, 0.14)",
+  },
+};
+const PLANNER_THEME = "sea";
+const T = THEMES[PLANNER_THEME];
+
 export default function TripPlanner() {
   return (
-    <Suspense fallback={<PlannerShell><div style={{ minHeight: 520, display: "flex", alignItems: "center", justifyContent: "center", color: COLORS.sea, opacity: 0.6, fontSize: 13 }}>Loading planner…</div></PlannerShell>}>
+    <Suspense fallback={<PlannerShell><div style={{ minHeight: 520, display: "flex", alignItems: "center", justifyContent: "center", color: T.label, opacity: 0.8, fontSize: 13 }}>Loading planner…</div></PlannerShell>}>
       <PlannerContent />
     </Suspense>
   );
@@ -28,9 +46,9 @@ function PlannerShell({ children }) {
     <div
       id="trip-planner"
       style={{
-        background: "white",
+        background: T.bg,
         borderRadius: 18,
-        boxShadow: "0 14px 44px rgba(6, 47, 44, 0.14)",
+        boxShadow: T.shadow,
         padding: "24px 22px 20px",
         textAlign: "left",
       }}
@@ -50,7 +68,6 @@ function PlannerContent() {
   const [origin, setOrigin] = useState(null); // { lat, lng, label } — only set once a real place is picked
   const [activeDestination, setActiveDestination] = useState(null); // destination actually being searched, vs the dropdown's current value
   const [date, setDate] = useState(""); // optional, "YYYY-MM-DD"
-  const [leaveAt, setLeaveAt] = useState(""); // optional, "HH:MM": when they set off
   const [error, setError] = useState("");
 
   function handleFind() {
@@ -73,7 +90,7 @@ function PlannerContent() {
   const inputStyle = {
     padding: "11px 12px",
     borderRadius: 8,
-    border: `1px solid ${COLORS.foamLine}`,
+    border: `1px solid ${T.fieldBorder}`,
     background: "white",
     color: COLORS.ink,
     fontFamily: "'Inter', sans-serif",
@@ -84,20 +101,20 @@ function PlannerContent() {
   return (
     <PlannerShell>
       <div className="flex flex-wrap items-center gap-2" style={{ marginBottom: 14 }}>
-        <span style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, color: COLORS.sea, letterSpacing: 1 }}>QUICK START</span>
+        <span style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, color: T.label, letterSpacing: 1 }}>QUICK START</span>
         {START_POINTS.map((p) => (
           <button
             key={p.label}
             type="button"
             onClick={() => pickStart(p)}
-            style={{ fontSize: 12.5, fontWeight: 600, color: COLORS.sea, background: COLORS.foam, border: `1px solid ${COLORS.foamLine}`, borderRadius: 999, padding: "6px 12px", cursor: "pointer" }}
+            style={{ fontSize: 12.5, fontWeight: 600, color: T.chipText, background: T.chipBg, border: `1px solid ${T.chipBorder}`, borderRadius: 999, padding: "6px 12px", cursor: "pointer" }}
           >
             {p.label}
           </button>
         ))}
       </div>
       <div className="flex flex-col sm:flex-row sm:flex-wrap gap-3" style={{ marginBottom: 20 }}>
-        <label className="flex-1 sm:min-w-[220px]" style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, color: COLORS.sea, letterSpacing: 1 }}>
+        <label className="flex-1 sm:min-w-[220px]" style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, color: T.label, letterSpacing: 1 }}>
           YOUR ADDRESS OR HOTEL
           <div className="mt-1">
             <AddressAutocomplete
@@ -113,7 +130,7 @@ function PlannerContent() {
           </div>
         </label>
 
-        <label className="sm:w-[170px]" style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, color: COLORS.sea, letterSpacing: 1 }}>
+        <label className="sm:w-[170px]" style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, color: T.label, letterSpacing: 1 }}>
           TRAVEL DATE
           <input
             type="date"
@@ -125,12 +142,7 @@ function PlannerContent() {
           />
         </label>
 
-        <label className="sm:w-[140px]" style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, color: COLORS.sea, letterSpacing: 1 }}>
-          I SET OFF AT
-          <input type="time" value={leaveAt} onChange={(e) => setLeaveAt(e.target.value)} className="mt-1 w-full" style={inputStyle} />
-        </label>
-
-        <label className="flex-1 sm:min-w-[200px]" style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, color: COLORS.sea, letterSpacing: 1 }}>
+        <label className="flex-1 sm:min-w-[200px]" style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, color: T.label, letterSpacing: 1 }}>
           WHERE ARE YOU HEADED?
           <select value={destination} onChange={(e) => setDestination(e.target.value)} className="mt-1 w-full" style={inputStyle}>
             {PLANNER_DESTINATIONS.map((d) => (
@@ -159,18 +171,16 @@ function PlannerContent() {
           </button>
         </div>
       </div>
-      {error && <div style={{ fontSize: 12, color: COLORS.coralDeep, marginBottom: 14 }}>{error}</div>}
+      {error && <div style={{ fontSize: 12, color: T.error, marginBottom: 14 }}>{error}</div>}
 
-      <FindPortMap origin={origin} destination={activeDestination} date={date} leaveAt={leaveAt} />
+      <FindPortMap origin={origin} destination={activeDestination} date={date} />
 
-      <p style={{ fontSize: 11, color: COLORS.ink, opacity: 0.5, marginTop: 16, maxWidth: 700 }}>
+      <p style={{ fontSize: 11, color: T.muted, marginTop: 16, maxWidth: 700 }}>
         Car routes and times are live from Google Maps. Scooter times are estimated at ~75% of car drive time —
-        verify locally, especially at night or in rain. Departure times come from each operator's own published
-        timetable, with the date we last checked; where a port shows "coming soon" we haven't confirmed one yet.
-        If you add the time you set off, each departure is marked by whether you'd reach the port in time.
-        Crossing times marked ~ are estimates. Always confirm with the operator before you travel. The Book button
-        opens our booking page with your route and date filled in. IslandBounce is a comparison site, not the
-        operator, and may earn a commission when you book, at no extra cost to you.
+        verify locally, especially at night or in rain. Departure times are compiled from operators and booking
+        platforms and can change, so always confirm with the operator before you travel. Crossing times marked ~
+        are estimates. The Book button opens our booking page with your route and date filled in. IslandBounce is a
+        comparison site, not the operator.
       </p>
     </PlannerShell>
   );

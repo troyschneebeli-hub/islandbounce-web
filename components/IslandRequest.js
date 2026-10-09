@@ -34,7 +34,7 @@ export default function IslandRequest() {
   const input = { padding: "10px 12px", borderRadius: 8, border: `1px solid ${COLORS.foamLine}`, fontSize: 14, width: "100%", background: "white", color: COLORS.ink };
 
   return (
-    <div style={{ maxWidth: 560, margin: "26px auto 0", background: COLORS.foam, borderRadius: 14, padding: "18px 20px", textAlign: "center" }}>
+    <div style={{ maxWidth: 560, margin: "26px auto 0", background: "white", border: `1px solid ${COLORS.foamLine}`, borderRadius: 14, padding: "18px 20px", textAlign: "center" }}>
       <h3 style={{ fontFamily: "'Big Shoulders Display', sans-serif", fontWeight: 700, fontSize: 19, color: COLORS.sea, marginBottom: 4 }}>Where should we go next?</h3>
       {sent ? (
         <p style={{ fontSize: 14, color: COLORS.sea, fontWeight: 600 }}>
