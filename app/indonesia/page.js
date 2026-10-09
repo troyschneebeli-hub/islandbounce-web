@@ -8,6 +8,8 @@ import PoppyCard from "@/components/PoppyCard";
 import { ROUTE_PAGES, ROUTE_SLUGS } from "@/data/routePages";
 import AverageConditionsWidget from "@/components/AverageConditionsWidget";
 import TripPlanner from "@/components/TripPlanner";
+import PhotoStrip from "@/components/PhotoStrip";
+import HeroBand from "@/components/HeroBand";
 
 export const metadata = {
   title: "Indonesia",
@@ -59,17 +61,21 @@ export default function IndonesiaHub() {
         <div style={{ maxWidth: 700, margin: "0 auto 18px" }}>
           <AverageConditionsWidget />
         </div>
-        <div style={{ maxWidth: 700, margin: "0 auto", paddingBottom: 24, textAlign: "center" }}>
-          <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 11, color: COLORS.skyDeep, letterSpacing: 2, marginBottom: 10 }}>
-            INDONESIA
-          </div>
-          <h1 style={{ fontFamily: "'Big Shoulders Display', sans-serif", fontWeight: 800, fontSize: "clamp(28px, 5vw, 44px)", color: COLORS.seaDeep, lineHeight: 1.05 }}>
-            Bali, Gili Islands, Nusa & Lombok
-          </h1>
-          <p style={{ color: COLORS.seaDeep, opacity: 0.75, maxWidth: 520, margin: "12px auto 0", fontSize: 15 }}>
-            Type where you're staying and where you're headed. See the real drive to every port that gets you there,
-            and the boat crossing from each.
-          </p>
+        <div style={{ maxWidth: 1100, margin: "0 auto", paddingBottom: 24 }}>
+          <HeroBand src="/images/indonesia/hero.jpg" alt="Aerial view of boats on the channel beside the yellow bridge between Nusa Lembongan and Nusa Ceningan">
+            <div style={{ maxWidth: 700, margin: "0 auto", textAlign: "center" }}>
+              <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 11, color: "white", opacity: 0.85, letterSpacing: 2, marginBottom: 10 }}>
+                INDONESIA
+              </div>
+              <h1 style={{ fontFamily: "'Big Shoulders Display', sans-serif", fontWeight: 800, fontSize: "clamp(28px, 5vw, 44px)", color: "white", lineHeight: 1.05, textShadow: "0 2px 12px rgba(0,0,0,0.35)" }}>
+                Bali, Gili Islands, Nusa & Lombok
+              </h1>
+              <p style={{ color: "white", opacity: 0.92, maxWidth: 520, margin: "12px auto 0", fontSize: 15, textShadow: "0 1px 8px rgba(0,0,0,0.35)" }}>
+                Type where you're staying and where you're headed. See the real drive to every port that gets you there,
+                and the boat crossing from each.
+              </p>
+            </div>
+          </HeroBand>
         </div>
 
         {/* The Trip Planner, front and center under the heading. */}
@@ -93,6 +99,12 @@ export default function IndonesiaHub() {
           </div>
         </div>
         <WaveDivider into="white" height={70} />
+      </section>
+
+      <section className="relative left-1/2 right-1/2 -mx-[50vw] w-screen" style={{ background: "white", padding: "8px 20px 0" }}>
+        <div style={{ maxWidth: 900, margin: "0 auto" }}>
+          <PhotoStrip />
+        </div>
       </section>
 
       {/* Other tools. The Trip Planner itself now lives in the hero above. */}

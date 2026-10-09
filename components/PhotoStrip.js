@@ -9,9 +9,12 @@ import { COLORS } from "@/lib/theme";
 // looks broken or generic. See public/images/indonesia/README.md for
 // where to actually get photos you have the right to use.
 const SLOTS = [
-  { path: "/images/indonesia/bali.jpg", label: "Bali", kind: "temple" },
-  { path: "/images/indonesia/gilis.jpg", label: "The Gilis", kind: "beach" },
-  { path: "/images/indonesia/harbor.jpg", label: "Getting there", kind: "boat" },
+  { path: "/images/indonesia/harbor.jpg", label: "Padang Bai harbour", alt: "Aerial view of Padang Bai harbour in Bali with ferries at the pier", kind: "boat" },
+  { path: "/images/indonesia/gilis.jpg", label: "The Gilis", alt: "Aerial view of a Gili island ringed by turquoise water and reef", kind: "beach" },
+  { path: "/images/indonesia/nusa-penida.jpg", label: "Nusa Penida", alt: "Green clifftops and sea stacks on the coast of Nusa Penida", kind: "temple" },
+  { path: "/images/indonesia/broken-beach.jpg", label: "Broken Beach", alt: "Aerial view of the Broken Beach sea arch on Nusa Penida, with a path around the rim", kind: "beach" },
+  { path: "/images/indonesia/gili-air.jpg", label: "Gili Air", alt: "Wide aerial view of Gili Air with its beach fringe, reef and boats offshore", kind: "beach" },
+  { path: "/images/indonesia/sanur.jpg", label: "Sanur", alt: "Two Balinese pavilions on a stone jetty off Sanur beach", kind: "boat" },
 ];
 
 function PlaceholderTile({ kind }) {
@@ -44,12 +47,12 @@ function PhotoTile({ slot }) {
   const [failed, setFailed] = useState(false);
   const showPhoto = !failed;
   return (
-    <div style={{ position: "relative", borderRadius: 12, overflow: "hidden", aspectRatio: "4 / 3", flex: 1, minWidth: 180 }}>
+    <div style={{ position: "relative", borderRadius: 12, overflow: "hidden", aspectRatio: "4 / 3", flex: 1, minWidth: 180, flexBasis: "30%" }}>
       {showPhoto && (
         // eslint-disable-next-line @next/next/no-img-element
         <img
           src={slot.path}
-          alt={slot.label}
+          alt={slot.alt || slot.label}
           onError={() => setFailed(true)}
           style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
         />

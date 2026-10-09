@@ -7,6 +7,7 @@ import { ROUTE_PAGES, ROUTE_SLUGS } from "@/data/routePages";
 import { BALI_PORTS, ISLAND_PORTS } from "@/data/ports";
 import { buildTransportLink } from "@/lib/affiliateLinks";
 import { selectSailings, groupByPair, summarize, describeDurations, lastChecked, formatDate, isStale, rangeText, shortPort } from "@/lib/timetable";
+import PlacePhoto from "@/components/PlacePhoto";
 import WaveDivider from "@/components/WaveDivider";
 import RouteTimetable from "@/components/RouteTimetable";
 import SeaConditionsBadge from "@/components/SeaConditionsBadge";
@@ -15,6 +16,14 @@ import SeaConditionsBadge from "@/components/SeaConditionsBadge";
 // without a redeploy.
 export const revalidate = 21600;
 export const dynamicParams = false;
+
+// One hero photo per route page, by where the route goes.
+const ROUTE_PHOTOS = {
+  "gili-trawangan-to-bali": { src: "/images/indonesia/gilis.jpg", alt: "Aerial view of a Gili island ringed by turquoise water" },
+  "bali-to-gili-islands": { src: "/images/indonesia/gilis.jpg", alt: "Aerial view of a Gili island ringed by turquoise water" },
+  "gili-air-to-bali": { src: "/images/indonesia/harbor.jpg", alt: "Aerial view of Padang Bai harbour in Bali with ferries at the pier" },
+  "bali-to-lombok-ferry": { src: "/images/indonesia/lombok.jpg", alt: "A turquoise bay and pale sand beach on the Lombok coast" },
+};
 
 const ALL_PORTS = [...BALI_PORTS, ...ISLAND_PORTS];
 
@@ -118,6 +127,11 @@ export default function RoutePage({ params }) {
             </div>
           )}
         </div>
+        {ROUTE_PHOTOS[route.slug] && (
+          <div style={{ maxWidth: 760, margin: "0 auto 8px" }}>
+            <PlacePhoto src={ROUTE_PHOTOS[route.slug].src} alt={ROUTE_PHOTOS[route.slug].alt} aspect="21 / 9" radius={16} priority />
+          </div>
+        )}
         <WaveDivider into="white" height={64} />
       </section>
 
