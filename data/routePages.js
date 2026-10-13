@@ -55,7 +55,7 @@ export const ROUTE_PAGES = {
     toPorts: BALI_MAINLAND,
     conditionPorts: ["Gili Trawangan", "Padang Bai"],
     bookFrom: "Gili Trawangan",
-    bookTo: "Bali",
+    bookTo: "Padang Bai",
     related: ["bali-to-gili-islands", "gili-air-to-bali", "bali-to-lombok-ferry"],
     lead: (c) =>
       `Fast boats run from Gili Trawangan to ${joinList(c.toNames)}. We list ${plural(c.count, "departure")} with ${joinOps(c.operators)}, ` +
@@ -177,8 +177,8 @@ export const ROUTE_PAGES = {
     fromPorts: BALI_MAINLAND,
     toPorts: LOMBOK_PORTS,
     conditionPorts: ["Padang Bai", "Bangsal (Lombok)"],
-    bookFrom: "Bali",
-    bookTo: "Lombok",
+    bookFrom: "Padang Bai",
+    bookTo: "Bangsal (Lombok)",
     related: ["bali-to-gili-islands", "gili-trawangan-to-bali", "gili-air-to-bali"],
     lead: (c) =>
       `Fast boats cross from Bali to Bangsal, the Lombok port for the Gili Islands. ` +
@@ -228,7 +228,7 @@ export const ROUTE_PAGES = {
     toPorts: BALI_MAINLAND,
     conditionPorts: ["Gili Air", "Padang Bai"],
     bookFrom: "Gili Air",
-    bookTo: "Bali",
+    bookTo: "Padang Bai",
     related: ["gili-trawangan-to-bali", "bali-to-gili-islands", "bali-to-lombok-ferry"],
     lead: (c) =>
       `Fast boats run from Gili Air to ${joinList(c.toNames)}. We list ${plural(c.count, "departure")} with ${joinOps(c.operators)}, ` +

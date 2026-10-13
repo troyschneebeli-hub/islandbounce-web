@@ -5,7 +5,7 @@ import { SITE_URL, CONTACT_EMAIL } from "@/lib/site";
 import { SAILINGS } from "@/data/timetables";
 import { ROUTE_PAGES, ROUTE_SLUGS } from "@/data/routePages";
 import { BALI_PORTS, ISLAND_PORTS } from "@/data/ports";
-import { buildTransportLink } from "@/lib/affiliateLinks";
+import { bookingLink } from "@/lib/bookingLink";
 import { selectSailings, groupByPair, summarize, describeDurations, lastChecked, formatDate, isStale, rangeText, shortPort } from "@/lib/timetable";
 import PlacePhoto from "@/components/PlacePhoto";
 import WaveDivider from "@/components/WaveDivider";
@@ -168,7 +168,15 @@ export default function RoutePage({ params }) {
               and we&apos;ll fix it.
             </p>
             {hasData ? (
-              <RouteTimetable groups={groups} />
+              <>
+                <RouteTimetable groups={groups} />
+                {summary.operators.length <= 2 && (
+                  <p style={{ ...para, fontSize: 12.5, opacity: 0.75, marginTop: 10 }}>
+                    This table lists the operators whose timetables we&apos;ve confirmed so far. Other operators may also run this route, so
+                    use the booking page below to see every option for your date.
+                  </p>
+                )}
+              </>
             ) : (
               <p style={para}>There&apos;s nothing to show yet. Check back soon, or compare options on 12Go below.</p>
             )}
@@ -183,12 +191,12 @@ export default function RoutePage({ params }) {
 
           <section style={{ marginBottom: 44, textAlign: "center" }}>
             <a
-              href={buildTransportLink(route.bookFrom, route.bookTo)}
+              href={bookingLink(route.bookFrom, route.bookTo)}
               target="_blank"
               rel="sponsored noopener noreferrer"
               style={{ display: "inline-block", background: COLORS.coral, color: "white", fontWeight: 700, fontSize: 14, padding: "12px 24px", borderRadius: 999, textDecoration: "none" }}
             >
-              Check availability and book on 12Go →
+              Check availability and book →
             </a>
             <p style={{ fontSize: 11.5, color: COLORS.ink, opacity: 0.6, marginTop: 10 }}>
               We're a comparison site, not the operator — schedules, boat condition and on-the-day organization are

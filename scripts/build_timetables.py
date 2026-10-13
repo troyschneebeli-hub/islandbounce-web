@@ -12,7 +12,10 @@ Two sheets are read:
                        sailings (boarding at a Bali port / Nusa Penida, getting
                        off at a later island or Lombok stop, up to the first
                        Bangsal stop). Return legs and mid-island boardings are
-                       deliberately left out until an operator confirms them.
+                       left out UNLESS the circuit's first row carries the marker
+                       "RETURNS CONFIRMED" in Notes (i.e. the operator has
+                       confirmed those departures). Circuits marked PENDING
+                       CONFIRMATION are not published at all.
 """
 import json, re, sys
 from datetime import time, date, timedelta
@@ -162,7 +165,8 @@ def main(path):
             continue
         if rid not in routes:
             routes[rid] = {"operator": op, "stops": [], "season": ws.cell(r, 7).value,
-                           "source": ws.cell(r, 10).value, "verified": iso(ws.cell(r, 11).value)}
+                           "source": ws.cell(r, 10).value, "verified": iso(ws.cell(r, 11).value),
+                           "returns_ok": "RETURNS CONFIRMED" in str(ws.cell(r, 13).value or "")}
             order.append(rid)
         routes[rid]["stops"].append((stop, hhmm(ws.cell(r, 4).value), hhmm(ws.cell(r, 5).value)))
 
@@ -170,6 +174,7 @@ def main(path):
         rt = routes[rid]
         is_pending = str(rt["season"] or "").startswith("PENDING CONFIRMATION")
         if is_pending:
+            # Published, but labelled "Not confirmed by the operator yet" on the site.
             pending[rt["operator"]] = pending.get(rt["operator"], 0) + 1
             s_text, v_from, v_to = "", None, None
         else:
@@ -199,6 +204,29 @@ def main(path):
                     "note": (NOTE_THIRD_PARTY if circuit_third_party else NOTE_UNCONFIRMED) if circuit_unconf else None,
                     "boat": None,
                 })
+
+        # return legs: boarding at an island/Bangsal stop, getting off at a later Bali port.
+        # Only for circuits whose operator has confirmed these departures.
+        if rt["returns_ok"]:
+            for i, (p_i, _, dep_i) in enumerate(stops):
+                if dep_i is None or p_i in BALI:
+                    continue
+                for j in range(i + 1, len(stops)):
+                    p_j, arr_j, _ = stops[j]
+                    if p_j not in BALI or arr_j is None:
+                        continue
+                    sailings.append({
+                        "id": sid(rt["operator"], p_i, p_j, dep_i, rid),
+                        "operator": rt["operator"], "from": p_i, "to": p_j,
+                        "checkIn": minus_minutes(dep_i, CHECKIN_MINUTES), "departs": dep_i, "arrives": arr_j,
+                        "via": [s[0] for s in stops[i + 1: j]], "kind": "circuit",
+                        "season": None if s_text in ("Not stated on source", "Confirmed on operator's website", "Confirmed by operator: valid all season", "") else s_text,
+                        "validFrom": v_from, "validTo": v_to,
+                        "source": rt["source"], "verified": rt["verified"], "flag": None,
+                        "confidence": "unconfirmed" if circuit_unconf else "confirmed",
+                        "note": (NOTE_THIRD_PARTY if circuit_third_party else NOTE_UNCONFIRMED) if circuit_unconf else None,
+                        "boat": None,
+                    })
 
     sailings = merge_adjacent(sailings)
 
@@ -236,6 +264,8 @@ def main(path):
             unconf_by_op[s["operator"]] = unconf_by_op.get(s["operator"], 0) + 1
     for op, n in unconf_by_op.items():
         print(f"  UNCONFIRMED (published, labelled on the site): {n} {op} sailings")
+    for op, n in pending.items():
+        print(f"  PENDING: {n} {op} circuit(s) published but labelled unconfirmed on the site.")
     for op, n in parked.items():
         print(f"  NOT OPERATING: {n} {op} rows are marked 'Not currently operating'; ignored by the site.")
     for op, n in held.items():
