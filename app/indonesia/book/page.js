@@ -4,8 +4,8 @@ import WaveDivider from "@/components/WaveDivider";
 import TwelveGoBookingWidget from "@/components/TwelveGoBookingWidget";
 
 export const metadata = {
-  title: "Book Your Ferry",
-  description: "Search and book fast boat and ferry tickets across Bali, the Gili Islands, Nusa Penida and Lombok.",
+  title: "Book Bali, Gili & Nusa Fast Boats Online",
+  description: "Search and book fast boat tickets between Bali, the Gili Islands, Nusa Penida, Nusa Lembongan and Lombok. Pick a date and compare operators.",
   alternates: { canonical: "/indonesia/book" },
 };
 

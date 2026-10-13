@@ -22,6 +22,12 @@ const ROUTE_PHOTOS = {
   "gili-trawangan-to-bali": { src: "/images/indonesia/gilis.jpg", alt: "Aerial view of a Gili island ringed by turquoise water" },
   "bali-to-gili-islands": { src: "/images/indonesia/gilis.jpg", alt: "Aerial view of a Gili island ringed by turquoise water" },
   "gili-air-to-bali": { src: "/images/indonesia/harbor.jpg", alt: "Aerial view of Padang Bai harbour in Bali with ferries at the pier" },
+  "nusa-penida-to-gili-islands": { src: "/images/indonesia/nusa-penida.jpg", alt: "Limestone cliffs and turquoise water on Nusa Penida" },
+  "nusa-lembongan-to-gili-islands": { src: "/images/indonesia/lembongan.jpg", alt: "The yellow suspension bridge between Nusa Lembongan and Nusa Ceningan" },
+  "padang-bai-to-gili-trawangan": { src: "/images/indonesia/harbor.jpg", alt: "Aerial view of Padang Bai harbour in Bali with ferries at the pier" },
+  "padang-bai-to-gili-air": { src: "/images/indonesia/gili-air.jpg", alt: "Aerial panorama of Gili Air and its turquoise shallows" },
+  "sanur-to-gili-trawangan": { src: "/images/indonesia/sanur.jpg", alt: "Beachfront pavilions on Sanur beach in Bali" },
+  "sanur-to-gili-air": { src: "/images/indonesia/gili-air.jpg", alt: "Aerial panorama of Gili Air and its turquoise shallows" },
   "bali-to-lombok-ferry": { src: "/images/indonesia/lombok.jpg", alt: "A turquoise bay and pale sand beach on the Lombok coast" },
 };
 
@@ -35,6 +41,7 @@ export function generateMetadata({ params }) {
   const route = ROUTE_PAGES[params.slug];
   if (!route) return {};
   const path = `/indonesia/routes/${route.slug}`;
+  const photo = ROUTE_PHOTOS[route.slug];
   return {
     title: { absolute: route.metaTitle },
     description: route.metaDescription,
@@ -45,6 +52,7 @@ export function generateMetadata({ params }) {
       url: `${SITE_URL}${path}`,
       siteName: "IslandBounce",
       type: "website",
+      ...(photo ? { images: [{ url: photo.src, alt: photo.alt }] } : {}),
     },
   };
 }

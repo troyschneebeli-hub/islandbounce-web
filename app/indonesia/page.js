@@ -12,8 +12,8 @@ import PhotoStrip from "@/components/PhotoStrip";
 import HeroBand from "@/components/HeroBand";
 
 export const metadata = {
-  title: "Indonesia",
-  description: "Bali, the Gili Islands, Nusa Penida, and Lombok — boat routes, ports, and things to do.",
+  title: "Bali, Gili Islands & Nusa Fast Boats: Trip Planner & Routes",
+  description: "Plan your Bali island hop: fast boat routes to the Gili Islands, Nusa Penida and Lombok, port-by-port departure times, and a planner that works out your trip to the harbour.",
   alternates: { canonical: "/indonesia" },
 };
 

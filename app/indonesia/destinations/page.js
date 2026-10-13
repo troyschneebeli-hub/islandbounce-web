@@ -3,8 +3,8 @@ import { COLORS } from "@/lib/theme";
 import PlacePhoto from "@/components/PlacePhoto";
 
 export const metadata = {
-  title: "Places We Cover",
-  description: "Gili Trawangan, Gili Air, Gili Meno, Nusa Penida, Nusa Lembongan and Lombok — what each place is actually like.",
+  title: "Gili Islands, Nusa Penida & Lombok: Which Island to Visit",
+  description: "Gili Trawangan, Gili Air, Gili Meno, Nusa Penida, Nusa Lembongan and Lombok: what each island is actually like, and which suits the trip you want.",
   alternates: { canonical: "/indonesia/destinations" },
 };
 

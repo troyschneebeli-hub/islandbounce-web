@@ -4,9 +4,9 @@ import PoppyCard from "@/components/PoppyCard";
 import WaveDivider from "@/components/WaveDivider";
 
 export const metadata = {
-  title: "Bali, Gili & Lombok Fast Boat Routes",
+  title: "Bali, Gili & Nusa Fast Boat Routes: Times & Operators",
   description:
-    "Fast boat and ferry routes between Bali, the Gili Islands and Lombok, with departure times and operators.",
+    "Every fast boat route we cover between Bali, the Gili Islands, Nusa Penida, Nusa Lembongan and Lombok, with departure times, crossing times and operators.",
   alternates: { canonical: "/indonesia/routes" },
 };
 

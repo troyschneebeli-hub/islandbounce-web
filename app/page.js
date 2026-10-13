@@ -5,6 +5,13 @@ import WaveDivider from "@/components/WaveDivider";
 import RegionCard from "@/components/RegionCard";
 import IslandRequest from "@/components/IslandRequest";
 
+export const metadata = {
+  title: { absolute: "IslandBounce: Bali to Gili, Nusa & Lombok Fast Boats" },
+  description:
+    "Compare fast boats from Bali to the Gili Islands, Nusa Penida, Nusa Lembongan and Lombok. Departure times, sea conditions and a trip planner, then book on 12Go.",
+  alternates: { canonical: "/" },
+};
+
 export default function CoverPage() {
   return (
     <div>

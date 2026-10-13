@@ -11,7 +11,17 @@ export const metadata = {
     template: "%s | IslandBounce",
   },
   description:
-    "Ferry, fast-boat, and trip-planning comparisons across Bali, the Gili Islands, Nusa Penida, and Lombok — every departure compared side by side.",
+    "Compare fast boats and ferries from Bali to the Gili Islands, Nusa Penida, Nusa Lembongan and Lombok. Real timetables, sea conditions and a trip planner in one place.",
+  openGraph: {
+    siteName: "IslandBounce",
+    type: "website",
+    locale: "en_AU",
+    images: [{ url: "/images/og-default.jpg", width: 1200, height: 630, alt: "Yellow bridge between Nusa Lembongan and Nusa Ceningan over turquoise water" }],
+  },
+  twitter: { card: "summary_large_image", images: ["/images/og-default.jpg"] },
+  // Search Console "HTML tag" verification: set GOOGLE_SITE_VERIFICATION in
+  // Vercel to the content value Google gives you. Skipped when not set.
+  ...(process.env.GOOGLE_SITE_VERIFICATION ? { verification: { google: process.env.GOOGLE_SITE_VERIFICATION } } : {}),
 };
 
 // Explicit rather than relying on Next.js's default — without this, mobile
@@ -33,6 +43,15 @@ const organizationLd = {
   logo: `${SITE_URL}/images/logo.png`,
 };
 
+// Names the site itself for Google's results and lets it show a clean site name.
+const websiteLd = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: "IslandBounce",
+  url: SITE_URL,
+  inLanguage: "en",
+};
+
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
@@ -44,7 +63,7 @@ export default function RootLayout({ children }) {
       </head>
       <body>
         <a href="#main" className="skip-link">Skip to content</a>
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationLd).replace(/</g, "\\u003c") }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify([organizationLd, websiteLd]).replace(/</g, "\\u003c") }} />
         <div style={{ minHeight: "100%" }}>
           <Nav />
           <main id="main">{children}</main>

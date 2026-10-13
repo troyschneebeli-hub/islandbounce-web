@@ -3,8 +3,8 @@ import PortsExplorer from "@/components/PortsExplorer";
 import { BALI_PORTS, ISLAND_PORTS } from "@/data/ports";
 
 export const metadata = {
-  title: "All Ports — Indonesia",
-  description: "Every harbor covering Bali, the Gili Islands, Nusa Penida, Nusa Lembongan, and Bangsal on Lombok.",
+  title: "Bali, Gili & Nusa Ferry Ports Map: Padang Bai, Sanur & More",
+  description: "Interactive map of every fast boat port in Bali, the Gili Islands, Nusa Penida, Nusa Lembongan and Bangsal on Lombok, with photos and what to know at each harbour.",
   alternates: { canonical: "/indonesia/ports" },
 };
 
