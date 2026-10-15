@@ -32,7 +32,7 @@ export default function RouteTimetable({ groups }) {
               {shortPort(g.from)} → {shortPort(g.to)}
             </h3>
             <div style={{ overflowX: "auto" }}>
-              <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 560 }}>
+              <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 640 }}>
                 <caption className="sr-only">
                   Fast boat departures from {shortPort(g.from)} to {shortPort(g.to)}
                 </caption>
@@ -43,6 +43,7 @@ export default function RouteTimetable({ groups }) {
                     <th style={th}>Departs</th>
                     <th style={th}>Arrives</th>
                     <th style={th}>Duration</th>
+                    <th style={th}>From (adult)</th>
                     <th style={th}>Notes</th>
                   </tr>
                 </thead>
@@ -64,6 +65,7 @@ export default function RouteTimetable({ groups }) {
                         <td style={{ ...td, fontWeight: isFastest ? 700 : 400, color: isFastest ? COLORS.coralDeep : COLORS.ink }}>
                           {fmtDuration(durs[i])}
                         </td>
+                        <td style={td}>{s.price ? `A$${s.price}` : "—"}</td>
                         <td style={{ ...td, fontSize: 12, opacity: 0.75 }}>{notes.join(" · ")}</td>
                       </tr>
                     );

@@ -135,6 +135,51 @@ function withBoatInfo(r, date) {
   return { ...r, departures, boatMin, boatIsEstimate: !departures.hasReal, totalMin: r.driveMin + CHECKIN_BUFFER_MIN + boatMin };
 }
 
+
+// Times and operators for one port card, from lib/portDepartures. Every time shown is
+// a departure; check-in is 1 hour before. Prices are the lowest adult fare 12Go listed.
+function DepartureList({ departures, from, to }) {
+  const [open, setOpen] = useState(false);
+  if (!departures?.hasReal) {
+    return <div style={{ marginTop: 10, fontSize: 11, color: COLORS.ink, opacity: 0.6 }}>Times for this crossing are coming soon. Check the booking page.</div>;
+  }
+  const total = departures.groups.reduce((n, g) => n + g.times.length, 0);
+  return (
+    <div style={{ marginTop: 10 }}>
+      <button
+        type="button"
+        onClick={(e) => { e.stopPropagation(); setOpen(!open); }}
+        style={{ background: "none", border: "none", padding: 0, cursor: "pointer", fontSize: 12, fontWeight: 700, color: COLORS.sea, textDecoration: "underline" }}
+      >
+        {open ? "Hide" : "Show"} {total} departures · {departures.groups.length} {departures.groups.length === 1 ? "operator" : "operators"}
+      </button>
+      {open && (
+        <div style={{ marginTop: 8, maxHeight: 220, overflowY: "auto", fontSize: 11.5, color: COLORS.ink }} onClick={(e) => e.stopPropagation()}>
+          {departures.groups.map((g) => (
+            <div key={g.operator} style={{ marginBottom: 8 }}>
+              <div style={{ fontWeight: 700 }}>{g.operator}</div>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 4, marginTop: 3 }}>
+                {g.details.map((d) => (
+                  <span
+                    key={d.time}
+                    title={`Check in ${d.checkIn || "1 hour before"}${d.arrives ? ` · arrives ${d.arrives}` : ""}${d.price ? ` · from A$${d.price}` : ""}`}
+                    style={{ background: COLORS.foam, border: `1px solid ${COLORS.foamLine}`, borderRadius: 6, padding: "2px 6px" }}
+                  >
+                    {d.time}{d.price ? ` · A$${d.price}` : ""}
+                  </span>
+                ))}
+              </div>
+            </div>
+          ))}
+          <div style={{ opacity: 0.65, marginTop: 4 }}>
+            Check in 1 hour before departure. Times and fares are daily guides from the booking site, so confirm on the booking page. Checked {formatDate(departures.checked)}.
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 /** @param {{ origin?: any, destination?: any, date?: string, returnDate?: string, travellers?: number }} props */
 export default function FindPortMap({ origin, destination, date, returnDate, travellers }) {
   const mapRef = useRef(null);
@@ -556,6 +601,7 @@ export default function FindPortMap({ origin, destination, date, returnDate, tra
                 <div style={{ marginTop: 10, fontSize: 11.5, color: COLORS.ink, opacity: 0.75 }}>
                   About {fmtMins(r.totalMin)} door to door
                 </div>
+                <DepartureList departures={r.departures} from={r.port} to={r.destination} />
                 {r.walking && (
                   <div style={{ marginTop: 4, fontSize: 11, color: COLORS.ink, opacity: 0.6 }}>The Gilis are car free, so it's a walk (or a bike or cidomo ride) to the harbour.</div>
                 )}

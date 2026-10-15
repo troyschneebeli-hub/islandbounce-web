@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { COLORS } from "@/lib/theme";
 import { SITE_URL, CONTACT_EMAIL } from "@/lib/site";
-import { SAILINGS } from "@/data/timetables";
+import { SAILINGS } from "@/data/sailings";
 import { ROUTE_PAGES, ROUTE_SLUGS } from "@/data/routePages";
 import { BALI_PORTS, ISLAND_PORTS } from "@/data/ports";
 import { bookingLink } from "@/lib/bookingLink";

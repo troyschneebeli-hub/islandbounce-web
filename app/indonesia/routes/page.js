@@ -2,6 +2,7 @@ import { COLORS } from "@/lib/theme";
 import { ROUTE_PAGES, ROUTE_SLUGS } from "@/data/routePages";
 import PoppyCard from "@/components/PoppyCard";
 import WaveDivider from "@/components/WaveDivider";
+import AllRoutesDirectory from "@/components/AllRoutesDirectory";
 
 export const metadata = {
   title: "Bali, Gili & Nusa Fast Boat Routes: Times & Operators",
@@ -22,7 +23,7 @@ export default function RoutesIndex() {
             Fast boat routes
           </h1>
           <p style={{ color: COLORS.seaDeep, opacity: 0.8, margin: "12px auto 0", fontSize: 15, lineHeight: 1.6 }}>
-            Every route below lists real departures and operators, plus live sea conditions for each port.
+            The main routes below list real departures and operators, plus live sea conditions. Scroll down for every other route we know about.
           </p>
         </div>
         <WaveDivider into="white" height={64} />
@@ -36,8 +37,9 @@ export default function RoutesIndex() {
             ))}
           </div>
           <p style={{ fontSize: 13, color: COLORS.ink, opacity: 0.65, textAlign: "center", maxWidth: 560, margin: "0 auto" }}>
-            More routes, including Nusa Penida and Nusa Lembongan, are added as we verify each operator&apos;s timetable.
+            More route pages are added as we verify each operator&apos;s timetable.
           </p>
+          <AllRoutesDirectory />
         </div>
       </div>
     </div>

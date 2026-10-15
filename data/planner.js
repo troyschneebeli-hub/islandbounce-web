@@ -64,6 +64,7 @@ export const BOAT_ROUTES = {
     "Gili Air": { duration: 105, priceLow: 20, priceHigh: 35, count: 7 },
     "Nusa Penida": { duration: 35, priceLow: 10, priceHigh: 22, count: 8 },
     "Nusa Lembongan": { duration: 35, priceLow: 10, priceHigh: 20, count: 6 },
+    "Gili Meno": { duration: 225, priceLow: 49, priceHigh: 60, count: 6 },
     "Bangsal (Lombok)": { duration: 210, priceLow: 25, priceHigh: 40, count: 2 },
   },
   "Padang Bai": {
@@ -74,6 +75,7 @@ export const BOAT_ROUTES = {
     "Senggigi (Lombok)": { duration: 100, priceLow: 20, priceHigh: 35, count: 1 },
     "Lembar (Lombok)": { duration: 300, priceLow: 1, priceHigh: 3, count: 8, ferry: true },
     "Nusa Penida": { duration: 60, priceLow: 15, priceHigh: 25, count: 2 },
+    "Nusa Lembongan": { duration: 40, priceLow: 20, priceHigh: 27, count: 4 },
   },
   Serangan: {
     "Gili Trawangan": { duration: 75, priceLow: 25, priceHigh: 40, count: 3 },
@@ -81,6 +83,7 @@ export const BOAT_ROUTES = {
     "Gili Meno": { duration: 80, priceLow: 25, priceHigh: 40, count: 2 },
     "Bangsal (Lombok)": { duration: 150, priceLow: 25, priceHigh: 40, count: 3 },
     "Gili Gede (SW Lombok)": { duration: 180, priceLow: 30, priceHigh: 45, count: 1 },
+    "Nusa Penida": { duration: 60, priceLow: 12, priceHigh: 21, count: 6 },
   },
   Kusamba: {
     "Nusa Penida": { duration: 15, priceLow: 5, priceHigh: 10, count: 6 },
@@ -88,6 +91,11 @@ export const BOAT_ROUTES = {
   "Benoa / Nusa Dua": {
     "Gili Trawangan": { duration: 120, priceLow: 30, priceHigh: 45, count: 2 },
     "Gili Air": { duration: 120, priceLow: 30, priceHigh: 45, count: 2 },
+    // Added from the 12Go booking-page listings (see data/twelvego.js).
+    "Gili Meno": { duration: 260, priceLow: 60, priceHigh: 90, count: 2 },
+    "Bangsal (Lombok)": { duration: 245, priceLow: 44, priceHigh: 60, count: 5 },
+    "Nusa Penida": { duration: 45, priceLow: 13, priceHigh: 30, count: 3 },
+    "Nusa Lembongan": { duration: 75, priceLow: 20, priceHigh: 40, count: 2 },
   },
 };
 

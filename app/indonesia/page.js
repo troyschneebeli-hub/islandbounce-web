@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { COLORS } from "@/lib/theme";
 import { BALI_PORTS } from "@/data/ports";
-import { SAILINGS } from "@/data/timetables";
+import { SAILINGS } from "@/data/sailings";
 import IslandRequest from "@/components/IslandRequest";
 import WaveDivider from "@/components/WaveDivider";
 import PoppyCard from "@/components/PoppyCard";
