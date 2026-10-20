@@ -138,7 +138,7 @@ function withBoatInfo(r, date) {
 
 // Times and operators for one port card, from lib/portDepartures. Every time shown is
 // a departure; check-in is 1 hour before. Prices are the lowest adult fare 12Go listed.
-function DepartureList({ departures, from, to }) {
+function DepartureList({ departures, from, to, date, returnDate, travellers }) {
   const [open, setOpen] = useState(false);
   if (!departures?.hasReal) {
     return <div style={{ marginTop: 10, fontSize: 11, color: COLORS.ink, opacity: 0.6 }}>Times for this crossing are coming soon. Check the booking page.</div>;
@@ -160,19 +160,22 @@ function DepartureList({ departures, from, to }) {
               <div style={{ fontWeight: 700 }}>{g.operator}</div>
               <div style={{ display: "flex", flexWrap: "wrap", gap: 4, marginTop: 3 }}>
                 {g.details.map((d) => (
-                  <span
+                  <a
                     key={d.time}
-                    title={`Check in ${d.checkIn || "1 hour before"}${d.arrives ? ` · arrives ${d.arrives}` : ""}${d.price ? ` · from A$${d.price}` : ""}`}
-                    style={{ background: COLORS.foam, border: `1px solid ${COLORS.foamLine}`, borderRadius: 6, padding: "2px 6px" }}
+                    href={bookingLink(from, to, date, returnDate, travellers)}
+                    target="_blank"
+                    rel="sponsored noopener noreferrer"
+                    title={`Opens ${from} to ${to} on the booking page${date ? ` for ${formatDate(date)}` : ""}. Look for the ${d.time} ${g.operator} sailing. Check in ${d.checkIn || "1 hour before"}${d.arrives ? ` · arrives ${d.arrives}` : ""}`}
+                    style={{ background: COLORS.foam, border: `1px solid ${COLORS.foamLine}`, borderRadius: 6, padding: "2px 6px", color: COLORS.ink, textDecoration: "none" }}
                   >
                     {d.time}{d.price ? ` · A$${d.price}` : ""}
-                  </span>
+                  </a>
                 ))}
               </div>
             </div>
           ))}
           <div style={{ opacity: 0.65, marginTop: 4 }}>
-            Check in 1 hour before departure. Times and fares are daily guides from the booking site, so confirm on the booking page. Checked {formatDate(departures.checked)}.
+            Check in 1 hour before departure. Tap a time to open that route on the booking page, then pick the same operator and time. Times and fares are daily guides, so confirm there. Checked {formatDate(departures.checked)}.
           </div>
         </div>
       )}
@@ -601,7 +604,7 @@ export default function FindPortMap({ origin, destination, date, returnDate, tra
                 <div style={{ marginTop: 10, fontSize: 11.5, color: COLORS.ink, opacity: 0.75 }}>
                   About {fmtMins(r.totalMin)} door to door
                 </div>
-                <DepartureList departures={r.departures} from={r.port} to={r.destination} />
+                <DepartureList departures={r.departures} from={r.port} to={r.destination} date={date} returnDate={returnDate} travellers={travellers} />
                 {r.walking && (
                   <div style={{ marginTop: 4, fontSize: 11, color: COLORS.ink, opacity: 0.6 }}>The Gilis are car free, so it's a walk (or a bike or cidomo ride) to the harbour.</div>
                 )}
