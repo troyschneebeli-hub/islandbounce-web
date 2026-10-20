@@ -55,13 +55,22 @@ export function BookingBox() {
   const { pairs, date, setDate, travellers, setTravellers, pair, setPair, linkFor } = useBooking();
   const buttonRef = useRef(null);
   const [buttonVisible, setButtonVisible] = useState(true);
+  const [footerVisible, setFooterVisible] = useState(false);
 
   // On phones, pin a copy of the button to the bottom of the screen once the
-  // main one has scrolled out of view.
+  // main one has scrolled out of view, and drop it again when the site footer
+  // comes into view so it never covers the footer links.
   useEffect(() => {
     if (!buttonRef.current || typeof IntersectionObserver === "undefined") return;
-    const obs = new IntersectionObserver(([entry]) => setButtonVisible(entry.isIntersecting));
+    const footer = document.querySelector("footer");
+    const obs = new IntersectionObserver((entries) => {
+      for (const entry of entries) {
+        if (entry.target === buttonRef.current) setButtonVisible(entry.isIntersecting);
+        else setFooterVisible(entry.isIntersecting);
+      }
+    });
     obs.observe(buttonRef.current);
+    if (footer) obs.observe(footer);
     return () => obs.disconnect();
   }, []);
 
@@ -107,7 +116,7 @@ export function BookingBox() {
         </p>
       </div>
 
-      {!buttonVisible && (
+      {!buttonVisible && !footerVisible && (
         <div
           className="md:hidden"
           style={{ position: "fixed", left: 0, right: 0, bottom: 0, zIndex: 40, padding: "10px 16px calc(10px + env(safe-area-inset-bottom))", background: "rgba(255,255,255,0.96)", borderTop: `1px solid ${COLORS.foamLine}`, boxShadow: "0 -4px 16px rgba(0,0,0,0.08)" }}

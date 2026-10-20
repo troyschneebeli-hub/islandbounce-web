@@ -288,10 +288,7 @@ export default function RoutePage({ params }) {
 
           <p style={{ fontSize: 12, color: COLORS.ink, opacity: 0.6, lineHeight: 1.6 }}>
             How we compile this: we read the departures listed on the booking site, date-stamp them, and refresh them about once a month.
-          </p>
-          {/* Room for the booking button pinned to the bottom of the screen on phones. */}
-          {hasData && <div className="md:hidden" style={{ height: 72 }} aria-hidden="true" />}
-        </div>
+          </p>        </div>
       </div>
     </div>
   );
