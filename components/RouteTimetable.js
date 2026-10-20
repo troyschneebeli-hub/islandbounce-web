@@ -1,5 +1,6 @@
 import { COLORS } from "@/lib/theme";
 import { durationMins, fmtDuration, seasonLabel, shortPort } from "@/lib/timetable";
+import { RowBookButton } from "@/components/RouteBooking";
 
 const th = {
   textAlign: "left",
@@ -13,8 +14,12 @@ const th = {
   whiteSpace: "nowrap",
 };
 const td = { padding: "10px", fontSize: 13.5, color: COLORS.ink, borderBottom: `1px solid ${COLORS.foamLine}`, verticalAlign: "top" };
+// The Book column stays pinned to the right edge while a phone scrolls the table sideways.
+const bookCol = { position: "sticky", right: 0, background: "white", boxShadow: "-6px 0 8px -6px rgba(0,0,0,0.12)" };
 
-// One plain table per from -> to pair. Server component: no client JS needed.
+// One plain table per from -> to pair, rendered on the server so search engines
+// see every row. Only the Book buttons are client components: they read the date
+// and travellers from the booking box, so this must sit inside RouteBookingProvider.
 export default function RouteTimetable({ groups }) {
   return (
     <div>
@@ -32,7 +37,7 @@ export default function RouteTimetable({ groups }) {
               {shortPort(g.from)} → {shortPort(g.to)}
             </h3>
             <div style={{ overflowX: "auto" }}>
-              <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 640 }}>
+              <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 700 }}>
                 <caption className="sr-only">
                   Fast boat departures from {shortPort(g.from)} to {shortPort(g.to)}
                 </caption>
@@ -45,6 +50,7 @@ export default function RouteTimetable({ groups }) {
                     <th style={th}>Duration</th>
                     <th style={th}>From (adult)</th>
                     <th style={th}>Notes</th>
+                    <th style={{ ...th, ...bookCol }}><span className="sr-only">Book</span></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -67,6 +73,9 @@ export default function RouteTimetable({ groups }) {
                         </td>
                         <td style={td}>{s.price ? `A$${s.price}` : "—"}</td>
                         <td style={{ ...td, fontSize: 12, opacity: 0.75 }}>{notes.join(" · ")}</td>
+                        <td style={{ ...td, ...bookCol, textAlign: "right", verticalAlign: "middle" }}>
+                          <RowBookButton from={s.from} to={s.to} time={s.departs} operator={s.operator} />
+                        </td>
                       </tr>
                     );
                   })}

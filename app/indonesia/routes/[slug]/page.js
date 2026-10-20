@@ -6,10 +6,11 @@ import { SAILINGS } from "@/data/sailings";
 import { ROUTE_PAGES, ROUTE_SLUGS } from "@/data/routePages";
 import { BALI_PORTS, ISLAND_PORTS } from "@/data/ports";
 import { bookingLink } from "@/lib/bookingLink";
-import { selectSailings, groupByPair, summarize, describeDurations, lastChecked, formatDate, isStale, rangeText, shortPort } from "@/lib/timetable";
+import { selectSailings, groupByPair, summarize, describeDurations, lastChecked, formatDate, isStale, fmtDuration, shortPort } from "@/lib/timetable";
 import PlacePhoto from "@/components/PlacePhoto";
 import WaveDivider from "@/components/WaveDivider";
 import RouteTimetable from "@/components/RouteTimetable";
+import { RouteBookingProvider, BookingBox } from "@/components/RouteBooking";
 import SeaConditionsBadge from "@/components/SeaConditionsBadge";
 
 // Re-render every 6 hours so "which season is running today" stays correct
@@ -97,14 +98,21 @@ export default function RoutePage({ params }) {
     : null;
   const jsonLd = [breadcrumbLd, faqLd].filter(Boolean);
 
+  // Summary strip and booking box: cheapest fare and fastest crossing across
+  // every port pair on the page, plus each pair's own lowest fare for the picker.
+  const minOf = (nums) => (nums.length ? Math.min(...nums) : null);
+  const priced = (list) => list.map((s) => s.price).filter((p) => p != null);
+  const lowestPrice = minOf(priced(active));
+  const fastestMin = hasData ? Math.min(...summary.pairs.map((p) => p.min)) : null;
   const stats = hasData
     ? [
-        { n: summary.count, label: "departures" },
-        { n: rangeText(Math.min(...summary.pairs.map((p) => p.min)), Math.max(...summary.pairs.map((p) => p.max))), label: "crossing time" },
+        ...(lowestPrice != null ? [{ n: `A$${lowestPrice}`, label: "from (adult)" }] : []),
+        { n: fmtDuration(fastestMin), label: "fastest crossing" },
+        { n: summary.count, label: summary.count === 1 ? "departure" : "departures" },
         { n: summary.operators.length, label: summary.operators.length === 1 ? "operator" : "operators" },
-        ...(checked ? [{ n: formatDate(checked), label: "times checked" }] : []),
       ]
     : [];
+  const bookingPairs = groups.map((g) => ({ from: g.from, to: g.to, minPrice: minOf(priced(g.sailings)) }));
 
   const related = route.related.map((slug) => ROUTE_PAGES[slug]).filter(Boolean);
 
@@ -123,17 +131,6 @@ export default function RoutePage({ params }) {
             {route.h1}
           </h1>
           <p style={{ color: COLORS.seaDeep, opacity: 0.85, maxWidth: 640, margin: "14px auto 0", fontSize: 15.5, lineHeight: 1.6 }}>{lead}</p>
-
-          {stats.length > 0 && (
-            <div className="flex flex-wrap justify-center gap-x-9 gap-y-3" style={{ marginTop: 24 }}>
-              {stats.map((s) => (
-                <div key={s.label} style={{ textAlign: "center" }}>
-                  <div style={{ fontFamily: "'Big Shoulders Display', sans-serif", fontWeight: 800, fontSize: 24, color: COLORS.seaDeep }}>{s.n}</div>
-                  <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, color: COLORS.skyDeep, letterSpacing: 0.5 }}>{s.label}</div>
-                </div>
-              ))}
-            </div>
-          )}
         </div>
         {ROUTE_PHOTOS[route.slug] && (
           <div style={{ maxWidth: 760, margin: "0 auto 8px" }}>
@@ -145,6 +142,21 @@ export default function RoutePage({ params }) {
 
       <div style={{ background: "white" }}>
         <div style={{ maxWidth: 900, margin: "0 auto", padding: "16px 20px 56px" }}>
+          <RouteBookingProvider pairs={bookingPairs} defaultPair={{ from: route.bookFrom, to: route.bookTo }}>
+          {stats.length > 0 && (
+            <div
+              className="grid grid-cols-2 sm:grid-cols-4"
+              style={{ border: `1px solid ${COLORS.foamLine}`, borderRadius: 14, marginBottom: 12, overflow: "hidden", background: "white" }}
+            >
+              {stats.map((s) => (
+                <div key={s.label} style={{ textAlign: "center", padding: "12px 8px", borderRight: `1px solid ${COLORS.foamLine}`, borderBottom: `1px solid ${COLORS.foamLine}`, marginRight: -1, marginBottom: -1 }}>
+                  <div style={{ fontFamily: "'Big Shoulders Display', sans-serif", fontWeight: 800, fontSize: 24, color: COLORS.seaDeep, lineHeight: 1.1 }}>{s.n}</div>
+                  <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, color: COLORS.skyDeep, letterSpacing: 0.5, marginTop: 2 }}>{s.label}</div>
+                </div>
+              ))}
+            </div>
+          )}
+          {hasData && <BookingBox />}
           <section style={{ marginBottom: 40 }}>
             <h2 style={h2}>{route.name} fast boat times</h2>
             <p style={{ ...para, fontSize: 13, opacity: 0.7 }}>
@@ -188,6 +200,7 @@ export default function RoutePage({ params }) {
               </div>
             )}
           </section>
+          </RouteBookingProvider>
 
           <section style={{ marginBottom: 44, textAlign: "center" }}>
             <a
@@ -276,6 +289,8 @@ export default function RoutePage({ params }) {
           <p style={{ fontSize: 12, color: COLORS.ink, opacity: 0.6, lineHeight: 1.6 }}>
             How we compile this: we read the departures listed on the booking site, date-stamp them, and refresh them about once a month.
           </p>
+          {/* Room for the booking button pinned to the bottom of the screen on phones. */}
+          {hasData && <div className="md:hidden" style={{ height: 72 }} aria-hidden="true" />}
         </div>
       </div>
     </div>
