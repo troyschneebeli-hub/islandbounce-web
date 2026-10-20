@@ -102,7 +102,7 @@ export default function RoutePage({ params }) {
         { n: summary.count, label: "departures" },
         { n: rangeText(Math.min(...summary.pairs.map((p) => p.min)), Math.max(...summary.pairs.map((p) => p.max))), label: "crossing time" },
         { n: summary.operators.length, label: summary.operators.length === 1 ? "operator" : "operators" },
-        ...(checked ? [{ n: formatDate(checked), label: "timetables updated" }] : []),
+        ...(checked ? [{ n: formatDate(checked), label: "times checked" }] : []),
       ]
     : [];
 
@@ -148,9 +148,9 @@ export default function RoutePage({ params }) {
           <section style={{ marginBottom: 40 }}>
             <h2 style={h2}>{route.name} fast boat times</h2>
             <p style={{ ...para, fontSize: 13, opacity: 0.7 }}>
-              Times are compiled from operators&apos; own timetables and booking platforms{checked ? ` and were last updated ${formatDate(checked)}` : ""}.
-              Please check in 1 hour before departure. Operators change schedules, so confirm when you book. Fares vary by operator and season, so check
-              the booking page for current prices.
+              Times and fares are guides taken from the booking site{checked ? ` and were last checked ${formatDate(checked)}` : ""}. Fares are the
+              lowest adult price listed. Please check in 1 hour before departure. Operators change schedules and prices, so confirm on the booking page
+              when you book.
             </p>
             {stale && (
               <p style={{ ...para, fontSize: 13, background: "#FFF2CC", color: "#8A5A00", borderRadius: 8, padding: "8px 12px" }}>
@@ -172,7 +172,7 @@ export default function RoutePage({ params }) {
                 <RouteTimetable groups={groups} />
                 {summary.operators.length <= 2 && (
                   <p style={{ ...para, fontSize: 12.5, opacity: 0.75, marginTop: 10 }}>
-                    This table lists the operators whose timetables we&apos;ve confirmed so far. Other operators may also run this route, so
+                    This table lists the operators the booking site showed when we last checked. Others may run this route too, so
                     use the booking page below to see every option for your date.
                   </p>
                 )}
@@ -274,8 +274,7 @@ export default function RoutePage({ params }) {
           </section>
 
           <p style={{ fontSize: 12, color: COLORS.ink, opacity: 0.6, lineHeight: 1.6 }}>
-            How we compile this: we collect departure times from operators&apos; own timetables and booking platforms, date-stamp them, and update them
-            when operators tell us about changes.
+            How we compile this: we read the departures listed on the booking site, date-stamp them, and refresh them about once a month.
           </p>
         </div>
       </div>

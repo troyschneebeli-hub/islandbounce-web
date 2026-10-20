@@ -141,7 +141,7 @@ function withBoatInfo(r, date) {
 function DepartureList({ departures, from, to, date, returnDate, travellers }) {
   const [open, setOpen] = useState(false);
   if (!departures?.hasReal) {
-    return <div style={{ marginTop: 10, fontSize: 11, color: COLORS.ink, opacity: 0.6 }}>Times for this crossing are coming soon. Check the booking page.</div>;
+    return <div style={{ marginTop: 10, fontSize: 11, color: COLORS.ink, opacity: 0.6 }}>No departures listed for this crossing. Check the booking page.</div>;
   }
   const total = departures.groups.reduce((n, g) => n + g.times.length, 0);
   return (
@@ -154,7 +154,9 @@ function DepartureList({ departures, from, to, date, returnDate, travellers }) {
         {open ? "Hide" : "Show"} {total} departures · {departures.groups.length} {departures.groups.length === 1 ? "operator" : "operators"}
       </button>
       {open && (
-        <div style={{ marginTop: 8, maxHeight: 220, overflowY: "auto", fontSize: 11.5, color: COLORS.ink }} onClick={(e) => e.stopPropagation()}>
+        <div style={{ marginTop: 8, fontSize: 11.5, color: COLORS.ink }} onClick={(e) => e.stopPropagation()}>
+        {/* Only the chips scroll; the note below stays visible in full. */}
+        <div style={{ maxHeight: 220, overflowY: "auto" }}>
           {departures.groups.map((g) => (
             <div key={g.operator} style={{ marginBottom: 8 }}>
               <div style={{ fontWeight: 700 }}>{g.operator}</div>
@@ -168,14 +170,16 @@ function DepartureList({ departures, from, to, date, returnDate, travellers }) {
                     title={`Opens ${from} to ${to} on the booking page${date ? ` for ${formatDate(date)}` : ""}. Look for the ${d.time} ${g.operator} sailing. Check in ${d.checkIn || "1 hour before"}${d.arrives ? ` · arrives ${d.arrives}` : ""}`}
                     style={{ background: COLORS.foam, border: `1px solid ${COLORS.foamLine}`, borderRadius: 6, padding: "2px 6px", color: COLORS.ink, textDecoration: "none" }}
                   >
-                    {d.time}{d.price ? ` · A$${d.price}` : ""}
+                    {d.time} · {d.price ? `A$${d.price}` : "price on site"}
                   </a>
                 ))}
               </div>
             </div>
           ))}
-          <div style={{ opacity: 0.65, marginTop: 4 }}>
-            Check in 1 hour before departure. Tap a time to open that route on the booking page, then pick the same operator and time. Times and fares are daily guides, so confirm there. Checked {formatDate(departures.checked)}.
+        </div>
+          <div style={{ opacity: 0.65, marginTop: 6, lineHeight: 1.45 }}>
+            Check in 1 hour before departure. Tap a time to open that route on the booking page, then pick the same operator and time.
+            Times and lowest adult fares are guides from the booking site, so confirm there. Checked {formatDate(departures.checked)}.
           </div>
         </div>
       )}
@@ -309,7 +313,7 @@ export default function FindPortMap({ origin, destination, date, returnDate, tra
     if (candidatePorts.length === 0) {
       setNotice(
         fromGili
-          ? `We don't list a boat from ${giliPort.name} to ${destination} yet. Try Padang Bai or Sanur.`
+          ? `We don't list a boat from ${giliPort.name} to ${destination} yet. Try Padang Bai.`
           : fromNusa
           ? `We don't list a boat from the Nusa islands to ${destination} yet. Try a Gili as your destination.`
           : `No Bali port in our data has a route to ${destination} yet.`
@@ -521,8 +525,8 @@ export default function FindPortMap({ origin, destination, date, returnDate, tra
     );
   }
 
-  // Real departures from the verified timetables where we have them, never
-  // invented times; crossing times marked "~" are estimates.
+  // Departures come from the 12Go listings only, never invented times;
+  // crossing times marked "~" are estimates.
   const cards = results.map((r) => withBoatInfo(r, date));
 
   return (

@@ -17,7 +17,7 @@ export const metadata = {
   alternates: { canonical: "/indonesia" },
 };
 
-// Real counts from the timetable data we list.
+// Real counts from the 12Go sailings we list.
 const LISTED_OPERATORS = new Set(SAILINGS.map((s) => s.operator)).size;
 const LISTED_ROUTES = new Set(SAILINGS.map((s) => `${s.from}|${s.to}`)).size;
 

@@ -4,10 +4,10 @@ import { SAILINGS } from "@/data/sailings";
 import { ROUTE_PAGES, ROUTE_SLUGS } from "@/data/routePages";
 import { bookingLink } from "@/lib/bookingLink";
 
-// Every route pair we have timetable evidence for, grouped by where it leaves
-// from. Pairs come from data/timetables.js, so this list grows automatically
-// as new operator timetables are added. Lombok ports we no longer serve are
-// left out.
+// Every route pair the 12Go sailings cover, grouped by where it leaves from.
+// Pairs come from data/sailings.js (12Go only), so this list grows
+// automatically when the 12Go capture is rebuilt. Lombok ports we no longer
+// serve are left out.
 const EXCLUDED = ["Senggigi (Lombok)", "Lembar (Lombok)", "Gili Gede"];
 const ORIGIN_ORDER = [
   "Padang Bai", "Sanur", "Serangan", "Benoa / Nusa Dua", "Kusamba",

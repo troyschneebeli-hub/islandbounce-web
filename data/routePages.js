@@ -2,10 +2,10 @@ import { joinList, plural, rangeText } from "@/lib/timetable";
 
 // Definitions + copy for the SEO route pages (/indonesia/routes/[slug]).
 // Anything numeric (departure counts, times, durations, operator names) is
-// computed from data/timetables.js at render time via `ctx`, so it can never
-// disagree with the timetable shown on the same page. Static copy below is
-// limited to things that are stable and true; prices are deliberately absent
-// until fares have actually been verified.
+// computed from data/sailings.js (the 12Go listings, the only sailings the site
+// shows) at render time via `ctx`, so it can never disagree with the timetable
+// shown on the same page. Static copy below is limited to things that are
+// stable and true, and doesn't name operators.
 
 export const BALI_MAINLAND = ["Padang Bai", "Benoa / Nusa Dua", "Serangan", "Sanur", "Kusamba"];
 const LOMBOK_PORTS = ["Bangsal (Lombok)"];
@@ -26,7 +26,7 @@ const BOOK_FAQ = {
 };
 
 const CHECKIN_TEXT =
-  "Eka Jaya asks passengers to check in an hour before departure. For other operators, check the time on your ticket.";
+  "The times on this page are guides taken from the booking site. Check-in is usually an hour before departure, but go by the time on your ticket.";
 
 const PLANNER_CTA = (to) => ({
   href: to ? `/indonesia?to=${encodeURIComponent(to)}` : "/indonesia",
@@ -89,7 +89,7 @@ export const ROUTE_PAGES = {
       },
       {
         q: "Which operators run boats from Gili Trawangan to Bali?",
-        a: `We list ${joinOps(c.operators)}. We add more operators as we get their timetables.`,
+        a: `We list ${joinOps(c.operators)}. These are the operators listed on the booking site when we last checked.`,
       },
       CANCEL_FAQ("Gili Trawangan", "Bali"),
       BOOK_FAQ,
@@ -148,7 +148,7 @@ export const ROUTE_PAGES = {
       },
       {
         q: "Which operators go from Bali to the Gili Islands?",
-        a: `We list ${joinOps(c.operators)}. We add more operators as we get their timetables.`,
+        a: `We list ${joinOps(c.operators)}. These are the operators listed on the booking site when we last checked.`,
       },
       {
         q: "Which Bali port is best for the Gilis?",
@@ -296,8 +296,8 @@ export const ROUTE_PAGES = {
       {
         heading: "Going straight from Nusa to the Gilis",
         paragraphs: [
-          "You don't have to go back to Bali first. A small number of fast boats run from Nusa Penida to the Gili Islands, so you can carry on from the cliffs to the beaches without a night on the mainland.",
-          "There are only a few departures a day, mostly in the morning, so check the times before you plan your day on Nusa Penida around one of them.",
+          "You don't have to go back to Bali first. Fast boats run from Nusa Penida to the Gili Islands, so you can carry on from the cliffs to the beaches without a night on the mainland.",
+          "Check the times above before you plan your last day on Nusa Penida around one of them.",
         ],
       },
       {
@@ -357,7 +357,7 @@ export const ROUTE_PAGES = {
       {
         heading: "Going straight from Lembongan to the Gilis",
         paragraphs: [
-          "You can cross from Nusa Lembongan to the Gili Islands without returning to Bali. Only a few boats a day make the crossing, mostly in the morning, so it's worth fixing the time before you plan the rest of your stay.",
+          "You can cross from Nusa Lembongan to the Gili Islands without returning to Bali. It's worth fixing your departure time before you plan the rest of your stay.",
         ],
       },
       {

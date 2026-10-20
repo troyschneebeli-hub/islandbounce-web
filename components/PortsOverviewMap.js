@@ -2,7 +2,9 @@
 
 import { useEffect, useRef, useState } from "react";
 import { BALI_PORTS, ISLAND_PORTS } from "@/data/ports";
-import { BOAT_ROUTES, genDepartures, fmtMins } from "@/data/planner";
+import { fmtMins } from "@/data/planner";
+import { SAILINGS } from "@/data/sailings";
+import { durationMins } from "@/lib/timetable";
 import { COLORS } from "@/lib/theme";
 import { loadGoogleMaps } from "@/components/AddressAutocomplete";
 
@@ -30,32 +32,20 @@ const REGION_LABEL = { bali: "Bali", nusa: "Nusa", "gili-lombok": "Gili / Lombok
 
 const ALL_PORTS = [...BALI_PORTS, ...ISLAND_PORTS];
 
-// For a Bali port: real destinations straight from BOAT_ROUTES.
-// For a Gili/Nusa/Lombok port: the reverse lookup — which Bali ports
-// actually have a route TO this one — since BOAT_ROUTES is only modeled
-// one direction (Bali port → destination). Crossing time is symmetric
-// either way, so the same genDepartures data is valid read backwards.
+// Every port you can sail to from this one, with the fastest crossing, taken from
+// the 12Go sailings (the only sailings the site shows).
 function getConnectionsFrom(port) {
-  if (port.region === "bali") {
-    const routes = BOAT_ROUTES[port.name];
-    if (!routes) return [];
-    return Object.keys(routes).map((destName) => {
-      const boats = genDepartures(port.name, destName, routes[destName]);
-      const fastest = boats.reduce((a, b) => (a.boatMin < b.boatMin ? a : b));
-      const destPort = ISLAND_PORTS.find((p) => p.name === destName);
-      return { name: destName, region: destPort?.region, boatMin: fastest.boatMin };
-    });
+  const fastest = new Map();
+  for (const s of SAILINGS) {
+    if (s.from !== port.name) continue;
+    const mins = durationMins(s.departs, s.arrives);
+    if (!fastest.has(s.to) || mins < fastest.get(s.to)) fastest.set(s.to, mins);
   }
-  const reachableFrom = [];
-  BALI_PORTS.forEach((baliPort) => {
-    const cfg = BOAT_ROUTES[baliPort.name]?.[port.name];
-    if (cfg) {
-      const boats = genDepartures(baliPort.name, port.name, cfg);
-      const fastest = boats.reduce((a, b) => (a.boatMin < b.boatMin ? a : b));
-      reachableFrom.push({ name: baliPort.name, region: "bali", boatMin: fastest.boatMin });
-    }
-  });
-  return reachableFrom;
+  return [...fastest.entries()].map(([name, boatMin]) => ({
+    name,
+    region: ALL_PORTS.find((p) => p.name === name)?.region,
+    boatMin,
+  }));
 }
 
 export default function PortsOverviewMap() {
@@ -179,7 +169,7 @@ export default function PortsOverviewMap() {
                 </div>
               )}
               <p style={{ fontSize: 10, opacity: 0.5, marginTop: 12, fontStyle: "italic" }}>
-                Boat times are estimated schedules for planning purposes — verify before booking.
+                Fastest crossings listed on the booking site. Times are guides, so confirm when you book.
               </p>
             </div>
           )}

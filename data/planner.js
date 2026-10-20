@@ -10,15 +10,17 @@ export const CHECKIN_BUFFER_MIN = 35;
 export const VILLA_AREAS = ["Kuta", "Seminyak", "Canggu", "Uluwatu", "Ubud", "Sanur", "Nusa Dua / Jimbaran"];
 
 export const DRIVE_TIMES = {
-  Kuta: { Sanur: 25, "Padang Bai": 47, Serangan: 25, Kusamba: 75, "Benoa / Nusa Dua": 25 },
-  Seminyak: { Sanur: 35, "Padang Bai": 55, Serangan: 35, Kusamba: 80, "Benoa / Nusa Dua": 30 },
-  Canggu: { Sanur: 45, "Padang Bai": 90, Serangan: 45, Kusamba: 100, "Benoa / Nusa Dua": 55 },
-  Uluwatu: { Sanur: 55, "Padang Bai": 100, Serangan: 50, Kusamba: 110, "Benoa / Nusa Dua": 25 },
-  Ubud: { Sanur: 50, "Padang Bai": 32, Serangan: 50, Kusamba: 40, "Benoa / Nusa Dua": 70 },
-  Sanur: { Sanur: 5, "Padang Bai": 55, Serangan: 20, Kusamba: 50, "Benoa / Nusa Dua": 30 },
-  "Nusa Dua / Jimbaran": { Sanur: 30, "Padang Bai": 60, Serangan: 30, Kusamba: 70, "Benoa / Nusa Dua": 15 },
+  Kuta: { Sanur: 25, "Padang Bai": 47, Serangan: 25, "Benoa / Nusa Dua": 25 },
+  Seminyak: { Sanur: 35, "Padang Bai": 55, Serangan: 35, "Benoa / Nusa Dua": 30 },
+  Canggu: { Sanur: 45, "Padang Bai": 90, Serangan: 45, "Benoa / Nusa Dua": 55 },
+  Uluwatu: { Sanur: 55, "Padang Bai": 100, Serangan: 50, "Benoa / Nusa Dua": 25 },
+  Ubud: { Sanur: 50, "Padang Bai": 32, Serangan: 50, "Benoa / Nusa Dua": 70 },
+  Sanur: { Sanur: 5, "Padang Bai": 55, Serangan: 20, "Benoa / Nusa Dua": 30 },
+  "Nusa Dua / Jimbaran": { Sanur: 30, "Padang Bai": 60, Serangan: 30, "Benoa / Nusa Dua": 15 },
 };
 
+// Only list pairs that have sailings in data/twelvego.js: the site shows 12Go
+// sailings only, so a pair without them would just show an empty card.
 // port -> destination -> boat leg options (a destination may have more than
 // one operator/route from the same port). Each entry is route config, not a
 // single fixed price/time — genDepartures() below expands this into every
@@ -42,7 +44,6 @@ export const BOAT_ROUTES = {
   },
   "Gili Meno": {
     "Padang Bai": { duration: 120, priceLow: 18, priceHigh: 30, count: 1 },
-    "Benoa / Nusa Dua": { duration: 200, priceLow: 30, priceHigh: 45, count: 1 },
     "Nusa Penida": { duration: 180, priceLow: 30, priceHigh: 45, count: 1 },
     "Nusa Lembongan": { duration: 175, priceLow: 30, priceHigh: 45, count: 1 },
   },
@@ -72,21 +73,14 @@ export const BOAT_ROUTES = {
     "Gili Air": { duration: 90, priceLow: 18, priceHigh: 30, count: 5 },
     "Gili Meno": { duration: 95, priceLow: 18, priceHigh: 30, count: 3 },
     "Bangsal (Lombok)": { duration: 100, priceLow: 20, priceHigh: 35, count: 3 },
-    "Senggigi (Lombok)": { duration: 100, priceLow: 20, priceHigh: 35, count: 1 },
-    "Lembar (Lombok)": { duration: 300, priceLow: 1, priceHigh: 3, count: 8, ferry: true },
     "Nusa Penida": { duration: 60, priceLow: 15, priceHigh: 25, count: 2 },
     "Nusa Lembongan": { duration: 40, priceLow: 20, priceHigh: 27, count: 4 },
   },
   Serangan: {
     "Gili Trawangan": { duration: 75, priceLow: 25, priceHigh: 40, count: 3 },
     "Gili Air": { duration: 75, priceLow: 25, priceHigh: 40, count: 3 },
-    "Gili Meno": { duration: 80, priceLow: 25, priceHigh: 40, count: 2 },
     "Bangsal (Lombok)": { duration: 150, priceLow: 25, priceHigh: 40, count: 3 },
-    "Gili Gede (SW Lombok)": { duration: 180, priceLow: 30, priceHigh: 45, count: 1 },
     "Nusa Penida": { duration: 60, priceLow: 12, priceHigh: 21, count: 6 },
-  },
-  Kusamba: {
-    "Nusa Penida": { duration: 15, priceLow: 5, priceHigh: 10, count: 6 },
   },
   "Benoa / Nusa Dua": {
     "Gili Trawangan": { duration: 120, priceLow: 30, priceHigh: 45, count: 2 },

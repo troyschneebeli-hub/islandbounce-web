@@ -45,7 +45,7 @@ export default function CoverPage() {
         <div style={{ maxWidth: 780, margin: "0 auto" }} className="grid grid-cols-1 sm:grid-cols-3 gap-6">
           {[
             { n: "01", title: "Pick a spot", blurb: "Where you're staying, where you're headed." },
-            { n: "02", title: "We compare", blurb: "Real timetables from operators and booking platforms." },
+            { n: "02", title: "We compare", blurb: "Departure times and fares from the booking site, side by side." },
             { n: "03", title: "You book", blurb: "Through a trusted booking platform, at no extra cost to you." },
           ].map((s) => (
             <div key={s.n} style={{ textAlign: "center" }}>

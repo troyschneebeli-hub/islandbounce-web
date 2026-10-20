@@ -37,7 +37,7 @@ export default function RoutesIndex() {
             ))}
           </div>
           <p style={{ fontSize: 13, color: COLORS.ink, opacity: 0.65, textAlign: "center", maxWidth: 560, margin: "0 auto" }}>
-            More route pages are added as we verify each operator&apos;s timetable.
+            Times on every route are guides taken from the booking site, refreshed about once a month.
           </p>
           <AllRoutesDirectory />
         </div>
