@@ -36,15 +36,17 @@ function notesFor(s) {
 
 // One plain table per from -> to pair, rendered on the server so search engines
 // see every row. Confirmed sailings (operator timetable + booking site) come first,
-// then the booking-site-only "typical" ones. Only the time chips and Book buttons
-// are client components: they read the date and travellers from the booking box,
-// so this must sit inside RouteBookingProvider.
-export default function RouteTimetable({ groups, scanText }) {
+// then the booking-site-only "typical" ones. `show` limits it to one of the two
+// ("confirmed" / "typical"), so the page can keep the typical list collapsed.
+// Only the time chips and Book buttons are client components: they read the date
+// and travellers from the booking box, so this must sit inside RouteBookingProvider.
+export default function RouteTimetable({ groups, checkedText, show = "all" }) {
   return (
     <div>
       {groups.map((g) => {
-        const confirmed = g.sailings.filter(isConfirmed);
-        const typical = g.sailings.filter((s) => !isConfirmed(s));
+        const confirmed = show === "typical" ? [] : g.sailings.filter(isConfirmed);
+        const typical = show === "confirmed" ? [] : g.sailings.filter((s) => !isConfirmed(s));
+        if (!confirmed.length && !typical.length) return null;
         // "Fastest" only goes to confirmed sailings, so an odd listing can't take the highlight.
         const confDurs = knownDurations(confirmed);
         const fastest = confDurs.length ? Math.min(...confDurs) : null;
@@ -56,7 +58,7 @@ export default function RouteTimetable({ groups, scanText }) {
             head: (
               <>
                 <span style={badge(COLORS.sea, "white")}>Confirmed</span>
-                On the operator&apos;s own timetable and the booking site{scanText ? `, checked ${scanText}` : ""}
+                On the operator&apos;s own timetable and the booking site{checkedText ? `, ${checkedText}` : ""}
               </>
             ),
           },

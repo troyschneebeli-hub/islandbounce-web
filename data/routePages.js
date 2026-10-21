@@ -53,7 +53,7 @@ const CONFIRMED_FAQ = (from, to, c) => ({
   q: `Which ${from} to ${to} boats are confirmed?`,
   a:
     c.confirmedCount
-      ? `${plural(c.confirmedCount, "departure")} with ${joinOps(c.confirmedOperators)} appeared on both the operator's own timetable and the booking site in our check of ${c.scanText}. They're marked Confirmed in the table above. The rest are listed on the booking site only.`
+      ? `${plural(c.confirmedCount, "departure")} with ${joinOps(c.confirmedOperators)} appeared on both the operator's own timetable and the booking site (${c.scanText}). They're marked Confirmed in the table above. The rest are listed on the booking site only.`
       : "None yet. Every departure above is listed on the booking site only, so confirm with the operator before you plan around one boat.",
 });
 

@@ -24,11 +24,16 @@ const PORTS = {
   "gili-trawangan": "Gili Trawangan", "gili-air": "Gili Air", "gili-meno": "Gili Meno",
   "bangsal": "Bangsal (Lombok)", "nusa-penida": "Nusa Penida", "nusa-lembongan": "Nusa Lembongan",
 };
-// 12Go spelling -> the name we already use for the same company
+// 12Go spelling -> the name we already use for the same company (also fixes names 12Go lists
+// without their apostrophe or space). Keep in sync with OPS in build-confirmed.mjs.
 const OPS = {
   "Ekajaya Fast Ferry": "Eka Jaya Fast Boat", "BlueWater Express": "Blue Water Express",
   "Gili Gili Fastboat": "Gili Gili Fast Boat", "Gili Getaway": "Gili Getaway",
+  "Dcamel Fast Ferry": "D’Camel Fast Ferry", "DStars Fast Ferry": "D’Stars Fast Ferry",
+  "Sanjaya Fastboat": "Sanjaya Fast Boat", "The Angkal Fastboat": "The Angkal Fast Boat",
 };
+// 12Go listing types that are a boat plus a road transfer (a package, not a sailing).
+const ROAD_TYPES = /taxi|van|bus/i;
 const CAPTURED = "2026-10-15";
 const SOURCE = "12Go booking page (listings for 20 Oct 2026, assumed daily)";
 
@@ -101,25 +106,33 @@ const asTime = (v) => (typeof v === "number" ? hhmm(Math.round(v * 1440)) : v ? 
 
 // ---- build --------------------------------------------------------------------------------
 
-const out = [], seen = new Set();
+const out = [], seen = new Set(), ids = new Set();
 let skipped = 0;
 for (const r of readSheet(SRC, "Master Routes").slice(1)) {
-  let [frm, to, op, cls, cat, , dep, arr, , price] = r;
+  let [frm, to, op, cls, cat, type, dep, arr, , price] = r;
   dep = asTime(dep); arr = asTime(arr);
   if (cat !== "Scheduled boat" || !dep || !arr || !op || String(op).startsWith("(")) continue;
+  if (ROAD_TYPES.test(String(type || ""))) continue;
   if (mins(dep) < 5 * 60) { skipped++; continue; } // 12Go lists a few 01:30 entries that look like time-zone slips
   op = OPS[op] || op;
   const a = PORTS[frm], b = PORTS[to];
   if (!a || !b) throw new Error(`Unknown port slug in row: ${frm} -> ${to}`);
-  const k = [key(op), a, b, dep].join("|");
+  // Listings at the same time that differ by class, arrival or fare are separate sailings; only
+  // exact repeats are dropped. Later variants get "-2", "-3" ... on the id.
+  price = price == null || price === "" ? null : Math.round(Number(price));
+  const k = [key(op), a, b, dep, cls || "", arr, price].join("|");
   if (seen.has(k)) continue;
   seen.add(k);
+  const base = `12go-${slugify(op)}-${slugify(a)}-${slugify(b)}-${dep.replace(":", "-")}`;
+  let id = base;
+  for (let n = 2; ids.has(id); n++) id = `${base}-${n}`;
+  ids.add(id);
   out.push({
-    id: `12go-${slugify(op)}-${slugify(a)}-${slugify(b)}-${dep.replace(":", "-")}`,
+    id,
     operator: op, from: a, to: b, checkIn: hhmm(mins(dep) - 60), departs: dep, arrives: arr,
     via: [], kind: "direct", season: "Daily (assumed)", validFrom: null, validTo: null,
     source: SOURCE, verified: CAPTURED, flag: null, confidence: "unconfirmed",
-    note: "From a booking-site listing", boat: cls || null, price: price == null || price === "" ? null : Math.round(Number(price)),
+    note: "From a booking-site listing", boat: cls || null, price,
   });
 }
 const cmp = (x, y) => (x < y ? -1 : x > y ? 1 : 0);

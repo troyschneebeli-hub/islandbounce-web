@@ -7,7 +7,7 @@ import { CONFIRMED_SCAN } from "@/data/confirmed";
 import { ROUTE_PAGES, ROUTE_SLUGS } from "@/data/routePages";
 import { BALI_PORTS, ISLAND_PORTS } from "@/data/ports";
 import { bookingLink } from "@/lib/bookingLink";
-import { selectSailings, groupByPair, summarize, routeContext, lastChecked, formatDate, isStale, fmtDuration, shortPort, durationMins, joinList, rangeText } from "@/lib/timetable";
+import { selectSailings, groupByPair, summarize, routeContext, lastChecked, isStale, fmtDuration, shortPort, durationMins, joinList, rangeText } from "@/lib/timetable";
 import PlacePhoto from "@/components/PlacePhoto";
 import WaveDivider from "@/components/WaveDivider";
 import RouteTimetable from "@/components/RouteTimetable";
@@ -87,7 +87,8 @@ export default function RoutePage({ params }) {
   const checked = lastChecked([...active, ...upcoming]);
   const stale = isStale(checked, new Date().toISOString().slice(0, 10));
   const confirmedActive = active.filter((s) => s.confidence === "confirmed");
-  const ctx = routeContext(route, active, CONFIRMED_SCAN.text);
+  const ctx = routeContext(route, active, CONFIRMED_SCAN.checkedText);
+  const typicalCount = summary.count - ctx.confirmedCount;
   const lead = hasData
     ? route.lead(ctx)
     : "We're adding a current timetable for this route. Check back soon, or compare options on 12Go below.";
@@ -158,8 +159,8 @@ export default function RoutePage({ params }) {
   const slowestMin = pairMaxes.length ? Math.max(...pairMaxes) : null;
   const summaryCard = hasData
     ? [
-        { n: summary.count, label: summary.count === 1 ? "departure a day" : "departures a day" },
-        { n: ctx.confirmedCount, label: "confirmed" },
+        // One tile, so the two numbers read together: "4 confirmed / of 10 departures".
+        { n: `${ctx.confirmedCount} confirmed`, label: `of ${summary.count} ${summary.count === 1 ? "departure" : "departures"}` },
         { n: `${summary.earliest}–${summary.latest}`, label: "earliest to latest" },
         { n: summary.operators.length, label: summary.operators.length === 1 ? "operator" : "operators" },
         { n: rangeText(fastestMin, slowestMin), label: "crossing time" },
@@ -283,9 +284,10 @@ export default function RoutePage({ params }) {
             )}
             <p style={{ ...para, fontSize: 13, opacity: 0.7 }}>
               {ctx.confirmedCount > 0
-                ? `Departures marked Confirmed appeared on both the operator's own timetable and the booking site in our 7-day check (${CONFIRMED_SCAN.text}). Typical departures are listed on the booking site only. `
+                ? `Departures marked Confirmed appeared on both the operator's own timetable and the booking site: ${CONFIRMED_SCAN.checkedText}. `
                 : ""}
-              Times and fares are guides{checked ? `, last checked ${formatDate(checked)}` : ""}. Fares are the lowest adult price listed. Check in
+              Typical departures are booking-site listings that we haven&apos;t checked against the operator&apos;s timetable yet. Times and fares
+              are guides. Fares are the lowest adult price listed. Check in
               at the time on your ticket, usually up to an hour before departure. Operators change schedules and prices, so confirm on the booking page
               when you book.
             </p>
@@ -305,21 +307,27 @@ export default function RoutePage({ params }) {
               and we&apos;ll fix it.
             </p>
             {hasData ? (
-              // Closed by default but still in the HTML, so search engines can read the times.
-              <details style={{ border: `1px solid ${COLORS.foamLine}`, borderRadius: 12, padding: "10px 14px" }}>
-                <summary style={{ cursor: "pointer", fontWeight: 700, fontSize: 14.5, color: COLORS.sea }}>
-                  See departure times{ctx.confirmedCount > 0 ? ` (${ctx.confirmedCount} confirmed)` : ""}
-                </summary>
-                <div style={{ marginTop: 12 }}>
-                  <RouteTimetable groups={groups} scanText={CONFIRMED_SCAN.text} />
-                  {summary.operators.length <= 2 && (
-                    <p style={{ ...para, fontSize: 12.5, opacity: 0.75, marginTop: 10 }}>
-                      This table lists the operators the booking site showed when we last checked. Others may run this route too, so
-                      use the booking page below to see every option for your date.
-                    </p>
-                  )}
-                </div>
-              </details>
+              <>
+                {/* Confirmed departures are always open, so the times are in the visible HTML. */}
+                {ctx.confirmedCount > 0 && <RouteTimetable groups={groups} checkedText={CONFIRMED_SCAN.checkedText} show="confirmed" />}
+                {typicalCount > 0 && (
+                  // Closed by default but still in the HTML.
+                  <details style={{ border: `1px solid ${COLORS.foamLine}`, borderRadius: 12, padding: "10px 14px" }}>
+                    <summary style={{ cursor: "pointer", fontWeight: 700, fontSize: 14.5, color: COLORS.sea }}>
+                      See departure times ({typicalCount} typical {typicalCount === 1 ? "departure" : "departures"} from the booking site)
+                    </summary>
+                    <div style={{ marginTop: 12 }}>
+                      <RouteTimetable groups={groups} show="typical" />
+                    </div>
+                  </details>
+                )}
+                {summary.operators.length <= 2 && (
+                  <p style={{ ...para, fontSize: 12.5, opacity: 0.75, marginTop: 10 }}>
+                    These tables list the operators we found when we checked. Others may run this route too, so
+                    use the booking page below to see every option for your date.
+                  </p>
+                )}
+              </>
             ) : (
               <p style={para}>There&apos;s nothing to show yet. Check back soon, or compare options on 12Go below.</p>
             )}
@@ -418,8 +426,8 @@ export default function RoutePage({ params }) {
           </section>
 
           <p style={{ fontSize: 12, color: COLORS.ink, opacity: 0.6, lineHeight: 1.6 }}>
-            How we compile this: every week we check seven days of departures on the booking site against each operator&apos;s own timetable. Sailings
-            that match are marked Confirmed. The other listings come from the booking site and are refreshed about once a month.
+            How we compile this: We check seven days of departures on the booking site against each operator&apos;s own timetable. Sailings that
+            match are marked Confirmed.
           </p>        </div>
       </div>
     </div>
