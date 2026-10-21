@@ -21,10 +21,6 @@ export const metadata = {
 const LISTED_OPERATORS = new Set(SAILINGS.map((s) => s.operator)).size;
 const LISTED_ROUTES = new Set(SAILINGS.map((s) => `${s.from}|${s.to}`)).size;
 
-const TOOLS = [
-  { href: "/indonesia/ports", title: "All Ports", blurb: "Every harbor across Bali, the Gilis, Nusa & Lombok." },
-];
-
 const FAQS = [
   {
     q: "Do I need to book my ferry in advance?",
@@ -79,6 +75,16 @@ export default function IndonesiaHub() {
           <TripPlanner />
         </div>
 
+        {/* Short pointer to the ports guide, directly under the planner. */}
+        <div style={{ maxWidth: 440, margin: "20px auto 0" }}>
+          <PoppyCard
+            href="/indonesia/ports"
+            title="Which port should I use?"
+            blurb="Every harbor across Bali, the Gilis, Nusa & Lombok."
+            width="100%"
+          />
+        </div>
+
         <div style={{ maxWidth: 700, margin: "0 auto", paddingBottom: 34, textAlign: "center" }}>
           {/* Quick stats — real counts from the site's own data, not invented numbers. */}
           <div className="flex flex-wrap justify-center gap-x-10 gap-y-3" style={{ marginTop: 30 }}>
@@ -103,20 +109,9 @@ export default function IndonesiaHub() {
         </div>
       </section>
 
-      {/* Other tools. The Trip Planner itself now lives in the hero above. */}
-      <section className="relative left-1/2 right-1/2 -mx-[50vw] w-screen" style={{ background: "white", padding: "28px 20px 8px" }}>
-        <div style={{ maxWidth: 900, margin: "0 auto" }}>
-          <div style={{ maxWidth: 440, margin: "0 auto" }}>
-            {TOOLS.map((t) => (
-              <PoppyCard key={t.href} href={t.href} title={t.title} blurb={t.blurb} width="100%" />
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* Popular routes — the actual target-keyword headings, right at the
           top of the page for both visitors and Google, not buried lower down. */}
-      <section className="relative left-1/2 right-1/2 -mx-[50vw] w-screen" style={{ background: "white", padding: "8px 20px 32px" }}>
+      <section className="relative left-1/2 right-1/2 -mx-[50vw] w-screen" style={{ background: "white", padding: "28px 20px 32px" }}>
         <div style={{ maxWidth: 900, margin: "0 auto", textAlign: "center" }}>
           <h2 style={{ fontFamily: "'Big Shoulders Display', sans-serif", fontWeight: 700, fontSize: 20, color: COLORS.sea, marginBottom: 14 }}>
             Popular routes
