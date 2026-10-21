@@ -39,6 +39,7 @@ function getConnectionsFrom(port) {
   for (const s of SAILINGS) {
     if (s.from !== port.name) continue;
     const mins = durationMins(s.departs, s.arrives);
+    if (mins == null) continue;
     if (!fastest.has(s.to) || mins < fastest.get(s.to)) fastest.set(s.to, mins);
   }
   return [...fastest.entries()].map(([name, boatMin]) => ({

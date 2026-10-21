@@ -130,6 +130,25 @@ export function BookingBox() {
   );
 }
 
+// A departure time as a chip that opens the route on the booking page with the chosen date and
+// travellers. Never a per-sailing link: the booking site has no stable link to one sailing.
+/** @param {{ from: string, to: string, time: string, operator: string, listedAt?: string | null }} props */
+export function TimeChip({ from, to, time, operator, listedAt }) {
+  const { linkFor } = useBooking();
+  const listed = listedAt && listedAt !== time ? ` (listed there at ${listedAt})` : "";
+  return (
+    <a
+      href={linkFor(from, to)}
+      target="_blank"
+      rel="sponsored noopener noreferrer"
+      title={`Opens ${short(from)} to ${short(to)} on the booking page. Look for the ${time} ${operator} sailing${listed}.`}
+      style={{ display: "inline-block", fontWeight: 700, color: COLORS.sea, background: COLORS.foam, border: `1px solid ${COLORS.foamLine}`, borderRadius: 999, padding: "2px 9px", textDecoration: "none", whiteSpace: "nowrap" }}
+    >
+      {time}
+    </a>
+  );
+}
+
 /** @param {{ from: string, to: string, time: string, operator: string }} props */
 export function RowBookButton({ from, to, time, operator }) {
   const { linkFor } = useBooking();

@@ -3,10 +3,11 @@ import { notFound } from "next/navigation";
 import { COLORS } from "@/lib/theme";
 import { SITE_URL, CONTACT_EMAIL } from "@/lib/site";
 import { SAILINGS } from "@/data/sailings";
+import { CONFIRMED_SCAN } from "@/data/confirmed";
 import { ROUTE_PAGES, ROUTE_SLUGS } from "@/data/routePages";
 import { BALI_PORTS, ISLAND_PORTS } from "@/data/ports";
 import { bookingLink } from "@/lib/bookingLink";
-import { selectSailings, groupByPair, summarize, describeDurations, lastChecked, formatDate, isStale, fmtDuration, shortPort } from "@/lib/timetable";
+import { selectSailings, groupByPair, summarize, routeContext, lastChecked, formatDate, isStale, fmtDuration, shortPort, durationMins, joinList, rangeText } from "@/lib/timetable";
 import PlacePhoto from "@/components/PlacePhoto";
 import WaveDivider from "@/components/WaveDivider";
 import RouteTimetable from "@/components/RouteTimetable";
@@ -30,6 +31,18 @@ const ROUTE_PHOTOS = {
   "sanur-to-gili-trawangan": { src: "/images/indonesia/sanur.jpg", alt: "Beachfront pavilions on Sanur beach in Bali" },
   "sanur-to-gili-air": { src: "/images/indonesia/gili-air.jpg", alt: "Aerial panorama of Gili Air and its turquoise shallows" },
   "bali-to-lombok-ferry": { src: "/images/indonesia/lombok.jpg", alt: "A turquoise bay and pale sand beach on the Lombok coast" },
+  "sanur-to-nusa-penida": { src: "/images/indonesia/nusa-penida.jpg", alt: "Limestone cliffs and turquoise water on Nusa Penida" },
+  "sanur-to-nusa-lembongan": { src: "/images/indonesia/lembongan.jpg", alt: "The yellow suspension bridge between Nusa Lembongan and Nusa Ceningan" },
+  "bali-to-nusa-penida": { src: "/images/indonesia/nusa-penida-cliffs.jpg", alt: "Sea cliffs on the coast of Nusa Penida" },
+  "bali-to-nusa-lembongan": { src: "/images/indonesia/lembongan.jpg", alt: "The yellow suspension bridge between Nusa Lembongan and Nusa Ceningan" },
+  "nusa-lembongan-to-bali": { src: "/images/indonesia/sanur.jpg", alt: "Beachfront pavilions on Sanur beach in Bali" },
+  "nusa-penida-to-bali": { src: "/images/indonesia/nusa-penida-cliffs.jpg", alt: "Sea cliffs on the coast of Nusa Penida" },
+  "gili-islands-to-nusa-penida": { src: "/images/indonesia/nusa-penida.jpg", alt: "Limestone cliffs and turquoise water on Nusa Penida" },
+  "gili-islands-to-nusa-lembongan": { src: "/images/indonesia/lembongan.jpg", alt: "The yellow suspension bridge between Nusa Lembongan and Nusa Ceningan" },
+  "lombok-to-bali": { src: "/images/indonesia/lombok.jpg", alt: "A turquoise bay and pale sand beach on the Lombok coast" },
+  "lombok-to-nusa-islands": { src: "/images/indonesia/lombok.jpg", alt: "A turquoise bay and pale sand beach on the Lombok coast" },
+  "nusa-islands-to-lombok": { src: "/images/indonesia/lombok.jpg", alt: "A turquoise bay and pale sand beach on the Lombok coast" },
+  "gili-meno-to-bali": { src: "/images/indonesia/meno.jpg", alt: "Aerial view of Gili Meno, its white beach and its inland salt lake" },
 };
 
 const ALL_PORTS = [...BALI_PORTS, ...ISLAND_PORTS];
@@ -73,7 +86,8 @@ export default function RoutePage({ params }) {
   const upcomingGroups = groupByPair(upcoming);
   const checked = lastChecked([...active, ...upcoming]);
   const stale = isStale(checked, new Date().toISOString().slice(0, 10));
-  const ctx = { ...summary, durations: hasData ? describeDurations(summary, route) : "" };
+  const confirmedActive = active.filter((s) => s.confidence === "confirmed");
+  const ctx = routeContext(route, active, CONFIRMED_SCAN.text);
   const lead = hasData
     ? route.lead(ctx)
     : "We're adding a current timetable for this route. Check back soon, or compare options on 12Go below.";
@@ -96,14 +110,39 @@ export default function RoutePage({ params }) {
         mainEntity: faqs.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })),
       }
     : null;
-  const jsonLd = [breadcrumbLd, faqLd].filter(Boolean);
+  // Trip data for confirmed sailings only; the 12Go-only listings aren't checked enough to mark up.
+  // Times are Bali/Lombok local time (WITA, UTC+8).
+  const wita = (t) => `${t}:00+08:00`;
+  const tripsLd = confirmedActive.length
+    ? {
+        "@context": "https://schema.org",
+        "@type": "ItemList",
+        name: `${route.name} confirmed fast boat departures`,
+        itemListElement: confirmedActive.map((s, i) => ({
+          "@type": "ListItem",
+          position: i + 1,
+          item: {
+            "@type": "BoatTrip",
+            name: `${s.operator}: ${shortPort(s.from)} to ${shortPort(s.to)}, ${s.departs}`,
+            provider: { "@type": "Organization", name: s.operator },
+            departureBoatTerminal: { "@type": "BoatTerminal", name: s.from },
+            arrivalBoatTerminal: { "@type": "BoatTerminal", name: s.to },
+            departureTime: wita(s.departs),
+            ...(s.arrives ? { arrivalTime: wita(s.arrives) } : {}),
+          },
+        })),
+      }
+    : null;
+  const jsonLd = [breadcrumbLd, faqLd, tripsLd].filter(Boolean);
 
   // Summary strip and booking box: cheapest fare and fastest crossing across
   // every port pair on the page, plus each pair's own lowest fare for the picker.
   const minOf = (nums) => (nums.length ? Math.min(...nums) : null);
   const priced = (list) => list.map((s) => s.price).filter((p) => p != null);
   const lowestPrice = minOf(priced(active));
-  const fastestMin = hasData ? Math.min(...summary.pairs.map((p) => p.min)) : null;
+  const pairMins = summary.pairs.map((p) => p.min).filter((m) => m != null);
+  const pairMaxes = summary.pairs.map((p) => p.max).filter((m) => m != null);
+  const fastestMin = pairMins.length ? Math.min(...pairMins) : null;
   const stats = hasData
     ? [
         ...(lowestPrice != null ? [{ n: `A$${lowestPrice}`, label: "from (adult)" }] : []),
@@ -113,6 +152,46 @@ export default function RoutePage({ params }) {
       ]
     : [];
   const bookingPairs = groups.map((g) => ({ from: g.from, to: g.to, minPrice: minOf(priced(g.sailings)) }));
+
+  // Summary card for "Typical departures". The 12Go listings are one day's
+  // capture assumed to run daily, so the sailing count is a typical day.
+  const slowestMin = pairMaxes.length ? Math.max(...pairMaxes) : null;
+  const summaryCard = hasData
+    ? [
+        { n: summary.count, label: summary.count === 1 ? "departure a day" : "departures a day" },
+        { n: ctx.confirmedCount, label: "confirmed" },
+        { n: `${summary.earliest}–${summary.latest}`, label: "earliest to latest" },
+        { n: summary.operators.length, label: summary.operators.length === 1 ? "operator" : "operators" },
+        { n: rangeText(fastestMin, slowestMin), label: "crossing time" },
+        ...(lowestPrice != null ? [{ n: `From A$${lowestPrice}`, label: "lowest adult fare" }] : []),
+      ]
+    : [];
+
+  // "Our pick": fastest, cheapest and earliest/latest, all computed from the
+  // listed sailings. Ties list every operator that matches.
+  const multiPair = summary.pairs.length > 1;
+  const where = (s) => (multiPair ? ` · ${shortPort(s.from)} → ${shortPort(s.to)}` : "");
+  const opsFor = (list) => joinList([...new Set(list.map((s) => s.operator))]);
+  const pickRows = [];
+  if (hasData) {
+    // Fastest comes from confirmed sailings when there are any, so one odd listing can't win it.
+    const basis = confirmedActive.length ? confirmedActive : active;
+    const basisDurs = basis.map((s) => durationMins(s.departs, s.arrives)).filter((d) => d != null);
+    const fastestPick = basisDurs.length ? Math.min(...basisDurs) : null;
+    const fastest = basis.filter((s) => durationMins(s.departs, s.arrives) === fastestPick);
+    if (fastest.length) pickRows.push({ label: "Fastest", value: `${opsFor(fastest)}, ${fmtDuration(fastestPick)}`, note: where(fastest[0]) });
+    if (lowestPrice != null) {
+      const cheapest = active.filter((s) => s.price === lowestPrice);
+      pickRows.push({ label: "Cheapest", value: `${opsFor(cheapest)}, from A$${lowestPrice}`, note: where(cheapest[0]) });
+    }
+    const first = active.filter((s) => s.departs === summary.earliest);
+    const last = active.filter((s) => s.departs === summary.latest);
+    pickRows.push({
+      label: "Earliest / latest departure",
+      value: `${summary.earliest} (${opsFor(first)}) / ${summary.latest} (${opsFor(last)})`,
+      note: "",
+    });
+  }
 
   const related = route.related.map((slug) => ROUTE_PAGES[slug]).filter(Boolean);
 
@@ -157,11 +236,57 @@ export default function RoutePage({ params }) {
             </div>
           )}
           {hasData && <BookingBox />}
+          {pickRows.length > 0 && (
+            <section style={{ marginBottom: 32, border: `1px solid ${COLORS.foamLine}`, borderRadius: 14, padding: "16px 18px", background: COLORS.foam }}>
+              <h2 style={{ ...h2, fontSize: 20, marginBottom: 10 }}>Our pick</h2>
+              <dl style={{ margin: 0 }}>
+                {pickRows.map((r, i) => (
+                  <div
+                    key={r.label}
+                    className="flex flex-col sm:flex-row sm:gap-4"
+                    style={{ padding: "8px 0", borderTop: i === 0 ? "none" : `1px solid ${COLORS.foamLine}` }}
+                  >
+                    <dt style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 11, color: COLORS.skyDeep, letterSpacing: 0.5, minWidth: 190, paddingTop: 2 }}>
+                      {r.label.toUpperCase()}
+                    </dt>
+                    <dd style={{ margin: 0, fontSize: 14.5, color: COLORS.ink, fontWeight: 600 }}>
+                      {r.value}
+                      {r.note && <span style={{ fontWeight: 400, opacity: 0.65, fontSize: 13 }}>{r.note}</span>}
+                    </dd>
+                  </div>
+                ))}
+              </dl>
+              {route.ourPick && <p style={{ ...para, marginTop: 10, marginBottom: 0 }}>{route.ourPick}</p>}
+            </section>
+          )}
           <section style={{ marginBottom: 40 }}>
-            <h2 style={h2}>{route.name} fast boat times</h2>
+            <h2 style={h2}>Typical departures</h2>
+            <p style={{ ...para, fontWeight: 600 }}>Times and prices change by day. Choose your date to see what&apos;s available.</p>
+            {summaryCard.length > 0 && (
+              <div style={{ border: `1px solid ${COLORS.foamLine}`, borderRadius: 14, padding: "14px 16px", margin: "12px 0 16px", background: "white" }}>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-y-3">
+                  {summaryCard.map((s) => (
+                    <div key={s.label} style={{ textAlign: "center", padding: "0 6px" }}>
+                      <div style={{ fontFamily: "'Big Shoulders Display', sans-serif", fontWeight: 800, fontSize: 21, color: COLORS.seaDeep, lineHeight: 1.15 }}>{s.n}</div>
+                      <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, color: COLORS.skyDeep, letterSpacing: 0.5, marginTop: 2 }}>{s.label}</div>
+                    </div>
+                  ))}
+                </div>
+                <ul className="flex flex-wrap gap-2" style={{ listStyle: "none", padding: 0, margin: "14px 0 0", justifyContent: "center" }} aria-label="Operators">
+                  {summary.operators.map((op) => (
+                    <li key={op} style={{ fontSize: 12, fontWeight: 600, color: COLORS.sea, background: COLORS.foam, border: `1px solid ${COLORS.foamLine}`, borderRadius: 999, padding: "3px 10px" }}>
+                      {op}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
             <p style={{ ...para, fontSize: 13, opacity: 0.7 }}>
-              Times and fares are guides taken from the booking site{checked ? ` and were last checked ${formatDate(checked)}` : ""}. Fares are the
-              lowest adult price listed. Please check in 1 hour before departure. Operators change schedules and prices, so confirm on the booking page
+              {ctx.confirmedCount > 0
+                ? `Departures marked Confirmed appeared on both the operator's own timetable and the booking site in our 7-day check (${CONFIRMED_SCAN.text}). Typical departures are listed on the booking site only. `
+                : ""}
+              Times and fares are guides{checked ? `, last checked ${formatDate(checked)}` : ""}. Fares are the lowest adult price listed. Check in
+              at the time on your ticket, usually up to an hour before departure. Operators change schedules and prices, so confirm on the booking page
               when you book.
             </p>
             {stale && (
@@ -180,15 +305,21 @@ export default function RoutePage({ params }) {
               and we&apos;ll fix it.
             </p>
             {hasData ? (
-              <>
-                <RouteTimetable groups={groups} />
-                {summary.operators.length <= 2 && (
-                  <p style={{ ...para, fontSize: 12.5, opacity: 0.75, marginTop: 10 }}>
-                    This table lists the operators the booking site showed when we last checked. Others may run this route too, so
-                    use the booking page below to see every option for your date.
-                  </p>
-                )}
-              </>
+              // Closed by default but still in the HTML, so search engines can read the times.
+              <details style={{ border: `1px solid ${COLORS.foamLine}`, borderRadius: 12, padding: "10px 14px" }}>
+                <summary style={{ cursor: "pointer", fontWeight: 700, fontSize: 14.5, color: COLORS.sea }}>
+                  See departure times{ctx.confirmedCount > 0 ? ` (${ctx.confirmedCount} confirmed)` : ""}
+                </summary>
+                <div style={{ marginTop: 12 }}>
+                  <RouteTimetable groups={groups} scanText={CONFIRMED_SCAN.text} />
+                  {summary.operators.length <= 2 && (
+                    <p style={{ ...para, fontSize: 12.5, opacity: 0.75, marginTop: 10 }}>
+                      This table lists the operators the booking site showed when we last checked. Others may run this route too, so
+                      use the booking page below to see every option for your date.
+                    </p>
+                  )}
+                </div>
+              </details>
             ) : (
               <p style={para}>There&apos;s nothing to show yet. Check back soon, or compare options on 12Go below.</p>
             )}
@@ -287,7 +418,8 @@ export default function RoutePage({ params }) {
           </section>
 
           <p style={{ fontSize: 12, color: COLORS.ink, opacity: 0.6, lineHeight: 1.6 }}>
-            How we compile this: we read the departures listed on the booking site, date-stamp them, and refresh them about once a month.
+            How we compile this: every week we check seven days of departures on the booking site against each operator&apos;s own timetable. Sailings
+            that match are marked Confirmed. The other listings come from the booking site and are refreshed about once a month.
           </p>        </div>
       </div>
     </div>

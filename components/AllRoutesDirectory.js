@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { COLORS } from "@/lib/theme";
 import { SAILINGS } from "@/data/sailings";
-import { ROUTE_PAGES, ROUTE_SLUGS } from "@/data/routePages";
+import { routePageFor } from "@/data/routePages";
 import { bookingLink } from "@/lib/bookingLink";
 
 // Every route pair the 12Go sailings cover, grouped by where it leaves from.
@@ -21,9 +21,9 @@ const DEST_ORDER = [
   "Padang Bai", "Sanur", "Serangan", "Benoa / Nusa Dua", "Kusamba",
 ];
 
-function pageFor(from, to) {
-  return ROUTE_SLUGS.map((s) => ROUTE_PAGES[s]).find((r) => r.fromPorts.includes(from) && r.toPorts.includes(to));
-}
+// The most specific route page for the pair, e.g. Sanur -> Gili Air links to "Sanur to Gili Air",
+// not "Bali to the Gili Islands".
+const pageFor = routePageFor;
 
 export function allRoutePairs() {
   const seen = new Map();

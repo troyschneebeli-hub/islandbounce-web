@@ -6,6 +6,8 @@ import { joinList, plural, rangeText } from "@/lib/timetable";
 // shows) at render time via `ctx`, so it can never disagree with the timetable
 // shown on the same page. Static copy below is limited to things that are
 // stable and true, and doesn't name operators.
+// `ourPick` is an optional hand-written editorial note shown under the computed
+// "Our pick" block on the route page. Leave it "" to show nothing.
 
 export const BALI_MAINLAND = ["Padang Bai", "Benoa / Nusa Dua", "Serangan", "Sanur", "Kusamba"];
 const LOMBOK_PORTS = ["Bangsal (Lombok)"];
@@ -39,6 +41,27 @@ function joinOps(list, max = 5) {
   return `${list.slice(0, max).join(", ")} and ${list.length - max} more operators`;
 }
 
+// "12 of them are confirmed ..." sentence for the intro, from the confirmed sailings (data/confirmed.js).
+const CONFIRMED_LINE = (c) =>
+  c.confirmedCount === 0
+    ? ""
+    : c.confirmedCount === c.count
+      ? ` All of them appeared on the operator's own timetable as well as the booking site in our latest check.`
+      : ` ${c.confirmedCount} of them appeared on the operator's own timetable as well as the booking site in our latest check.`;
+
+const CONFIRMED_FAQ = (from, to, c) => ({
+  q: `Which ${from} to ${to} boats are confirmed?`,
+  a:
+    c.confirmedCount
+      ? `${plural(c.confirmedCount, "departure")} with ${joinOps(c.confirmedOperators)} appeared on both the operator's own timetable and the booking site in our check of ${c.scanText}. They're marked Confirmed in the table above. The rest are listed on the booking site only.`
+      : "None yet. Every departure above is listed on the booking site only, so confirm with the operator before you plan around one boat.",
+});
+
+const LEMBONGAN_LANDING =
+  "Many boats to and from Nusa Lembongan land on the beach rather than at a pier, so you may step off into shallow water. Wear sandals and pack so your bag can be carried.";
+const PENIDA_HARBOURS =
+  "Nusa Penida has several harbours, including Toyapakeh, Buyuk and Sampalan. Which one your boat uses depends on the operator, so check your ticket and plan your onward ride from there.";
+
 export const ROUTE_PAGES = {
   "gili-trawangan-to-bali": {
     slug: "gili-trawangan-to-bali",
@@ -57,6 +80,7 @@ export const ROUTE_PAGES = {
     bookFrom: "Gili Trawangan",
     bookTo: "Padang Bai",
     related: ["bali-to-gili-islands", "gili-air-to-bali", "bali-to-lombok-ferry"],
+    ourPick: "",
     lead: (c) =>
       `Fast boats run from Gili Trawangan to ${joinList(c.toNames)}. We list ${plural(c.count, "departure")} with ${joinOps(c.operators)}, ` +
       `leaving between ${c.earliest} and ${c.latest}. Crossing times: ${c.durations}.`,
@@ -113,6 +137,7 @@ export const ROUTE_PAGES = {
     bookFrom: "Padang Bai",
     bookTo: "Gili Trawangan",
     related: ["gili-trawangan-to-bali", "gili-air-to-bali", "bali-to-lombok-ferry"],
+    ourPick: "",
     lead: (c) =>
       `Fast boats run from ${joinList(c.fromNames)} to ${joinList(c.toNames)}. We list ${plural(c.count, "departure")} with ${joinOps(c.operators)}, ` +
       `leaving between ${c.earliest} and ${c.latest}. Gili Trawangan is the main stop and has the most boats.`,
@@ -180,6 +205,7 @@ export const ROUTE_PAGES = {
     bookFrom: "Padang Bai",
     bookTo: "Bangsal (Lombok)",
     related: ["bali-to-gili-islands", "gili-trawangan-to-bali", "gili-air-to-bali"],
+    ourPick: "",
     lead: (c) =>
       `Fast boats cross from Bali to Bangsal, the Lombok port for the Gili Islands. ` +
       `We list ${plural(c.count, "departure")} with ${joinOps(c.operators)}, leaving between ${c.earliest} and ${c.latest}.`,
@@ -230,6 +256,7 @@ export const ROUTE_PAGES = {
     bookFrom: "Gili Air",
     bookTo: "Padang Bai",
     related: ["gili-trawangan-to-bali", "bali-to-gili-islands", "bali-to-lombok-ferry"],
+    ourPick: "",
     lead: (c) =>
       `Fast boats run from Gili Air to ${joinList(c.toNames)}. We list ${plural(c.count, "departure")} with ${joinOps(c.operators)}, ` +
       `leaving between ${c.earliest} and ${c.latest}. Crossing times: ${c.durations}.`,
@@ -289,6 +316,7 @@ export const ROUTE_PAGES = {
     bookFrom: "Nusa Penida",
     bookTo: "Gili Trawangan",
     related: ["nusa-lembongan-to-gili-islands", "bali-to-gili-islands", "gili-trawangan-to-bali"],
+    ourPick: "",
     lead: (c) =>
       `Fast boats run from Nusa Penida to ${joinList(c.toNames)}. We list ${plural(c.count, "departure")} with ${joinOps(c.operators)}, ` +
       `leaving between ${c.earliest} and ${c.latest}. Crossing times: ${c.durations}.`,
@@ -350,6 +378,7 @@ export const ROUTE_PAGES = {
     bookFrom: "Nusa Lembongan",
     bookTo: "Gili Trawangan",
     related: ["nusa-penida-to-gili-islands", "bali-to-gili-islands", "gili-trawangan-to-bali"],
+    ourPick: "",
     lead: (c) =>
       `Fast boats run from Nusa Lembongan to ${joinList(c.toNames)}. We list ${plural(c.count, "departure")} with ${joinOps(c.operators)}, ` +
       `leaving between ${c.earliest} and ${c.latest}. Crossing times: ${c.durations}.`,
@@ -409,6 +438,7 @@ export const ROUTE_PAGES = {
     bookFrom: "Padang Bai",
     bookTo: "Gili Trawangan",
     related: ["padang-bai-to-gili-air","sanur-to-gili-trawangan","bali-to-gili-islands","gili-trawangan-to-bali"],
+    ourPick: "",
     lead: (c) =>
       `We list ${plural(c.count, "fast boat departure")} from Padang Bai to Gili Trawangan with ${joinOps(c.operators)}, ` +
       `leaving between ${c.earliest} and ${c.latest}. The crossing takes ${rangeText(c.pairs[0].min, c.pairs[0].max)}, depending on the boat.`,
@@ -478,6 +508,7 @@ export const ROUTE_PAGES = {
     bookFrom: "Padang Bai",
     bookTo: "Gili Air",
     related: ["padang-bai-to-gili-trawangan","sanur-to-gili-air","bali-to-gili-islands","gili-air-to-bali"],
+    ourPick: "",
     lead: (c) =>
       `We list ${plural(c.count, "fast boat departure")} from Padang Bai to Gili Air with ${joinOps(c.operators)}, ` +
       `leaving between ${c.earliest} and ${c.latest}. The crossing takes ${rangeText(c.pairs[0].min, c.pairs[0].max)}, depending on the boat.`,
@@ -536,6 +567,7 @@ export const ROUTE_PAGES = {
     bookFrom: "Sanur",
     bookTo: "Gili Trawangan",
     related: ["sanur-to-gili-air","padang-bai-to-gili-trawangan","bali-to-gili-islands","gili-trawangan-to-bali"],
+    ourPick: "",
     lead: (c) =>
       `We list ${plural(c.count, "fast boat departure")} from Sanur to Gili Trawangan with ${joinOps(c.operators)}, ` +
       `leaving between ${c.earliest} and ${c.latest}. The crossing takes ${rangeText(c.pairs[0].min, c.pairs[0].max)}, depending on the boat.`,
@@ -594,6 +626,7 @@ export const ROUTE_PAGES = {
     bookFrom: "Sanur",
     bookTo: "Gili Air",
     related: ["sanur-to-gili-trawangan","padang-bai-to-gili-air","bali-to-gili-islands","gili-air-to-bali"],
+    ourPick: "",
     lead: (c) =>
       `We list ${plural(c.count, "fast boat departure")} from Sanur to Gili Air with ${joinOps(c.operators)}, ` +
       `leaving between ${c.earliest} and ${c.latest}. The crossing takes ${rangeText(c.pairs[0].min, c.pairs[0].max)}, depending on the boat.`,
@@ -635,7 +668,660 @@ export const ROUTE_PAGES = {
       BOOK_FAQ,
     ],
   },
+
+  "sanur-to-nusa-penida": {
+    slug: "sanur-to-nusa-penida",
+    region: "Nusa Islands",
+    name: "Sanur to Nusa Penida",
+    h1: "Sanur to Nusa Penida by fast boat",
+    metaTitle: "Sanur to Nusa Penida Fast Boat: Times & Operators",
+    metaDescription:
+      "Sanur to Nusa Penida fast boat times, crossing time and operators, with confirmed departures and live sea conditions. Compare boats and book on 12Go.",
+    blurb: "The main crossing from south Bali to Nusa Penida, with confirmed departures and crossing times.",
+    fromLabel: "Sanur",
+    toLabel: "Nusa Penida",
+    fromPorts: ["Sanur"],
+    toPorts: ["Nusa Penida"],
+    conditionPorts: ["Sanur", "Nusa Penida"],
+    bookFrom: "Sanur",
+    bookTo: "Nusa Penida",
+    related: ["bali-to-nusa-penida", "sanur-to-nusa-lembongan", "nusa-penida-to-bali", "nusa-penida-to-gili-islands"],
+    ourPick: "",
+    lead: (c) =>
+      `We list ${plural(c.count, "fast boat departure")} from Sanur to Nusa Penida with ${joinOps(c.operators)}, ` +
+      `leaving between ${c.earliest} and ${c.latest}. The crossing takes ${rangeText(c.pairs[0].min, c.pairs[0].max)}, depending on the boat.` +
+      CONFIRMED_LINE(c),
+    sections: [
+      {
+        heading: "Why most people leave from Sanur",
+        paragraphs: [
+          "Sanur is the easiest port to reach from south and central Bali: about 25 minutes from Kuta, 40 to 50 minutes from Canggu and 45 minutes to an hour from Ubud. That's why it has so many boats to Nusa Penida spread across the day.",
+          "With this many departures you can usually pick a time that suits you, so check the Duration column too: crossing times differ between boats.",
+        ],
+      },
+      {
+        heading: "Arriving on Nusa Penida",
+        paragraphs: [
+          PENIDA_HARBOURS,
+          "Penida's roads are steep and rough in places. If you're planning a day trip, an early boat leaves the most time on the island.",
+        ],
+      },
+      { heading: "Checking in", paragraphs: [CHECKIN_TEXT], cta: PLANNER_CTA("Nusa Penida") },
+    ],
+    faqs: (c) => [
+      {
+        q: "How long is the fast boat from Sanur to Nusa Penida?",
+        a: `Crossing times are ${c.durations}, depending on the boat. Check the Duration column above and confirm on your ticket.`,
+      },
+      {
+        q: "What time is the first boat from Sanur to Nusa Penida?",
+        a: `The earliest departure we list is ${c.earliest} and the latest is ${c.latest}. Timetables change, so confirm on the booking page for your date.`,
+      },
+      {
+        q: "Which operators run Sanur to Nusa Penida?",
+        a: `We list ${joinOps(c.operators, 9)}. Boats and comfort differ, so compare times and reviews as well as the fare.`,
+      },
+      CONFIRMED_FAQ("Sanur", "Nusa Penida", c),
+      {
+        q: "Can I do Nusa Penida as a day trip from Sanur?",
+        a: `Yes, many people do. With departures from ${c.earliest}, an early boat out and an afternoon boat back gives you most of a day on the island. Book the return before you go in busy months.`,
+      },
+      CANCEL_FAQ("Sanur", "Nusa Penida"),
+      BOOK_FAQ,
+    ],
+  },
+
+  "sanur-to-nusa-lembongan": {
+    slug: "sanur-to-nusa-lembongan",
+    region: "Nusa Islands",
+    name: "Sanur to Nusa Lembongan",
+    h1: "Sanur to Nusa Lembongan by fast boat",
+    metaTitle: "Sanur to Nusa Lembongan Fast Boat: Times & Operators",
+    metaDescription:
+      "Sanur to Nusa Lembongan fast boat times, crossing time and operators, with confirmed departures and live sea conditions. Compare boats and book on 12Go.",
+    blurb: "The short hop from Sanur to Nusa Lembongan, with confirmed departures and crossing times.",
+    fromLabel: "Sanur",
+    toLabel: "Nusa Lembongan",
+    fromPorts: ["Sanur"],
+    toPorts: ["Nusa Lembongan"],
+    conditionPorts: ["Sanur", "Nusa Lembongan"],
+    bookFrom: "Sanur",
+    bookTo: "Nusa Lembongan",
+    related: ["bali-to-nusa-lembongan", "nusa-lembongan-to-bali", "sanur-to-nusa-penida", "nusa-lembongan-to-gili-islands"],
+    ourPick: "",
+    lead: (c) =>
+      `We list ${plural(c.count, "fast boat departure")} from Sanur to Nusa Lembongan with ${joinOps(c.operators)}, ` +
+      `leaving between ${c.earliest} and ${c.latest}. The crossing takes ${rangeText(c.pairs[0].min, c.pairs[0].max)}, depending on the boat.` +
+      CONFIRMED_LINE(c),
+    sections: [
+      {
+        heading: "Sanur to Lembongan",
+        paragraphs: [
+          "Sanur is the usual port for Nusa Lembongan: it's about 25 minutes from Kuta and 45 minutes to an hour from Ubud, and boats run through the day.",
+          "Lembongan is joined to Nusa Ceningan by a footbridge, and Nusa Penida is a short boat ride away, so it makes a good base for all three islands.",
+        ],
+      },
+      { heading: "Arriving on Lembongan", paragraphs: [LEMBONGAN_LANDING, CHECKIN_TEXT], cta: PLANNER_CTA("Nusa Lembongan") },
+    ],
+    faqs: (c) => [
+      {
+        q: "How long is the fast boat from Sanur to Nusa Lembongan?",
+        a: `Crossing times are ${c.durations}, depending on the boat. Check the Duration column above and confirm on your ticket.`,
+      },
+      {
+        q: "What time is the first boat from Sanur to Nusa Lembongan?",
+        a: `The earliest departure we list is ${c.earliest} and the latest is ${c.latest}. Timetables change, so confirm on the booking page for your date.`,
+      },
+      {
+        q: "Which operators run Sanur to Nusa Lembongan?",
+        a: `We list ${joinOps(c.operators, 9)}. Boats and comfort differ, so compare times and reviews as well as the fare.`,
+      },
+      CONFIRMED_FAQ("Sanur", "Nusa Lembongan", c),
+      {
+        q: "Will I get wet getting off the boat?",
+        a: "Possibly. Many boats land on Lembongan's beach rather than at a pier, so you may step off into shallow water. Wear sandals and keep valuables in a bag you can lift.",
+      },
+      CANCEL_FAQ("Sanur", "Nusa Lembongan"),
+      BOOK_FAQ,
+    ],
+  },
+
+  "bali-to-nusa-penida": {
+    slug: "bali-to-nusa-penida",
+    region: "Nusa Islands",
+    name: "Bali to Nusa Penida",
+    h1: "Bali to Nusa Penida by fast boat",
+    metaTitle: "Bali to Nusa Penida Fast Boat: Times From Every Port",
+    metaDescription:
+      "Fast boats from Bali to Nusa Penida from Sanur, Padang Bai, Serangan and Benoa: departures, crossing times and operators, with sea conditions. Compare and book.",
+    blurb: "Every Bali port with boats to Nusa Penida in one table, with confirmed departures.",
+    fromLabel: "Bali",
+    toLabel: "Nusa Penida",
+    fromPorts: BALI_MAINLAND,
+    toPorts: ["Nusa Penida"],
+    conditionPorts: ["Sanur", "Padang Bai", "Nusa Penida"],
+    bookFrom: "Sanur",
+    bookTo: "Nusa Penida",
+    related: ["sanur-to-nusa-penida", "bali-to-nusa-lembongan", "nusa-penida-to-bali", "nusa-penida-to-gili-islands"],
+    ourPick: "",
+    lead: (c) =>
+      `Fast boats run to Nusa Penida from ${joinList(c.fromNames)}. We list ${plural(c.count, "departure")} with ${joinOps(c.operators)}, ` +
+      `leaving between ${c.earliest} and ${c.latest}. Crossing times: ${c.durations}.` +
+      CONFIRMED_LINE(c),
+    sections: [
+      {
+        heading: "Which Bali port for Nusa Penida?",
+        paragraphs: [
+          "Sanur has by far the most boats and is the easiest port to reach from south and central Bali. The other ports have only a few departures, so they mainly suit you if you're staying close by.",
+          "Put your hotel into the Trip Planner to compare real driving times to each port against the boat time.",
+        ],
+        cta: PLANNER_CTA("Nusa Penida"),
+      },
+      { heading: "Arriving on Nusa Penida", paragraphs: [PENIDA_HARBOURS, CHECKIN_TEXT] },
+    ],
+    faqs: (c) => [
+      {
+        q: "How long is the fast boat from Bali to Nusa Penida?",
+        a: `Crossing times are: ${c.durations}. Check the Duration column above for each boat.`,
+      },
+      {
+        q: "Which Bali ports have boats to Nusa Penida?",
+        a: `We list departures from ${joinList(c.fromNames)}. Sanur has the most.`,
+      },
+      {
+        q: "Which operators go from Bali to Nusa Penida?",
+        a: `We list ${joinOps(c.operators, 9)}. These are the operators listed on the booking site when we last checked.`,
+      },
+      CONFIRMED_FAQ("Bali", "Nusa Penida", c),
+      CANCEL_FAQ("Bali", "Nusa Penida"),
+      BOOK_FAQ,
+    ],
+  },
+
+  "bali-to-nusa-lembongan": {
+    slug: "bali-to-nusa-lembongan",
+    region: "Nusa Islands",
+    name: "Bali to Nusa Lembongan",
+    h1: "Bali to Nusa Lembongan by fast boat",
+    metaTitle: "Bali to Nusa Lembongan Fast Boat: Times From Every Port",
+    metaDescription:
+      "Fast boats from Bali to Nusa Lembongan from Sanur, Padang Bai and Benoa: departures, crossing times and operators, with sea conditions. Compare and book.",
+    blurb: "Every Bali port with boats to Nusa Lembongan, with confirmed departures.",
+    fromLabel: "Bali",
+    toLabel: "Nusa Lembongan",
+    fromPorts: BALI_MAINLAND,
+    toPorts: ["Nusa Lembongan"],
+    conditionPorts: ["Sanur", "Nusa Lembongan"],
+    bookFrom: "Sanur",
+    bookTo: "Nusa Lembongan",
+    related: ["sanur-to-nusa-lembongan", "bali-to-nusa-penida", "nusa-lembongan-to-bali", "nusa-lembongan-to-gili-islands"],
+    ourPick: "",
+    lead: (c) =>
+      `Fast boats run to Nusa Lembongan from ${joinList(c.fromNames)}. We list ${plural(c.count, "departure")} with ${joinOps(c.operators)}, ` +
+      `leaving between ${c.earliest} and ${c.latest}. Crossing times: ${c.durations}.` +
+      CONFIRMED_LINE(c),
+    sections: [
+      {
+        heading: "Which Bali port for Lembongan?",
+        paragraphs: [
+          "Sanur has the most boats to Nusa Lembongan and is the easiest port to reach from south and central Bali. The other ports have only a few departures.",
+          "Put your hotel into the Trip Planner to compare real driving times to each port against the boat time.",
+        ],
+        cta: PLANNER_CTA("Nusa Lembongan"),
+      },
+      { heading: "Arriving on Lembongan", paragraphs: [LEMBONGAN_LANDING, CHECKIN_TEXT] },
+    ],
+    faqs: (c) => [
+      {
+        q: "How long is the fast boat from Bali to Nusa Lembongan?",
+        a: `Crossing times are: ${c.durations}. Check the Duration column above for each boat.`,
+      },
+      {
+        q: "Which Bali ports have boats to Nusa Lembongan?",
+        a: `We list departures from ${joinList(c.fromNames)}.`,
+      },
+      {
+        q: "Which operators go from Bali to Nusa Lembongan?",
+        a: `We list ${joinOps(c.operators, 9)}. These are the operators listed on the booking site when we last checked.`,
+      },
+      CONFIRMED_FAQ("Bali", "Nusa Lembongan", c),
+      CANCEL_FAQ("Bali", "Nusa Lembongan"),
+      BOOK_FAQ,
+    ],
+  },
+
+  "nusa-lembongan-to-bali": {
+    slug: "nusa-lembongan-to-bali",
+    region: "Nusa Islands",
+    name: "Nusa Lembongan to Bali",
+    h1: "Nusa Lembongan to Bali by fast boat",
+    metaTitle: "Nusa Lembongan to Bali Fast Boat: Times & Operators",
+    metaDescription:
+      "Nusa Lembongan to Bali fast boat departures to Sanur and other ports, with crossing times, operators and confirmed departures. Compare boats and book on 12Go.",
+    blurb: "Boats back to Bali from Nusa Lembongan, with confirmed departures and crossing times.",
+    fromLabel: "Nusa Lembongan",
+    toLabel: "Bali",
+    fromPorts: ["Nusa Lembongan"],
+    toPorts: BALI_MAINLAND,
+    conditionPorts: ["Nusa Lembongan", "Sanur"],
+    bookFrom: "Nusa Lembongan",
+    bookTo: "Sanur",
+    related: ["sanur-to-nusa-lembongan", "nusa-penida-to-bali", "nusa-lembongan-to-gili-islands"],
+    ourPick: "",
+    lead: (c) =>
+      `Fast boats run from Nusa Lembongan to ${joinList(c.toNames)}. We list ${plural(c.count, "departure")} with ${joinOps(c.operators)}, ` +
+      `leaving between ${c.earliest} and ${c.latest}. Crossing times: ${c.durations}.` +
+      CONFIRMED_LINE(c),
+    sections: [
+      {
+        heading: "Getting back to Bali",
+        paragraphs: [
+          "Most boats from Lembongan go to Sanur, which is close to the airport and south Bali. If you have a flight the same day, leave plenty of time for traffic on the Bali side.",
+          LEMBONGAN_LANDING,
+        ],
+        cta: PLANNER_CTA(),
+      },
+      { heading: "Checking in", paragraphs: [CHECKIN_TEXT] },
+    ],
+    faqs: (c) => [
+      {
+        q: "How long is the fast boat from Nusa Lembongan to Bali?",
+        a: `Crossing times are: ${c.durations}. Check the Duration column above for each boat.`,
+      },
+      {
+        q: "What time is the last boat from Nusa Lembongan to Bali?",
+        a: `The latest departure we list is ${c.latest}, and the earliest is ${c.earliest}. Timetables change, so confirm on the booking page for your date.`,
+      },
+      {
+        q: "Which operators run Nusa Lembongan to Bali?",
+        a: `We list ${joinOps(c.operators, 9)}.`,
+      },
+      CONFIRMED_FAQ("Nusa Lembongan", "Bali", c),
+      CANCEL_FAQ("Nusa Lembongan", "Bali"),
+      BOOK_FAQ,
+    ],
+  },
+
+  "nusa-penida-to-bali": {
+    slug: "nusa-penida-to-bali",
+    region: "Nusa Islands",
+    name: "Nusa Penida to Bali",
+    h1: "Nusa Penida to Bali by fast boat",
+    metaTitle: "Nusa Penida to Bali Fast Boat: Times & Operators",
+    metaDescription:
+      "Nusa Penida to Bali fast boat departures, crossing times and operators, with confirmed departures and sea conditions. Compare boats and book on 12Go.",
+    blurb: "Boats back to Bali from Nusa Penida, with crossing times and sea conditions.",
+    fromLabel: "Nusa Penida",
+    toLabel: "Bali",
+    fromPorts: ["Nusa Penida"],
+    toPorts: BALI_MAINLAND,
+    conditionPorts: ["Nusa Penida", "Sanur"],
+    bookFrom: "Nusa Penida",
+    bookTo: "Sanur",
+    related: ["sanur-to-nusa-penida", "bali-to-nusa-penida", "nusa-lembongan-to-bali", "nusa-penida-to-gili-islands"],
+    ourPick: "",
+    lead: (c) =>
+      `Fast boats run from Nusa Penida to ${joinList(c.toNames)}. We list ${plural(c.count, "departure")} with ${joinOps(c.operators)}, ` +
+      `leaving between ${c.earliest} and ${c.latest}. Crossing times: ${c.durations}.` +
+      CONFIRMED_LINE(c),
+    sections: [
+      {
+        heading: "Getting back to Bali",
+        paragraphs: [
+          PENIDA_HARBOURS,
+          "Penida's roads are slow, so allow plenty of time to reach the harbour. If you have a flight the same day, leave a generous buffer on the Bali side too.",
+        ],
+        cta: PLANNER_CTA(),
+      },
+      { heading: "Checking in", paragraphs: [CHECKIN_TEXT] },
+    ],
+    faqs: (c) => [
+      {
+        q: "How long is the fast boat from Nusa Penida to Bali?",
+        a: `Crossing times are: ${c.durations}. Check the Duration column above for each boat.`,
+      },
+      {
+        q: "What time is the last boat from Nusa Penida to Bali?",
+        a: `The latest departure we list is ${c.latest}, and the earliest is ${c.earliest}. Timetables change, so confirm on the booking page for your date.`,
+      },
+      {
+        q: "Which operators run Nusa Penida to Bali?",
+        a: `We list ${joinOps(c.operators, 9)}.`,
+      },
+      CONFIRMED_FAQ("Nusa Penida", "Bali", c),
+      CANCEL_FAQ("Nusa Penida", "Bali"),
+      BOOK_FAQ,
+    ],
+  },
+
+  "gili-islands-to-nusa-penida": {
+    slug: "gili-islands-to-nusa-penida",
+    region: "Nusa Islands",
+    name: "Gili Islands to Nusa Penida",
+    h1: "Gili Islands to Nusa Penida by fast boat",
+    metaTitle: "Gili Islands to Nusa Penida Fast Boat: Times & Operators",
+    metaDescription:
+      "Gili Trawangan, Gili Air and Gili Meno to Nusa Penida by fast boat: departures, crossing times and operators, with confirmed departures. Compare and book.",
+    blurb: "Straight from the Gilis to Nusa Penida without a night in Bali, with confirmed departures.",
+    fromLabel: "Gili Islands",
+    toLabel: "Nusa Penida",
+    fromPorts: ["Gili Trawangan", "Gili Air", "Gili Meno"],
+    toPorts: ["Nusa Penida"],
+    conditionPorts: ["Gili Trawangan", "Nusa Penida"],
+    bookFrom: "Gili Trawangan",
+    bookTo: "Nusa Penida",
+    related: ["nusa-penida-to-gili-islands", "gili-islands-to-nusa-lembongan", "gili-trawangan-to-bali"],
+    ourPick: "",
+    lead: (c) =>
+      `Fast boats run from ${joinList(c.fromNames)} to Nusa Penida. We list ${plural(c.count, "departure")} with ${joinOps(c.operators)}, ` +
+      `leaving between ${c.earliest} and ${c.latest}. Crossing times: ${c.durations}.` +
+      CONFIRMED_LINE(c),
+    sections: [
+      {
+        heading: "Skipping the mainland",
+        paragraphs: [
+          "You don't have to go back to Bali first. Fast boats run from the Gilis straight to Nusa Penida, which saves a night and a drive on the mainland.",
+          "Some boats call at other islands or ports on the way, which adds to the crossing time, so compare the Duration column before you choose.",
+        ],
+      },
+      {
+        heading: "Arriving on Nusa Penida",
+        paragraphs: [PENIDA_HARBOURS, "The Gilis have no cars or motorbikes, so allow time to reach the harbour on foot, by bicycle or by horse cart.", CHECKIN_TEXT],
+        cta: PLANNER_CTA("Nusa Penida"),
+      },
+    ],
+    faqs: (c) => [
+      {
+        q: "Can I go from the Gili Islands to Nusa Penida without going back to Bali?",
+        a: `Yes. We list ${plural(c.count, "departure")} from ${joinList(c.fromNames)} to Nusa Penida, with ${joinOps(c.operators)}.`,
+      },
+      {
+        q: "How long is the fast boat from the Gilis to Nusa Penida?",
+        a: `Crossing times are: ${c.durations}. Boats that call elsewhere on the way take longer.`,
+      },
+      {
+        q: "What time do boats leave the Gilis for Nusa Penida?",
+        a: `The earliest departure we list is ${c.earliest} and the latest is ${c.latest}. Timetables change, so confirm on the booking page for your date.`,
+      },
+      CONFIRMED_FAQ("Gili Islands", "Nusa Penida", c),
+      CANCEL_FAQ("the Gili Islands", "Nusa Penida"),
+      BOOK_FAQ,
+    ],
+  },
+
+  "gili-islands-to-nusa-lembongan": {
+    slug: "gili-islands-to-nusa-lembongan",
+    region: "Nusa Islands",
+    name: "Gili Islands to Nusa Lembongan",
+    h1: "Gili Islands to Nusa Lembongan by fast boat",
+    metaTitle: "Gili Islands to Nusa Lembongan Fast Boat: Times & Operators",
+    metaDescription:
+      "Gili Trawangan, Gili Air and Gili Meno to Nusa Lembongan by fast boat: departures, crossing times and operators, with confirmed departures. Compare and book.",
+    blurb: "Straight from the Gilis to Nusa Lembongan, with confirmed departures and crossing times.",
+    fromLabel: "Gili Islands",
+    toLabel: "Nusa Lembongan",
+    fromPorts: ["Gili Trawangan", "Gili Air", "Gili Meno"],
+    toPorts: ["Nusa Lembongan"],
+    conditionPorts: ["Gili Trawangan", "Nusa Lembongan"],
+    bookFrom: "Gili Trawangan",
+    bookTo: "Nusa Lembongan",
+    related: ["nusa-lembongan-to-gili-islands", "gili-islands-to-nusa-penida", "gili-trawangan-to-bali"],
+    ourPick: "",
+    lead: (c) =>
+      `Fast boats run from ${joinList(c.fromNames)} to Nusa Lembongan. We list ${plural(c.count, "departure")} with ${joinOps(c.operators)}, ` +
+      `leaving between ${c.earliest} and ${c.latest}. Crossing times: ${c.durations}.` +
+      CONFIRMED_LINE(c),
+    sections: [
+      {
+        heading: "Skipping the mainland",
+        paragraphs: [
+          "Fast boats run from the Gilis straight to Nusa Lembongan, so you can carry on to the Nusa Islands without a night in Bali.",
+          "Some boats call at other islands or ports on the way, which adds to the crossing time, so compare the Duration column before you choose.",
+        ],
+      },
+      {
+        heading: "Arriving on Lembongan",
+        paragraphs: [LEMBONGAN_LANDING, CHECKIN_TEXT],
+        cta: PLANNER_CTA("Nusa Lembongan"),
+      },
+    ],
+    faqs: (c) => [
+      {
+        q: "Can I go from the Gili Islands to Nusa Lembongan without going back to Bali?",
+        a: `Yes. We list ${plural(c.count, "departure")} from ${joinList(c.fromNames)} to Nusa Lembongan, with ${joinOps(c.operators)}.`,
+      },
+      {
+        q: "How long is the fast boat from the Gilis to Nusa Lembongan?",
+        a: `Crossing times are: ${c.durations}. Boats that call elsewhere on the way take longer.`,
+      },
+      {
+        q: "What time do boats leave the Gilis for Nusa Lembongan?",
+        a: `The earliest departure we list is ${c.earliest} and the latest is ${c.latest}. Timetables change, so confirm on the booking page for your date.`,
+      },
+      CONFIRMED_FAQ("Gili Islands", "Nusa Lembongan", c),
+      CANCEL_FAQ("the Gili Islands", "Nusa Lembongan"),
+      BOOK_FAQ,
+    ],
+  },
+
+  "lombok-to-bali": {
+    slug: "lombok-to-bali",
+    region: "Lombok",
+    name: "Lombok to Bali",
+    h1: "Lombok to Bali by fast boat",
+    metaTitle: "Lombok to Bali Fast Boat From Bangsal: Times & Operators",
+    metaDescription:
+      "Lombok to Bali by fast boat from Bangsal: departures, crossing times and operators, with confirmed departures and sea conditions. Compare and book on 12Go.",
+    blurb: "Fast boats from Bangsal on Lombok back to Bali, with confirmed departures.",
+    fromLabel: "Lombok",
+    toLabel: "Bali",
+    fromPorts: LOMBOK_PORTS,
+    toPorts: BALI_MAINLAND,
+    conditionPorts: ["Bangsal (Lombok)", "Padang Bai"],
+    bookFrom: "Bangsal (Lombok)",
+    bookTo: "Padang Bai",
+    related: ["bali-to-lombok-ferry", "gili-trawangan-to-bali", "lombok-to-nusa-islands"],
+    ourPick: "",
+    lead: (c) =>
+      `Fast boats run from Bangsal on Lombok to ${joinList(c.toNames)}. We list ${plural(c.count, "departure")} with ${joinOps(c.operators)}, ` +
+      `leaving between ${c.earliest} and ${c.latest}. Crossing times: ${c.durations}.` +
+      CONFIRMED_LINE(c),
+    sections: [
+      {
+        heading: "Leaving from Bangsal",
+        paragraphs: [
+          "Bangsal, on Lombok's north-west coast, is the main harbour for fast boats to Bali and the Gili Islands. Some boats to Bali call at the Gilis on the way, which adds to the crossing time.",
+          "Padang Bai, on Bali's east coast, usually has the shortest crossing. Sanur and the southern ports are closer to the airport but further by sea.",
+        ],
+        cta: PLANNER_CTA(),
+      },
+      { heading: "Flying instead?", paragraphs: ["There are also short flights between Lombok and Bali. This page covers the crossing by sea."] },
+      { heading: "Checking in", paragraphs: [CHECKIN_TEXT] },
+    ],
+    faqs: (c) => [
+      {
+        q: "Is there a fast boat from Lombok to Bali?",
+        a: `Yes. We list ${plural(c.count, "departure")} from Bangsal to ${joinList(c.toNames)}.`,
+      },
+      {
+        q: "How long does the Lombok to Bali fast boat take?",
+        a: `Crossing times are: ${c.durations}. Boats that stop at the Gilis on the way take longer.`,
+      },
+      {
+        q: "Which operators run Lombok to Bali?",
+        a: `We list ${joinOps(c.operators, 9)}.`,
+      },
+      CONFIRMED_FAQ("Lombok", "Bali", c),
+      CANCEL_FAQ("Lombok", "Bali"),
+      BOOK_FAQ,
+    ],
+  },
+
+  "lombok-to-nusa-islands": {
+    slug: "lombok-to-nusa-islands",
+    region: "Lombok",
+    name: "Lombok to the Nusa Islands",
+    h1: "Lombok to Nusa Penida and Lembongan by fast boat",
+    metaTitle: "Lombok to Nusa Penida & Lembongan Fast Boat: Times",
+    metaDescription:
+      "Fast boats from Bangsal on Lombok to Nusa Penida and Nusa Lembongan: departures, crossing times and operators, with confirmed departures. Compare and book.",
+    blurb: "Fast boats from Bangsal to Nusa Penida and Nusa Lembongan, with confirmed departures.",
+    fromLabel: "Lombok",
+    toLabel: "Nusa Islands",
+    fromPorts: LOMBOK_PORTS,
+    toPorts: ["Nusa Penida", "Nusa Lembongan"],
+    conditionPorts: ["Bangsal (Lombok)", "Nusa Penida"],
+    bookFrom: "Bangsal (Lombok)",
+    bookTo: "Nusa Penida",
+    related: ["nusa-islands-to-lombok", "lombok-to-bali", "gili-islands-to-nusa-penida"],
+    ourPick: "",
+    lead: (c) =>
+      `Fast boats run from Bangsal on Lombok to ${joinList(c.toNames)}. We list ${plural(c.count, "departure")} with ${joinOps(c.operators)}, ` +
+      `leaving between ${c.earliest} and ${c.latest}. Crossing times: ${c.durations}.` +
+      CONFIRMED_LINE(c),
+    sections: [
+      {
+        heading: "Straight to the Nusa Islands",
+        paragraphs: [
+          "You can sail from Lombok to Nusa Penida or Nusa Lembongan without going through mainland Bali. Some of these boats call at the Gili Islands on the way, which adds to the crossing time.",
+          PENIDA_HARBOURS,
+        ],
+      },
+      { heading: "Checking in", paragraphs: [CHECKIN_TEXT], cta: PLANNER_CTA("Nusa Penida") },
+    ],
+    faqs: (c) => [
+      {
+        q: "Is there a boat from Lombok to Nusa Penida?",
+        a: `Yes. We list ${plural(c.count, "departure")} from Bangsal to ${joinList(c.toNames)}.`,
+      },
+      {
+        q: "How long is the boat from Lombok to the Nusa Islands?",
+        a: `Crossing times are: ${c.durations}. Boats that stop at the Gilis on the way take longer.`,
+      },
+      {
+        q: "Which operators run Lombok to the Nusa Islands?",
+        a: `We list ${joinOps(c.operators, 9)}.`,
+      },
+      CONFIRMED_FAQ("Lombok", "Nusa Islands", c),
+      CANCEL_FAQ("Lombok", "the Nusa Islands"),
+      BOOK_FAQ,
+    ],
+  },
+
+  "nusa-islands-to-lombok": {
+    slug: "nusa-islands-to-lombok",
+    region: "Lombok",
+    name: "Nusa Islands to Lombok",
+    h1: "Nusa Penida and Lembongan to Lombok by fast boat",
+    metaTitle: "Nusa Penida & Lembongan to Lombok Fast Boat: Times",
+    metaDescription:
+      "Fast boats from Nusa Penida and Nusa Lembongan to Bangsal on Lombok: departures, crossing times and operators, with confirmed departures. Compare and book.",
+    blurb: "Fast boats from Nusa Penida and Lembongan to Bangsal on Lombok, with confirmed departures.",
+    fromLabel: "Nusa Islands",
+    toLabel: "Lombok",
+    fromPorts: ["Nusa Penida", "Nusa Lembongan"],
+    toPorts: LOMBOK_PORTS,
+    conditionPorts: ["Nusa Penida", "Bangsal (Lombok)"],
+    bookFrom: "Nusa Penida",
+    bookTo: "Bangsal (Lombok)",
+    related: ["lombok-to-nusa-islands", "nusa-penida-to-gili-islands", "nusa-lembongan-to-gili-islands"],
+    ourPick: "",
+    lead: (c) =>
+      `Fast boats run from ${joinList(c.fromNames)} to Bangsal on Lombok. We list ${plural(c.count, "departure")} with ${joinOps(c.operators)}, ` +
+      `leaving between ${c.earliest} and ${c.latest}. Crossing times: ${c.durations}.` +
+      CONFIRMED_LINE(c),
+    sections: [
+      {
+        heading: "Straight to Lombok",
+        paragraphs: [
+          "You can sail from Nusa Penida or Nusa Lembongan to Lombok without going back to mainland Bali. Some of these boats call at the Gili Islands on the way, which adds to the crossing time.",
+          "Bangsal is the main harbour on Lombok's north-west coast, and the usual landing point for fast boats from Bali and the Nusa Islands.",
+        ],
+      },
+      { heading: "Checking in", paragraphs: [CHECKIN_TEXT], cta: PLANNER_CTA("Bangsal (Lombok)") },
+    ],
+    faqs: (c) => [
+      {
+        q: "Is there a boat from Nusa Penida to Lombok?",
+        a: `Yes. We list ${plural(c.count, "departure")} from ${joinList(c.fromNames)} to Bangsal.`,
+      },
+      {
+        q: "How long is the boat from the Nusa Islands to Lombok?",
+        a: `Crossing times are: ${c.durations}. Boats that stop at the Gilis on the way take longer.`,
+      },
+      {
+        q: "Which operators run the Nusa Islands to Lombok?",
+        a: `We list ${joinOps(c.operators, 9)}.`,
+      },
+      CONFIRMED_FAQ("Nusa Islands", "Lombok", c),
+      CANCEL_FAQ("the Nusa Islands", "Lombok"),
+      BOOK_FAQ,
+    ],
+  },
+
+  "gili-meno-to-bali": {
+    slug: "gili-meno-to-bali",
+    region: "Gili Islands",
+    name: "Gili Meno to Bali",
+    h1: "Gili Meno to Bali by fast boat",
+    metaTitle: "Gili Meno to Bali Fast Boat: Times & Operators",
+    metaDescription:
+      "Gili Meno to Bali fast boat departures, crossing times and operators, with confirmed departures and sea conditions. Compare boats and book on 12Go.",
+    blurb: "Departures from Gili Meno, the quietest Gili, back to Bali.",
+    fromLabel: "Gili Meno",
+    toLabel: "Bali",
+    fromPorts: ["Gili Meno"],
+    toPorts: BALI_MAINLAND,
+    conditionPorts: ["Gili Meno", "Padang Bai"],
+    bookFrom: "Gili Meno",
+    bookTo: "Padang Bai",
+    related: ["gili-trawangan-to-bali", "gili-air-to-bali", "bali-to-gili-islands"],
+    ourPick: "",
+    lead: (c) =>
+      `Fast boats run from Gili Meno to ${joinList(c.toNames)}. We list ${plural(c.count, "departure")} with ${joinOps(c.operators)}, ` +
+      `leaving between ${c.earliest} and ${c.latest}. Crossing times: ${c.durations}.` +
+      CONFIRMED_LINE(c),
+    sections: [
+      {
+        heading: "Fewer boats from Meno",
+        paragraphs: [
+          "Gili Meno is the smallest and quietest of the three Gilis, and it has fewer direct boats than Gili Trawangan or Gili Air. If nothing suits your day, a short hop to one of the other Gilis opens up more departures.",
+          "Like the other Gilis, Meno has no cars or motorbikes, so allow time to reach the harbour with luggage.",
+        ],
+        cta: { href: "/indonesia/routes/gili-trawangan-to-bali", label: "See Gili Trawangan to Bali →" },
+      },
+      { heading: "Checking in", paragraphs: [CHECKIN_TEXT] },
+    ],
+    faqs: (c) => [
+      {
+        q: "How long is the fast boat from Gili Meno to Bali?",
+        a: `Crossing times are: ${c.durations}. Check the Duration column above for each boat.`,
+      },
+      {
+        q: "What time is the first boat from Gili Meno to Bali?",
+        a: `The earliest departure we list is ${c.earliest} and the latest is ${c.latest}. Timetables change, so confirm on the booking page for your date.`,
+      },
+      {
+        q: "Which operators run Gili Meno to Bali?",
+        a: `We list ${joinOps(c.operators, 9)}.`,
+      },
+      CONFIRMED_FAQ("Gili Meno", "Bali", c),
+      CANCEL_FAQ("Gili Meno", "Bali"),
+      BOOK_FAQ,
+    ],
+  },
 };
+
+// The most specific route page covering one from -> to pair (fewest port pairs), or null.
+export function routePageFor(from, to) {
+  let best = null;
+  for (const r of Object.values(ROUTE_PAGES)) {
+    if (!r.fromPorts.includes(from) || !r.toPorts.includes(to)) continue;
+    const size = r.fromPorts.length * r.toPorts.length;
+    if (!best || size < best.size) best = { route: r, size };
+  }
+  return best ? best.route : null;
+}
 
 export const ROUTE_SLUGS = Object.keys(ROUTE_PAGES);
 export const REGION_ORDER = ["Gili Islands", "Nusa Islands", "Lombok"];

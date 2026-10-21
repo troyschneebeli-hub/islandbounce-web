@@ -131,8 +131,9 @@ function withBoatInfo(r, date) {
   const day = date || new Date().toISOString().slice(0, 10);
   const departures = portDepartures(r.port, r.destination, day, undefined, new Date().toISOString().slice(0, 10));
   const cfg = BOAT_ROUTES[r.port]?.[r.destination];
-  const boatMin = departures.hasReal ? departures.fastestMin : cfg ? cfg.duration : 0;
-  return { ...r, departures, boatMin, boatIsEstimate: !departures.hasReal, totalMin: r.driveMin + CHECKIN_BUFFER_MIN + boatMin };
+  const real = departures.hasReal && departures.fastestMin != null;
+  const boatMin = real ? departures.fastestMin : cfg ? cfg.duration : 0;
+  return { ...r, departures, boatMin, boatIsEstimate: !real, totalMin: r.driveMin + CHECKIN_BUFFER_MIN + boatMin };
 }
 
 
