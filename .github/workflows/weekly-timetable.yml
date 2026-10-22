@@ -1,0 +1,90 @@
+name: Weekly timetable refresh
+
+# Tuesday 09:00 Perth / Bali (UTC+8) = Tuesday 01:00 UTC.
+# Scans the 7 days starting the coming THURSDAY, so sold-out "today/tomorrow" trips cannot hide a sailing.
+on:
+  schedule:
+    - cron: '0 1 * * 2'
+  workflow_dispatch:
+    inputs:
+      start_date:
+        description: 'Override first day to scan (YYYY-MM-DD). Leave empty for the coming Thursday.'
+        required: false
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency: weekly-timetable
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    outputs:
+      dates: ${{ steps.d.outputs.dates }}
+    steps:
+      - id: d
+        run: |
+          START="${{ github.event.inputs.start_date }}"
+          if [ -z "$START" ]; then START=$(date -u -d "+2 days" +%F); fi   # Tuesday + 2 = Thursday
+          DATES=$(python3 -c "import datetime,json,sys;s=datetime.date.fromisoformat('$START');print(json.dumps([(s+datetime.timedelta(days=i)).isoformat() for i in range(7)]))")
+          echo "dates=$DATES" >> "$GITHUB_OUTPUT"; echo "$DATES"
+
+  scan:
+    needs: plan
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        date: ${{ fromJSON(needs.plan.outputs.dates) }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm install --no-save --no-package-lock playwright && npx playwright install --with-deps chromium
+      - run: node scripts/weekly/scan_12go.mjs ${{ matrix.date }} out/scan-${{ matrix.date }}.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: scan-${{ matrix.date }}
+          path: out/scan-${{ matrix.date }}.json
+          retention-days: 30
+
+  compile:
+    needs: scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22   # check-data.mjs needs module.registerHooks (Node 22.15+)
+      - uses: actions/download-artifact@v4
+        with:
+          path: scans
+          pattern: scan-*
+          merge-multiple: true
+      - name: Match operator timetables against 12Go
+        run: python3 scripts/weekly/match.py --scans scans --operators data/operator-sailings.json --out data/generated-new
+      - name: Safety checks (blocks the publish if the data looks wrong)
+        run: python3 scripts/weekly/publish_check.py --new data/generated-new --old data/generated
+      - name: Publish (commit to main, Vercel redeploys)
+        run: |
+          rm -rf data/generated && mv data/generated-new data/generated
+          node scripts/build-confirmed.mjs   # data/generated/*.json -> the JS modules the site imports
+          node scripts/check-data.mjs        # stops here (nothing pushed) if the site data fails its checks
+          git config user.name "timetable-bot"; git config user.email "timetable-bot@users.noreply.github.com"
+          git add -A data
+          git diff --cached --quiet && { echo "No changes this week"; exit 0; }
+          git commit -m "Weekly timetable refresh (scan window from $(python3 -c "import json;print(json.load(open('data/generated/confirmed-sailings.json'))['scannedDates'][0])"))"
+          git push origin HEAD:main
+
+  notify:
+    needs: [scan, compile]
+    if: ${{ always() && (needs.scan.result == 'failure' || needs.compile.result == 'failure') }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Open an issue (GitHub emails the repo owner)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh issue create --repo "${{ github.repository }}" --title "Weekly timetable refresh did not publish" --body "The run was blocked or failed, so last week's data is still live. See ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"

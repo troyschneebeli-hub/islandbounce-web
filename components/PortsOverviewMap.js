@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { BALI_PORTS, ISLAND_PORTS } from "@/data/ports";
 import { fmtMins } from "@/data/planner";
-import { SAILINGS } from "@/data/sailings";
+import { PLANNER_SAILINGS as SAILINGS } from "@/data/sailings";
 import { durationMins } from "@/lib/timetable";
 import { COLORS } from "@/lib/theme";
 import { loadGoogleMaps } from "@/components/AddressAutocomplete";

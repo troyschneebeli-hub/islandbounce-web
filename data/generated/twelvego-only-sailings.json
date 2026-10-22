@@ -1,0 +1,4910 @@
+{
+ "scannedDates": [
+  "2026-10-20"
+ ],
+ "generatedAt": "2026-10-15T00:00:00Z",
+ "dailyRule": "single-day capture (listings for 20 Oct 2026), assumed daily",
+ "sailings": [
+  {
+   "operator": "Marina Group",
+   "from": "bangsal",
+   "to": "benoa-nusa-dua",
+   "fromName": "Bangsal (Lombok)",
+   "toName": "Benoa / Nusa Dua",
+   "departs": "08:30",
+   "arrives": "12:30",
+   "priceAUD": 44,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Semaya One",
+   "from": "bangsal",
+   "to": "nusa-lembongan",
+   "fromName": "Bangsal (Lombok)",
+   "toName": "Nusa Lembongan",
+   "departs": "08:00",
+   "arrives": "11:45",
+   "priceAUD": 52,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Wijaya Buyuk",
+   "from": "bangsal",
+   "to": "nusa-lembongan",
+   "fromName": "Bangsal (Lombok)",
+   "toName": "Nusa Lembongan",
+   "departs": "13:30",
+   "arrives": "15:55",
+   "priceAUD": 40,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Semaya One",
+   "from": "bangsal",
+   "to": "nusa-penida",
+   "fromName": "Bangsal (Lombok)",
+   "toName": "Nusa Penida",
+   "departs": "08:00",
+   "arrives": "11:15",
+   "priceAUD": 36,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Marina Group",
+   "from": "bangsal",
+   "to": "nusa-penida",
+   "fromName": "Bangsal (Lombok)",
+   "toName": "Nusa Penida",
+   "departs": "08:30",
+   "arrives": "11:30",
+   "priceAUD": 29,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Marina Luxury 99",
+   "from": "bangsal",
+   "to": "nusa-penida",
+   "fromName": "Bangsal (Lombok)",
+   "toName": "Nusa Penida",
+   "departs": "08:30",
+   "arrives": "11:00",
+   "priceAUD": 28,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Starfish Fast Cruise",
+   "from": "bangsal",
+   "to": "nusa-penida",
+   "fromName": "Bangsal (Lombok)",
+   "toName": "Nusa Penida",
+   "departs": "08:30",
+   "arrives": "11:15",
+   "priceAUD": 31,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "The Tanis Fast Cruise",
+   "from": "bangsal",
+   "to": "nusa-penida",
+   "fromName": "Bangsal (Lombok)",
+   "toName": "Nusa Penida",
+   "departs": "08:30",
+   "arrives": "11:40",
+   "priceAUD": 36,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Starfish Fast Cruise",
+   "from": "bangsal",
+   "to": "nusa-penida",
+   "fromName": "Bangsal (Lombok)",
+   "toName": "Nusa Penida",
+   "departs": "08:45",
+   "arrives": "11:15",
+   "priceAUD": 31,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "The Tanis Fast Cruise",
+   "from": "bangsal",
+   "to": "nusa-penida",
+   "fromName": "Bangsal (Lombok)",
+   "toName": "Nusa Penida",
+   "departs": "08:45",
+   "arrives": "11:45",
+   "priceAUD": 36,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "WaterJet",
+   "from": "bangsal",
+   "to": "nusa-penida",
+   "fromName": "Bangsal (Lombok)",
+   "toName": "Nusa Penida",
+   "departs": "08:45",
+   "arrives": "10:35",
+   "priceAUD": 39,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "WaterJet",
+   "from": "bangsal",
+   "to": "nusa-penida",
+   "fromName": "Bangsal (Lombok)",
+   "toName": "Nusa Penida",
+   "departs": "08:55",
+   "arrives": "10:35",
+   "priceAUD": 39,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "WaterJet",
+   "from": "bangsal",
+   "to": "nusa-penida",
+   "fromName": "Bangsal (Lombok)",
+   "toName": "Nusa Penida",
+   "departs": "08:58",
+   "arrives": "10:38",
+   "priceAUD": 39,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Starfish Fast Cruise",
+   "from": "bangsal",
+   "to": "nusa-penida",
+   "fromName": "Bangsal (Lombok)",
+   "toName": "Nusa Penida",
+   "departs": "09:15",
+   "arrives": "11:15",
+   "priceAUD": 31,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "WaterJet",
+   "from": "bangsal",
+   "to": "nusa-penida",
+   "fromName": "Bangsal (Lombok)",
+   "toName": "Nusa Penida",
+   "departs": "09:30",
+   "arrives": "11:10",
+   "priceAUD": 39,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Nusa Nadhi Fast Ferry",
+   "from": "bangsal",
+   "to": "nusa-penida",
+   "fromName": "Bangsal (Lombok)",
+   "toName": "Nusa Penida",
+   "departs": "13:30",
+   "arrives": "15:30",
+   "priceAUD": 31,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "The Tanis Fast Cruise",
+   "from": "bangsal",
+   "to": "nusa-penida",
+   "fromName": "Bangsal (Lombok)",
+   "toName": "Nusa Penida",
+   "departs": "13:30",
+   "arrives": "15:30",
+   "priceAUD": 32,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Wahana Virendra",
+   "from": "bangsal",
+   "to": "nusa-penida",
+   "fromName": "Bangsal (Lombok)",
+   "toName": "Nusa Penida",
+   "departs": "13:30",
+   "arrives": "15:30",
+   "priceAUD": 40,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Wijaya Buyuk",
+   "from": "bangsal",
+   "to": "padang-bai",
+   "fromName": "Bangsal (Lombok)",
+   "toName": "Padang Bai",
+   "departs": "08:35",
+   "arrives": "10:50",
+   "priceAUD": 33,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "WaterJet",
+   "from": "bangsal",
+   "to": "padang-bai",
+   "fromName": "Bangsal (Lombok)",
+   "toName": "Padang Bai",
+   "departs": "08:45",
+   "arrives": "11:00",
+   "priceAUD": 47,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "WaterJet",
+   "from": "bangsal",
+   "to": "padang-bai",
+   "fromName": "Bangsal (Lombok)",
+   "toName": "Padang Bai",
+   "departs": "09:00",
+   "arrives": "11:10",
+   "priceAUD": 47,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Semaya One",
+   "from": "bangsal",
+   "to": "padang-bai",
+   "fromName": "Bangsal (Lombok)",
+   "toName": "Padang Bai",
+   "departs": "09:30",
+   "arrives": "11:30",
+   "priceAUD": 46,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "WaterJet",
+   "from": "bangsal",
+   "to": "padang-bai",
+   "fromName": "Bangsal (Lombok)",
+   "toName": "Padang Bai",
+   "departs": "09:30",
+   "arrives": "12:00",
+   "priceAUD": 47,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Wahana Virendra",
+   "from": "bangsal",
+   "to": "padang-bai",
+   "fromName": "Bangsal (Lombok)",
+   "toName": "Padang Bai",
+   "departs": "10:00",
+   "arrives": "12:30",
+   "priceAUD": 39,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "WaterJet",
+   "from": "bangsal",
+   "to": "padang-bai",
+   "fromName": "Bangsal (Lombok)",
+   "toName": "Padang Bai",
+   "departs": "10:00",
+   "arrives": "12:00",
+   "priceAUD": 39,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "WaterJet",
+   "from": "bangsal",
+   "to": "padang-bai",
+   "fromName": "Bangsal (Lombok)",
+   "toName": "Padang Bai",
+   "departs": "10:30",
+   "arrives": "12:00",
+   "priceAUD": 39,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "WaterJet",
+   "from": "bangsal",
+   "to": "padang-bai",
+   "fromName": "Bangsal (Lombok)",
+   "toName": "Padang Bai",
+   "departs": "10:30",
+   "arrives": "13:00",
+   "priceAUD": 47,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Nusa Nadhi Fast Ferry",
+   "from": "bangsal",
+   "to": "padang-bai",
+   "fromName": "Bangsal (Lombok)",
+   "toName": "Padang Bai",
+   "departs": "11:00",
+   "arrives": "13:35",
+   "priceAUD": 37,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Wahana Virendra",
+   "from": "bangsal",
+   "to": "padang-bai",
+   "fromName": "Bangsal (Lombok)",
+   "toName": "Padang Bai",
+   "departs": "11:00",
+   "arrives": "12:30",
+   "priceAUD": 39,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "WaterJet",
+   "from": "bangsal",
+   "to": "padang-bai",
+   "fromName": "Bangsal (Lombok)",
+   "toName": "Padang Bai",
+   "departs": "11:00",
+   "arrives": "12:30",
+   "priceAUD": 47,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "WaterJet",
+   "from": "bangsal",
+   "to": "padang-bai",
+   "fromName": "Bangsal (Lombok)",
+   "toName": "Padang Bai",
+   "departs": "11:00",
+   "arrives": "13:00",
+   "priceAUD": 47,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "WaterJet",
+   "from": "bangsal",
+   "to": "padang-bai",
+   "fromName": "Bangsal (Lombok)",
+   "toName": "Padang Bai",
+   "departs": "11:00",
+   "arrives": "13:15",
+   "priceAUD": 47,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Wijaya Tramena",
+   "from": "bangsal",
+   "to": "padang-bai",
+   "fromName": "Bangsal (Lombok)",
+   "toName": "Padang Bai",
+   "departs": "11:00",
+   "arrives": "13:05",
+   "priceAUD": 34,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Karunia Luxury Fast Boat",
+   "from": "bangsal",
+   "to": "padang-bai",
+   "fromName": "Bangsal (Lombok)",
+   "toName": "Padang Bai",
+   "departs": "11:30",
+   "arrives": "12:30",
+   "priceAUD": 23,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "WaterJet",
+   "from": "bangsal",
+   "to": "padang-bai",
+   "fromName": "Bangsal (Lombok)",
+   "toName": "Padang Bai",
+   "departs": "11:30",
+   "arrives": "13:00",
+   "priceAUD": 47,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Nusa Nadhi Fast Ferry",
+   "from": "bangsal",
+   "to": "padang-bai",
+   "fromName": "Bangsal (Lombok)",
+   "toName": "Padang Bai",
+   "departs": "11:35",
+   "arrives": "13:35",
+   "priceAUD": 33,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Wijaya Tramena",
+   "from": "bangsal",
+   "to": "padang-bai",
+   "fromName": "Bangsal (Lombok)",
+   "toName": "Padang Bai",
+   "departs": "11:45",
+   "arrives": "13:05",
+   "priceAUD": 34,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Golden Queen Fast Ferry",
+   "from": "bangsal",
+   "to": "padang-bai",
+   "fromName": "Bangsal (Lombok)",
+   "toName": "Padang Bai",
+   "departs": "12:10",
+   "arrives": "13:45",
+   "priceAUD": 31,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Semaya One",
+   "from": "bangsal",
+   "to": "padang-bai",
+   "fromName": "Bangsal (Lombok)",
+   "toName": "Padang Bai",
+   "departs": "15:00",
+   "arrives": "17:00",
+   "priceAUD": 46,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "WaterJet",
+   "from": "bangsal",
+   "to": "padang-bai",
+   "fromName": "Bangsal (Lombok)",
+   "toName": "Padang Bai",
+   "departs": "15:00",
+   "arrives": "16:30",
+   "priceAUD": 47,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Wijaya Tramena",
+   "from": "bangsal",
+   "to": "padang-bai",
+   "fromName": "Bangsal (Lombok)",
+   "toName": "Padang Bai",
+   "departs": "15:15",
+   "arrives": "17:20",
+   "priceAUD": 34,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "WaterJet",
+   "from": "bangsal",
+   "to": "padang-bai",
+   "fromName": "Bangsal (Lombok)",
+   "toName": "Padang Bai",
+   "departs": "15:20",
+   "arrives": "17:00",
+   "priceAUD": 39,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Karunia Luxury Fast Boat",
+   "from": "bangsal",
+   "to": "padang-bai",
+   "fromName": "Bangsal (Lombok)",
+   "toName": "Padang Bai",
+   "departs": "15:30",
+   "arrives": "17:30",
+   "priceAUD": 23,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "WaterJet",
+   "from": "bangsal",
+   "to": "padang-bai",
+   "fromName": "Bangsal (Lombok)",
+   "toName": "Padang Bai",
+   "departs": "15:30",
+   "arrives": "17:00",
+   "priceAUD": 47,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "WaterJet",
+   "from": "bangsal",
+   "to": "padang-bai",
+   "fromName": "Bangsal (Lombok)",
+   "toName": "Padang Bai",
+   "departs": "15:30",
+   "arrives": "17:20",
+   "priceAUD": 39,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "WaterJet",
+   "from": "bangsal",
+   "to": "padang-bai",
+   "fromName": "Bangsal (Lombok)",
+   "toName": "Padang Bai",
+   "departs": "15:45",
+   "arrives": "17:55",
+   "priceAUD": 47,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "WaterJet",
+   "from": "bangsal",
+   "to": "padang-bai",
+   "fromName": "Bangsal (Lombok)",
+   "toName": "Padang Bai",
+   "departs": "16:00",
+   "arrives": "18:15",
+   "priceAUD": 47,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Wijaya Tramena",
+   "from": "bangsal",
+   "to": "padang-bai",
+   "fromName": "Bangsal (Lombok)",
+   "toName": "Padang Bai",
+   "departs": "16:00",
+   "arrives": "17:20",
+   "priceAUD": 34,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Golden Queen Fast Ferry",
+   "from": "bangsal",
+   "to": "padang-bai",
+   "fromName": "Bangsal (Lombok)",
+   "toName": "Padang Bai",
+   "departs": "16:15",
+   "arrives": "17:45",
+   "priceAUD": 39,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Wijaya Buyuk",
+   "from": "bangsal",
+   "to": "padang-bai",
+   "fromName": "Bangsal (Lombok)",
+   "toName": "Padang Bai",
+   "departs": "16:45",
+   "arrives": "18:15",
+   "priceAUD": 33,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Semaya One",
+   "from": "bangsal",
+   "to": "sanur",
+   "fromName": "Bangsal (Lombok)",
+   "toName": "Sanur",
+   "departs": "08:00",
+   "arrives": "12:15",
+   "priceAUD": 49,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Starfish Fast Cruise",
+   "from": "bangsal",
+   "to": "sanur",
+   "fromName": "Bangsal (Lombok)",
+   "toName": "Sanur",
+   "departs": "08:30",
+   "arrives": "11:45",
+   "priceAUD": 41,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Starfish Fast Cruise",
+   "from": "bangsal",
+   "to": "sanur",
+   "fromName": "Bangsal (Lombok)",
+   "toName": "Sanur",
+   "departs": "08:45",
+   "arrives": "11:45",
+   "priceAUD": 41,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "The Tanis Fast Cruise",
+   "from": "bangsal",
+   "to": "sanur",
+   "fromName": "Bangsal (Lombok)",
+   "toName": "Sanur",
+   "departs": "08:45",
+   "arrives": "12:30",
+   "priceAUD": 46,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "WaterJet",
+   "from": "bangsal",
+   "to": "sanur",
+   "fromName": "Bangsal (Lombok)",
+   "toName": "Sanur",
+   "departs": "08:45",
+   "arrives": "11:32",
+   "priceAUD": 47,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "WaterJet",
+   "from": "bangsal",
+   "to": "sanur",
+   "fromName": "Bangsal (Lombok)",
+   "toName": "Sanur",
+   "departs": "08:55",
+   "arrives": "11:32",
+   "priceAUD": 47,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "WaterJet",
+   "from": "bangsal",
+   "to": "sanur",
+   "fromName": "Bangsal (Lombok)",
+   "toName": "Sanur",
+   "departs": "08:58",
+   "arrives": "11:25",
+   "priceAUD": 47,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Starfish Fast Cruise",
+   "from": "bangsal",
+   "to": "sanur",
+   "fromName": "Bangsal (Lombok)",
+   "toName": "Sanur",
+   "departs": "09:15",
+   "arrives": "11:45",
+   "priceAUD": 41,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "WaterJet",
+   "from": "bangsal",
+   "to": "sanur",
+   "fromName": "Bangsal (Lombok)",
+   "toName": "Sanur",
+   "departs": "09:30",
+   "arrives": "11:57",
+   "priceAUD": 47,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "The Tanis Fast Cruise",
+   "from": "bangsal",
+   "to": "sanur",
+   "fromName": "Bangsal (Lombok)",
+   "toName": "Sanur",
+   "departs": "13:20",
+   "arrives": "16:40",
+   "priceAUD": 46,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Nusa Nadhi Fast Ferry",
+   "from": "bangsal",
+   "to": "sanur",
+   "fromName": "Bangsal (Lombok)",
+   "toName": "Sanur",
+   "departs": "13:30",
+   "arrives": "16:30",
+   "priceAUD": 43,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "The Tanis Fast Cruise",
+   "from": "bangsal",
+   "to": "sanur",
+   "fromName": "Bangsal (Lombok)",
+   "toName": "Sanur",
+   "departs": "13:30",
+   "arrives": "17:00",
+   "priceAUD": 46,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Marina Group",
+   "from": "benoa-nusa-dua",
+   "to": "bangsal",
+   "fromName": "Benoa / Nusa Dua",
+   "toName": "Bangsal (Lombok)",
+   "departs": "13:30",
+   "arrives": "17:00",
+   "priceAUD": 44,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Marina Group",
+   "from": "benoa-nusa-dua",
+   "to": "gili-air",
+   "fromName": "Benoa / Nusa Dua",
+   "toName": "Gili Air",
+   "departs": "13:30",
+   "arrives": "16:45",
+   "priceAUD": 43,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Marina Group",
+   "from": "benoa-nusa-dua",
+   "to": "gili-trawangan",
+   "fromName": "Benoa / Nusa Dua",
+   "toName": "Gili Trawangan",
+   "departs": "13:30",
+   "arrives": "16:30",
+   "priceAUD": 44,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Marina Group",
+   "from": "benoa-nusa-dua",
+   "to": "nusa-penida",
+   "fromName": "Benoa / Nusa Dua",
+   "toName": "Nusa Penida",
+   "departs": "13:30",
+   "arrives": "14:30",
+   "priceAUD": 13,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Marina Group",
+   "from": "gili-air",
+   "to": "benoa-nusa-dua",
+   "fromName": "Gili Air",
+   "toName": "Benoa / Nusa Dua",
+   "departs": "08:45",
+   "arrives": "12:30",
+   "priceAUD": 43,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Semaya One",
+   "from": "gili-air",
+   "to": "nusa-lembongan",
+   "fromName": "Gili Air",
+   "toName": "Nusa Lembongan",
+   "departs": "08:15",
+   "arrives": "11:45",
+   "priceAUD": 54,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Semaya One",
+   "from": "gili-air",
+   "to": "nusa-penida",
+   "fromName": "Gili Air",
+   "toName": "Nusa Penida",
+   "departs": "08:15",
+   "arrives": "11:15",
+   "priceAUD": 36,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Express Bali Travel",
+   "from": "gili-air",
+   "to": "nusa-penida",
+   "fromName": "Gili Air",
+   "toName": "Nusa Penida",
+   "departs": "08:30",
+   "arrives": "10:30",
+   "priceAUD": 35,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Wijaya Buyuk",
+   "from": "gili-air",
+   "to": "nusa-penida",
+   "fromName": "Gili Air",
+   "toName": "Nusa Penida",
+   "departs": "08:40",
+   "arrives": "10:35",
+   "priceAUD": 31,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Marina Group",
+   "from": "gili-air",
+   "to": "nusa-penida",
+   "fromName": "Gili Air",
+   "toName": "Nusa Penida",
+   "departs": "08:45",
+   "arrives": "11:30",
+   "priceAUD": 29,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Marina Luxury 99",
+   "from": "gili-air",
+   "to": "nusa-penida",
+   "fromName": "Gili Air",
+   "toName": "Nusa Penida",
+   "departs": "08:45",
+   "arrives": "11:30",
+   "priceAUD": 31,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Starfish Fast Cruise",
+   "from": "gili-air",
+   "to": "nusa-penida",
+   "fromName": "Gili Air",
+   "toName": "Nusa Penida",
+   "departs": "08:45",
+   "arrives": "11:15",
+   "priceAUD": 31,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "WaterJet",
+   "from": "gili-air",
+   "to": "nusa-penida",
+   "fromName": "Gili Air",
+   "toName": "Nusa Penida",
+   "departs": "08:45",
+   "arrives": "10:35",
+   "priceAUD": 39,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "The Tanis Fast Cruise",
+   "from": "gili-air",
+   "to": "nusa-penida",
+   "fromName": "Gili Air",
+   "toName": "Nusa Penida",
+   "departs": "09:00",
+   "arrives": "11:40",
+   "priceAUD": 36,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "The Tanis Fast Cruise",
+   "from": "gili-air",
+   "to": "nusa-penida",
+   "fromName": "Gili Air",
+   "toName": "Nusa Penida",
+   "departs": "09:15",
+   "arrives": "11:45",
+   "priceAUD": 36,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Express Bali Travel",
+   "from": "gili-air",
+   "to": "nusa-penida",
+   "fromName": "Gili Air",
+   "toName": "Nusa Penida",
+   "departs": "13:00",
+   "arrives": "15:00",
+   "priceAUD": 35,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Nusa Nadhi Fast Ferry",
+   "from": "gili-air",
+   "to": "nusa-penida",
+   "fromName": "Gili Air",
+   "toName": "Nusa Penida",
+   "departs": "13:00",
+   "arrives": "15:30",
+   "priceAUD": 31,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "The Tanis Fast Cruise",
+   "from": "gili-air",
+   "to": "nusa-penida",
+   "fromName": "Gili Air",
+   "toName": "Nusa Penida",
+   "departs": "13:00",
+   "arrives": "15:30",
+   "priceAUD": 32,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Wahana Virendra",
+   "from": "gili-air",
+   "to": "nusa-penida",
+   "fromName": "Gili Air",
+   "toName": "Nusa Penida",
+   "departs": "13:00",
+   "arrives": "16:00",
+   "priceAUD": 40,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Express Bali Travel",
+   "from": "gili-air",
+   "to": "padang-bai",
+   "fromName": "Gili Air",
+   "toName": "Padang Bai",
+   "departs": "08:45",
+   "arrives": "10:45",
+   "priceAUD": 35,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Wijaya Buyuk",
+   "from": "gili-air",
+   "to": "padang-bai",
+   "fromName": "Gili Air",
+   "toName": "Padang Bai",
+   "departs": "08:50",
+   "arrives": "10:50",
+   "priceAUD": 33,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "WaterJet",
+   "from": "gili-air",
+   "to": "padang-bai",
+   "fromName": "Gili Air",
+   "toName": "Padang Bai",
+   "departs": "09:00",
+   "arrives": "11:10",
+   "priceAUD": 47,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "WaterJet",
+   "from": "gili-air",
+   "to": "padang-bai",
+   "fromName": "Gili Air",
+   "toName": "Padang Bai",
+   "departs": "10:00",
+   "arrives": "12:00",
+   "priceAUD": 39,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Karunia Luxury Fast Boat",
+   "from": "gili-air",
+   "to": "padang-bai",
+   "fromName": "Gili Air",
+   "toName": "Padang Bai",
+   "departs": "10:45",
+   "arrives": "12:30",
+   "priceAUD": 23,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "WaterJet",
+   "from": "gili-air",
+   "to": "padang-bai",
+   "fromName": "Gili Air",
+   "toName": "Padang Bai",
+   "departs": "11:00",
+   "arrives": "13:00",
+   "priceAUD": 47,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Nusa Nadhi Fast Ferry",
+   "from": "gili-air",
+   "to": "padang-bai",
+   "fromName": "Gili Air",
+   "toName": "Padang Bai",
+   "departs": "11:15",
+   "arrives": "13:35",
+   "priceAUD": 33,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Express Bali Travel",
+   "from": "gili-air",
+   "to": "padang-bai",
+   "fromName": "Gili Air",
+   "toName": "Padang Bai",
+   "departs": "11:30",
+   "arrives": "13:30",
+   "priceAUD": 35,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Wijaya Tramena",
+   "from": "gili-air",
+   "to": "padang-bai",
+   "fromName": "Gili Air",
+   "toName": "Padang Bai",
+   "departs": "11:30",
+   "arrives": "13:05",
+   "priceAUD": 34,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Karunia Luxury Fast Boat",
+   "from": "gili-air",
+   "to": "padang-bai",
+   "fromName": "Gili Air",
+   "toName": "Padang Bai",
+   "departs": "15:10",
+   "arrives": "17:30",
+   "priceAUD": 23,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Semaya One",
+   "from": "gili-air",
+   "to": "padang-bai",
+   "fromName": "Gili Air",
+   "toName": "Padang Bai",
+   "departs": "15:15",
+   "arrives": "17:15",
+   "priceAUD": 41,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "WaterJet",
+   "from": "gili-air",
+   "to": "padang-bai",
+   "fromName": "Gili Air",
+   "toName": "Padang Bai",
+   "departs": "15:20",
+   "arrives": "17:00",
+   "priceAUD": 39,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Golden Queen Fast Ferry",
+   "from": "gili-air",
+   "to": "padang-bai",
+   "fromName": "Gili Air",
+   "toName": "Padang Bai",
+   "departs": "15:25",
+   "arrives": "17:15",
+   "priceAUD": 39,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Express Bali Travel",
+   "from": "gili-air",
+   "to": "padang-bai",
+   "fromName": "Gili Air",
+   "toName": "Padang Bai",
+   "departs": "15:45",
+   "arrives": "17:45",
+   "priceAUD": 35,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "WaterJet",
+   "from": "gili-air",
+   "to": "padang-bai",
+   "fromName": "Gili Air",
+   "toName": "Padang Bai",
+   "departs": "15:45",
+   "arrives": "17:55",
+   "priceAUD": 47,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Wijaya Tramena",
+   "from": "gili-air",
+   "to": "padang-bai",
+   "fromName": "Gili Air",
+   "toName": "Padang Bai",
+   "departs": "15:45",
+   "arrives": "17:20",
+   "priceAUD": 34,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Wijaya Buyuk",
+   "from": "gili-air",
+   "to": "padang-bai",
+   "fromName": "Gili Air",
+   "toName": "Padang Bai",
+   "departs": "16:30",
+   "arrives": "18:15",
+   "priceAUD": 33,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Semaya One",
+   "from": "gili-air",
+   "to": "sanur",
+   "fromName": "Gili Air",
+   "toName": "Sanur",
+   "departs": "08:15",
+   "arrives": "12:15",
+   "priceAUD": 49,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Starfish Fast Cruise",
+   "from": "gili-air",
+   "to": "sanur",
+   "fromName": "Gili Air",
+   "toName": "Sanur",
+   "departs": "08:45",
+   "arrives": "11:45",
+   "priceAUD": 41,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "WaterJet",
+   "from": "gili-air",
+   "to": "sanur",
+   "fromName": "Gili Air",
+   "toName": "Sanur",
+   "departs": "08:45",
+   "arrives": "11:32",
+   "priceAUD": 47,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "The Tanis Fast Cruise",
+   "from": "gili-air",
+   "to": "sanur",
+   "fromName": "Gili Air",
+   "toName": "Sanur",
+   "departs": "09:00",
+   "arrives": "12:30",
+   "priceAUD": 46,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Nusa Nadhi Fast Ferry",
+   "from": "gili-air",
+   "to": "sanur",
+   "fromName": "Gili Air",
+   "toName": "Sanur",
+   "departs": "13:00",
+   "arrives": "16:30",
+   "priceAUD": 43,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "The Tanis Fast Cruise",
+   "from": "gili-air",
+   "to": "sanur",
+   "fromName": "Gili Air",
+   "toName": "Sanur",
+   "departs": "13:00",
+   "arrives": "17:00",
+   "priceAUD": 46,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Wijaya Buyuk",
+   "from": "gili-meno",
+   "to": "nusa-lembongan",
+   "fromName": "Gili Meno",
+   "toName": "Nusa Lembongan",
+   "departs": "08:30",
+   "arrives": "11:10",
+   "priceAUD": 44,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Wijaya Buyuk",
+   "from": "gili-meno",
+   "to": "nusa-penida",
+   "fromName": "Gili Meno",
+   "toName": "Nusa Penida",
+   "departs": "08:30",
+   "arrives": "10:15",
+   "priceAUD": 36,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Wijaya Buyuk",
+   "from": "gili-meno",
+   "to": "padang-bai",
+   "fromName": "Gili Meno",
+   "toName": "Padang Bai",
+   "departs": "09:05",
+   "arrives": "10:50",
+   "priceAUD": 38,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Semaya One",
+   "from": "gili-meno",
+   "to": "padang-bai",
+   "fromName": "Gili Meno",
+   "toName": "Padang Bai",
+   "departs": "09:30",
+   "arrives": "11:30",
+   "priceAUD": 46,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Wijaya Tramena",
+   "from": "gili-meno",
+   "to": "padang-bai",
+   "fromName": "Gili Meno",
+   "toName": "Padang Bai",
+   "departs": "11:15",
+   "arrives": "13:05",
+   "priceAUD": 38,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Semaya One",
+   "from": "gili-meno",
+   "to": "padang-bai",
+   "fromName": "Gili Meno",
+   "toName": "Padang Bai",
+   "departs": "15:00",
+   "arrives": "17:00",
+   "priceAUD": 46,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Wijaya Tramena",
+   "from": "gili-meno",
+   "to": "padang-bai",
+   "fromName": "Gili Meno",
+   "toName": "Padang Bai",
+   "departs": "15:30",
+   "arrives": "17:20",
+   "priceAUD": 38,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Wijaya Buyuk",
+   "from": "gili-meno",
+   "to": "padang-bai",
+   "fromName": "Gili Meno",
+   "toName": "Padang Bai",
+   "departs": "16:15",
+   "arrives": "18:15",
+   "priceAUD": 38,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Marina Group",
+   "from": "gili-trawangan",
+   "to": "benoa-nusa-dua",
+   "fromName": "Gili Trawangan",
+   "toName": "Benoa / Nusa Dua",
+   "departs": "09:30",
+   "arrives": "12:30",
+   "priceAUD": 44,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Semaya One",
+   "from": "gili-trawangan",
+   "to": "nusa-lembongan",
+   "fromName": "Gili Trawangan",
+   "toName": "Nusa Lembongan",
+   "departs": "08:30",
+   "arrives": "11:30",
+   "priceAUD": 54,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Semaya One",
+   "from": "gili-trawangan",
+   "to": "nusa-lembongan",
+   "fromName": "Gili Trawangan",
+   "toName": "Nusa Lembongan",
+   "departs": "08:45",
+   "arrives": "11:45",
+   "priceAUD": 52,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Wijaya Buyuk",
+   "from": "gili-trawangan",
+   "to": "nusa-lembongan",
+   "fromName": "Gili Trawangan",
+   "toName": "Nusa Lembongan",
+   "departs": "08:45",
+   "arrives": "11:10",
+   "priceAUD": 40,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Semaya One",
+   "from": "gili-trawangan",
+   "to": "nusa-penida",
+   "fromName": "Gili Trawangan",
+   "toName": "Nusa Penida",
+   "departs": "08:30",
+   "arrives": "11:00",
+   "priceAUD": 36,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Semaya One",
+   "from": "gili-trawangan",
+   "to": "nusa-penida",
+   "fromName": "Gili Trawangan",
+   "toName": "Nusa Penida",
+   "departs": "08:45",
+   "arrives": "11:15",
+   "priceAUD": 36,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Wijaya Buyuk",
+   "from": "gili-trawangan",
+   "to": "nusa-penida",
+   "fromName": "Gili Trawangan",
+   "toName": "Nusa Penida",
+   "departs": "08:45",
+   "arrives": "10:15",
+   "priceAUD": 31,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "WaterJet",
+   "from": "gili-trawangan",
+   "to": "nusa-penida",
+   "fromName": "Gili Trawangan",
+   "toName": "Nusa Penida",
+   "departs": "08:55",
+   "arrives": "10:35",
+   "priceAUD": 39,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "WaterJet",
+   "from": "gili-trawangan",
+   "to": "nusa-penida",
+   "fromName": "Gili Trawangan",
+   "toName": "Nusa Penida",
+   "departs": "08:58",
+   "arrives": "10:38",
+   "priceAUD": 39,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Express Bali Travel",
+   "from": "gili-trawangan",
+   "to": "nusa-penida",
+   "fromName": "Gili Trawangan",
+   "toName": "Nusa Penida",
+   "departs": "09:00",
+   "arrives": "10:50",
+   "priceAUD": 35,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Semaya One",
+   "from": "gili-trawangan",
+   "to": "nusa-penida",
+   "fromName": "Gili Trawangan",
+   "toName": "Nusa Penida",
+   "departs": "09:00",
+   "arrives": "11:45",
+   "priceAUD": 36,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Starfish Fast Cruise",
+   "from": "gili-trawangan",
+   "to": "nusa-penida",
+   "fromName": "Gili Trawangan",
+   "toName": "Nusa Penida",
+   "departs": "09:15",
+   "arrives": "11:15",
+   "priceAUD": 31,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Marina Luxury 99",
+   "from": "gili-trawangan",
+   "to": "nusa-penida",
+   "fromName": "Gili Trawangan",
+   "toName": "Nusa Penida",
+   "departs": "09:30",
+   "arrives": "11:30",
+   "priceAUD": 28,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "The Tanis Fast Cruise",
+   "from": "gili-trawangan",
+   "to": "nusa-penida",
+   "fromName": "Gili Trawangan",
+   "toName": "Nusa Penida",
+   "departs": "09:30",
+   "arrives": "11:40",
+   "priceAUD": 36,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "The Tanis Fast Cruise",
+   "from": "gili-trawangan",
+   "to": "nusa-penida",
+   "fromName": "Gili Trawangan",
+   "toName": "Nusa Penida",
+   "departs": "09:45",
+   "arrives": "11:45",
+   "priceAUD": 36,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Express Bali Travel",
+   "from": "gili-trawangan",
+   "to": "nusa-penida",
+   "fromName": "Gili Trawangan",
+   "toName": "Nusa Penida",
+   "departs": "12:30",
+   "arrives": "14:20",
+   "priceAUD": 35,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "The Tanis Fast Cruise",
+   "from": "gili-trawangan",
+   "to": "nusa-penida",
+   "fromName": "Gili Trawangan",
+   "toName": "Nusa Penida",
+   "departs": "12:30",
+   "arrives": "15:30",
+   "priceAUD": 32,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Wahana Virendra",
+   "from": "gili-trawangan",
+   "to": "nusa-penida",
+   "fromName": "Gili Trawangan",
+   "toName": "Nusa Penida",
+   "departs": "13:30",
+   "arrives": "15:30",
+   "priceAUD": 40,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Wijaya Buyuk",
+   "from": "gili-trawangan",
+   "to": "padang-bai",
+   "fromName": "Gili Trawangan",
+   "toName": "Padang Bai",
+   "departs": "09:20",
+   "arrives": "10:50",
+   "priceAUD": 33,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Express Bali Travel",
+   "from": "gili-trawangan",
+   "to": "padang-bai",
+   "fromName": "Gili Trawangan",
+   "toName": "Padang Bai",
+   "departs": "09:30",
+   "arrives": "11:00",
+   "priceAUD": 35,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "WaterJet",
+   "from": "gili-trawangan",
+   "to": "padang-bai",
+   "fromName": "Gili Trawangan",
+   "toName": "Padang Bai",
+   "departs": "09:30",
+   "arrives": "12:00",
+   "priceAUD": 47,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Karunia Luxury Fast Boat",
+   "from": "gili-trawangan",
+   "to": "padang-bai",
+   "fromName": "Gili Trawangan",
+   "toName": "Padang Bai",
+   "departs": "10:30",
+   "arrives": "12:30",
+   "priceAUD": 23,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "WaterJet",
+   "from": "gili-trawangan",
+   "to": "padang-bai",
+   "fromName": "Gili Trawangan",
+   "toName": "Padang Bai",
+   "departs": "10:30",
+   "arrives": "13:00",
+   "priceAUD": 47,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Express Bali Travel",
+   "from": "gili-trawangan",
+   "to": "padang-bai",
+   "fromName": "Gili Trawangan",
+   "toName": "Padang Bai",
+   "departs": "11:00",
+   "arrives": "12:30",
+   "priceAUD": 35,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Nusa Nadhi Fast Ferry",
+   "from": "gili-trawangan",
+   "to": "padang-bai",
+   "fromName": "Gili Trawangan",
+   "toName": "Padang Bai",
+   "departs": "11:00",
+   "arrives": "13:35",
+   "priceAUD": 37,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Wijaya Tramena",
+   "from": "gili-trawangan",
+   "to": "padang-bai",
+   "fromName": "Gili Trawangan",
+   "toName": "Padang Bai",
+   "departs": "11:00",
+   "arrives": "13:05",
+   "priceAUD": 34,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Golden Queen Fast Ferry",
+   "from": "gili-trawangan",
+   "to": "padang-bai",
+   "fromName": "Gili Trawangan",
+   "toName": "Padang Bai",
+   "departs": "15:00",
+   "arrives": "17:15",
+   "priceAUD": 39,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Karunia Luxury Fast Boat",
+   "from": "gili-trawangan",
+   "to": "padang-bai",
+   "fromName": "Gili Trawangan",
+   "toName": "Padang Bai",
+   "departs": "15:00",
+   "arrives": "17:30",
+   "priceAUD": 23,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "WaterJet",
+   "from": "gili-trawangan",
+   "to": "padang-bai",
+   "fromName": "Gili Trawangan",
+   "toName": "Padang Bai",
+   "departs": "15:00",
+   "arrives": "16:30",
+   "priceAUD": 47,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Express Bali Travel",
+   "from": "gili-trawangan",
+   "to": "padang-bai",
+   "fromName": "Gili Trawangan",
+   "toName": "Padang Bai",
+   "departs": "15:15",
+   "arrives": "16:45",
+   "priceAUD": 35,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Wijaya Tramena",
+   "from": "gili-trawangan",
+   "to": "padang-bai",
+   "fromName": "Gili Trawangan",
+   "toName": "Padang Bai",
+   "departs": "15:15",
+   "arrives": "17:20",
+   "priceAUD": 34,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Golden Queen Fast Ferry",
+   "from": "gili-trawangan",
+   "to": "padang-bai",
+   "fromName": "Gili Trawangan",
+   "toName": "Padang Bai",
+   "departs": "15:30",
+   "arrives": "17:45",
+   "priceAUD": 39,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "WaterJet",
+   "from": "gili-trawangan",
+   "to": "padang-bai",
+   "fromName": "Gili Trawangan",
+   "toName": "Padang Bai",
+   "departs": "15:30",
+   "arrives": "17:00",
+   "priceAUD": 47,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Semaya One",
+   "from": "gili-trawangan",
+   "to": "padang-bai",
+   "fromName": "Gili Trawangan",
+   "toName": "Padang Bai",
+   "departs": "15:45",
+   "arrives": "17:15",
+   "priceAUD": 41,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Wijaya Buyuk",
+   "from": "gili-trawangan",
+   "to": "padang-bai",
+   "fromName": "Gili Trawangan",
+   "toName": "Padang Bai",
+   "departs": "16:00",
+   "arrives": "18:15",
+   "priceAUD": 33,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Semaya One",
+   "from": "gili-trawangan",
+   "to": "sanur",
+   "fromName": "Gili Trawangan",
+   "toName": "Sanur",
+   "departs": "08:30",
+   "arrives": "12:00",
+   "priceAUD": 49,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Semaya One",
+   "from": "gili-trawangan",
+   "to": "sanur",
+   "fromName": "Gili Trawangan",
+   "toName": "Sanur",
+   "departs": "08:45",
+   "arrives": "12:15",
+   "priceAUD": 49,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "WaterJet",
+   "from": "gili-trawangan",
+   "to": "sanur",
+   "fromName": "Gili Trawangan",
+   "toName": "Sanur",
+   "departs": "08:55",
+   "arrives": "11:32",
+   "priceAUD": 47,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "WaterJet",
+   "from": "gili-trawangan",
+   "to": "sanur",
+   "fromName": "Gili Trawangan",
+   "toName": "Sanur",
+   "departs": "08:58",
+   "arrives": "11:25",
+   "priceAUD": 47,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Semaya One",
+   "from": "gili-trawangan",
+   "to": "sanur",
+   "fromName": "Gili Trawangan",
+   "toName": "Sanur",
+   "departs": "09:00",
+   "arrives": "12:45",
+   "priceAUD": 50,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Starfish Fast Cruise",
+   "from": "gili-trawangan",
+   "to": "sanur",
+   "fromName": "Gili Trawangan",
+   "toName": "Sanur",
+   "departs": "09:15",
+   "arrives": "11:45",
+   "priceAUD": 41,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "The Tanis Fast Cruise",
+   "from": "gili-trawangan",
+   "to": "sanur",
+   "fromName": "Gili Trawangan",
+   "toName": "Sanur",
+   "departs": "09:15",
+   "arrives": "12:30",
+   "priceAUD": 46,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "The Tanis Fast Cruise",
+   "from": "gili-trawangan",
+   "to": "sanur",
+   "fromName": "Gili Trawangan",
+   "toName": "Sanur",
+   "departs": "12:30",
+   "arrives": "17:00",
+   "priceAUD": 46,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "The Tanis Fast Cruise",
+   "from": "nusa-lembongan",
+   "to": "bangsal",
+   "fromName": "Nusa Lembongan",
+   "toName": "Bangsal (Lombok)",
+   "departs": "09:40",
+   "arrives": "13:25",
+   "priceAUD": 42,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Nusa Nadhi Fast Ferry",
+   "from": "nusa-lembongan",
+   "to": "bangsal",
+   "fromName": "Nusa Lembongan",
+   "toName": "Bangsal (Lombok)",
+   "departs": "10:00",
+   "arrives": "12:30",
+   "priceAUD": 34,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Nusa Nadhi Fast Ferry",
+   "from": "nusa-lembongan",
+   "to": "bangsal",
+   "fromName": "Nusa Lembongan",
+   "toName": "Bangsal (Lombok)",
+   "departs": "10:00",
+   "arrives": "13:15",
+   "priceAUD": 34,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Semaya One",
+   "from": "nusa-lembongan",
+   "to": "bangsal",
+   "fromName": "Nusa Lembongan",
+   "toName": "Bangsal (Lombok)",
+   "departs": "13:00",
+   "arrives": "17:30",
+   "priceAUD": 52,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "The Tanis Fast Cruise",
+   "from": "nusa-lembongan",
+   "to": "gili-air",
+   "fromName": "Nusa Lembongan",
+   "toName": "Gili Air",
+   "departs": "09:40",
+   "arrives": "12:55",
+   "priceAUD": 42,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Nusa Nadhi Fast Ferry",
+   "from": "nusa-lembongan",
+   "to": "gili-air",
+   "fromName": "Nusa Lembongan",
+   "toName": "Gili Air",
+   "departs": "10:00",
+   "arrives": "13:00",
+   "priceAUD": 35,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Semaya One",
+   "from": "nusa-lembongan",
+   "to": "gili-air",
+   "fromName": "Nusa Lembongan",
+   "toName": "Gili Air",
+   "departs": "13:00",
+   "arrives": "16:30",
+   "priceAUD": 52,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "The Tanis Fast Cruise",
+   "from": "nusa-lembongan",
+   "to": "gili-trawangan",
+   "fromName": "Nusa Lembongan",
+   "toName": "Gili Trawangan",
+   "departs": "09:40",
+   "arrives": "12:25",
+   "priceAUD": 42,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Nusa Nadhi Fast Ferry",
+   "from": "nusa-lembongan",
+   "to": "gili-trawangan",
+   "fromName": "Nusa Lembongan",
+   "toName": "Gili Trawangan",
+   "departs": "10:00",
+   "arrives": "12:30",
+   "priceAUD": 34,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Semaya One",
+   "from": "nusa-lembongan",
+   "to": "gili-trawangan",
+   "fromName": "Nusa Lembongan",
+   "toName": "Gili Trawangan",
+   "departs": "13:00",
+   "arrives": "17:00",
+   "priceAUD": 52,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Express Bali Travel",
+   "from": "nusa-lembongan",
+   "to": "sanur",
+   "fromName": "Nusa Lembongan",
+   "toName": "Sanur",
+   "departs": "08:15",
+   "arrives": "09:00",
+   "priceAUD": 17,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Express Bali Travel",
+   "from": "nusa-lembongan",
+   "to": "sanur",
+   "fromName": "Nusa Lembongan",
+   "toName": "Sanur",
+   "departs": "12:30",
+   "arrives": "13:15",
+   "priceAUD": 17,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Arthamas Express",
+   "from": "nusa-lembongan",
+   "to": "sanur",
+   "fromName": "Nusa Lembongan",
+   "toName": "Sanur",
+   "departs": "13:00",
+   "arrives": "13:30",
+   "priceAUD": 17,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Express Bali Travel",
+   "from": "nusa-lembongan",
+   "to": "sanur",
+   "fromName": "Nusa Lembongan",
+   "toName": "Sanur",
+   "departs": "16:00",
+   "arrives": "16:45",
+   "priceAUD": 17,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Gili Getaway",
+   "from": "nusa-penida",
+   "to": "bangsal",
+   "fromName": "Nusa Penida",
+   "toName": "Bangsal (Lombok)",
+   "departs": "09:00",
+   "arrives": "16:30",
+   "priceAUD": 50,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Wahana Virendra",
+   "from": "nusa-penida",
+   "to": "bangsal",
+   "fromName": "Nusa Penida",
+   "toName": "Bangsal (Lombok)",
+   "departs": "10:00",
+   "arrives": "12:30",
+   "priceAUD": 40,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Wahana Virendra",
+   "from": "nusa-penida",
+   "to": "bangsal",
+   "fromName": "Nusa Penida",
+   "toName": "Bangsal (Lombok)",
+   "departs": "10:00",
+   "arrives": "12:45",
+   "priceAUD": 40,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "The Tanis Fast Cruise",
+   "from": "nusa-penida",
+   "to": "bangsal",
+   "fromName": "Nusa Penida",
+   "toName": "Bangsal (Lombok)",
+   "departs": "10:10",
+   "arrives": "13:25",
+   "priceAUD": 32,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "The Tanis Fast Cruise",
+   "from": "nusa-penida",
+   "to": "bangsal",
+   "fromName": "Nusa Penida",
+   "toName": "Bangsal (Lombok)",
+   "departs": "10:20",
+   "arrives": "13:20",
+   "priceAUD": 32,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Nusa Nadhi Fast Ferry",
+   "from": "nusa-penida",
+   "to": "bangsal",
+   "fromName": "Nusa Penida",
+   "toName": "Bangsal (Lombok)",
+   "departs": "10:30",
+   "arrives": "12:30",
+   "priceAUD": 31,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Nusa Nadhi Fast Ferry",
+   "from": "nusa-penida",
+   "to": "bangsal",
+   "fromName": "Nusa Penida",
+   "toName": "Bangsal (Lombok)",
+   "departs": "10:30",
+   "arrives": "13:15",
+   "priceAUD": 31,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "The Tanis Fast Cruise",
+   "from": "nusa-penida",
+   "to": "bangsal",
+   "fromName": "Nusa Penida",
+   "toName": "Bangsal (Lombok)",
+   "departs": "10:30",
+   "arrives": "13:30",
+   "priceAUD": 36,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Wahana Virendra",
+   "from": "nusa-penida",
+   "to": "bangsal",
+   "fromName": "Nusa Penida",
+   "toName": "Bangsal (Lombok)",
+   "departs": "10:30",
+   "arrives": "13:30",
+   "priceAUD": 40,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "WaterJet",
+   "from": "nusa-penida",
+   "to": "bangsal",
+   "fromName": "Nusa Penida",
+   "toName": "Bangsal (Lombok)",
+   "departs": "13:15",
+   "arrives": "14:55",
+   "priceAUD": 26,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "WaterJet",
+   "from": "nusa-penida",
+   "to": "bangsal",
+   "fromName": "Nusa Penida",
+   "toName": "Bangsal (Lombok)",
+   "departs": "13:15",
+   "arrives": "15:05",
+   "priceAUD": 26,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "WaterJet",
+   "from": "nusa-penida",
+   "to": "bangsal",
+   "fromName": "Nusa Penida",
+   "toName": "Bangsal (Lombok)",
+   "departs": "13:15",
+   "arrives": "15:15",
+   "priceAUD": 26,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "WaterJet",
+   "from": "nusa-penida",
+   "to": "bangsal",
+   "fromName": "Nusa Penida",
+   "toName": "Bangsal (Lombok)",
+   "departs": "13:17",
+   "arrives": "15:02",
+   "priceAUD": 39,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "WaterJet",
+   "from": "nusa-penida",
+   "to": "bangsal",
+   "fromName": "Nusa Penida",
+   "toName": "Bangsal (Lombok)",
+   "departs": "13:17",
+   "arrives": "15:30",
+   "priceAUD": 39,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "WaterJet",
+   "from": "nusa-penida",
+   "to": "bangsal",
+   "fromName": "Nusa Penida",
+   "toName": "Bangsal (Lombok)",
+   "departs": "13:25",
+   "arrives": "15:10",
+   "priceAUD": 39,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "WaterJet",
+   "from": "nusa-penida",
+   "to": "bangsal",
+   "fromName": "Nusa Penida",
+   "toName": "Bangsal (Lombok)",
+   "departs": "13:25",
+   "arrives": "15:40",
+   "priceAUD": 39,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "WaterJet",
+   "from": "nusa-penida",
+   "to": "bangsal",
+   "fromName": "Nusa Penida",
+   "toName": "Bangsal (Lombok)",
+   "departs": "13:25",
+   "arrives": "16:05",
+   "priceAUD": 39,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Semaya One",
+   "from": "nusa-penida",
+   "to": "bangsal",
+   "fromName": "Nusa Penida",
+   "toName": "Bangsal (Lombok)",
+   "departs": "13:30",
+   "arrives": "17:30",
+   "priceAUD": 36,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "The Tanis Fast Cruise",
+   "from": "nusa-penida",
+   "to": "bangsal",
+   "fromName": "Nusa Penida",
+   "toName": "Bangsal (Lombok)",
+   "departs": "13:30",
+   "arrives": "16:35",
+   "priceAUD": 36,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "WaterJet",
+   "from": "nusa-penida",
+   "to": "bangsal",
+   "fromName": "Nusa Penida",
+   "toName": "Bangsal (Lombok)",
+   "departs": "13:30",
+   "arrives": "15:25",
+   "priceAUD": 39,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "WaterJet",
+   "from": "nusa-penida",
+   "to": "bangsal",
+   "fromName": "Nusa Penida",
+   "toName": "Bangsal (Lombok)",
+   "departs": "13:30",
+   "arrives": "15:50",
+   "priceAUD": 39,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "WaterJet",
+   "from": "nusa-penida",
+   "to": "bangsal",
+   "fromName": "Nusa Penida",
+   "toName": "Bangsal (Lombok)",
+   "departs": "13:30",
+   "arrives": "15:53",
+   "priceAUD": 39,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "WaterJet",
+   "from": "nusa-penida",
+   "to": "bangsal",
+   "fromName": "Nusa Penida",
+   "toName": "Bangsal (Lombok)",
+   "departs": "13:45",
+   "arrives": "15:25",
+   "priceAUD": 26,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "WaterJet",
+   "from": "nusa-penida",
+   "to": "bangsal",
+   "fromName": "Nusa Penida",
+   "toName": "Bangsal (Lombok)",
+   "departs": "13:45",
+   "arrives": "15:35",
+   "priceAUD": 26,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "WaterJet",
+   "from": "nusa-penida",
+   "to": "bangsal",
+   "fromName": "Nusa Penida",
+   "toName": "Bangsal (Lombok)",
+   "departs": "13:45",
+   "arrives": "15:50",
+   "priceAUD": 26,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "The Tanis Fast Cruise",
+   "from": "nusa-penida",
+   "to": "bangsal",
+   "fromName": "Nusa Penida",
+   "toName": "Bangsal (Lombok)",
+   "departs": "13:50",
+   "arrives": "16:50",
+   "priceAUD": 32,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Semaya One",
+   "from": "nusa-penida",
+   "to": "bangsal",
+   "fromName": "Nusa Penida",
+   "toName": "Bangsal (Lombok)",
+   "departs": "14:00",
+   "arrives": "17:30",
+   "priceAUD": 36,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Starfish Fast Cruise",
+   "from": "nusa-penida",
+   "to": "bangsal",
+   "fromName": "Nusa Penida",
+   "toName": "Bangsal (Lombok)",
+   "departs": "14:00",
+   "arrives": "15:00",
+   "priceAUD": 31,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Starfish Fast Cruise",
+   "from": "nusa-penida",
+   "to": "bangsal",
+   "fromName": "Nusa Penida",
+   "toName": "Bangsal (Lombok)",
+   "departs": "14:00",
+   "arrives": "15:15",
+   "priceAUD": 31,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Starfish Fast Cruise",
+   "from": "nusa-penida",
+   "to": "bangsal",
+   "fromName": "Nusa Penida",
+   "toName": "Bangsal (Lombok)",
+   "departs": "14:00",
+   "arrives": "15:30",
+   "priceAUD": 31,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "The Tanis Fast Cruise",
+   "from": "nusa-penida",
+   "to": "bangsal",
+   "fromName": "Nusa Penida",
+   "toName": "Bangsal (Lombok)",
+   "departs": "14:00",
+   "arrives": "17:00",
+   "priceAUD": 32,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Marina Group",
+   "from": "nusa-penida",
+   "to": "bangsal",
+   "fromName": "Nusa Penida",
+   "toName": "Bangsal (Lombok)",
+   "departs": "14:45",
+   "arrives": "17:15",
+   "priceAUD": 28,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Marina Luxury 99",
+   "from": "nusa-penida",
+   "to": "bangsal",
+   "fromName": "Nusa Penida",
+   "toName": "Bangsal (Lombok)",
+   "departs": "14:45",
+   "arrives": "17:00",
+   "priceAUD": 28,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Marina Group",
+   "from": "nusa-penida",
+   "to": "benoa-nusa-dua",
+   "fromName": "Nusa Penida",
+   "toName": "Benoa / Nusa Dua",
+   "departs": "11:30",
+   "arrives": "12:30",
+   "priceAUD": 13,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Gili Getaway",
+   "from": "nusa-penida",
+   "to": "gili-air",
+   "fromName": "Nusa Penida",
+   "toName": "Gili Air",
+   "departs": "09:00",
+   "arrives": "12:15",
+   "priceAUD": 50,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "The Tanis Fast Cruise",
+   "from": "nusa-penida",
+   "to": "gili-air",
+   "fromName": "Nusa Penida",
+   "toName": "Gili Air",
+   "departs": "10:10",
+   "arrives": "12:55",
+   "priceAUD": 32,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "The Tanis Fast Cruise",
+   "from": "nusa-penida",
+   "to": "gili-air",
+   "fromName": "Nusa Penida",
+   "toName": "Gili Air",
+   "departs": "10:20",
+   "arrives": "12:50",
+   "priceAUD": 32,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Nusa Nadhi Fast Ferry",
+   "from": "nusa-penida",
+   "to": "gili-air",
+   "fromName": "Nusa Penida",
+   "toName": "Gili Air",
+   "departs": "10:30",
+   "arrives": "13:00",
+   "priceAUD": 31,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "The Tanis Fast Cruise",
+   "from": "nusa-penida",
+   "to": "gili-air",
+   "fromName": "Nusa Penida",
+   "toName": "Gili Air",
+   "departs": "10:30",
+   "arrives": "13:00",
+   "priceAUD": 36,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Wahana Virendra",
+   "from": "nusa-penida",
+   "to": "gili-air",
+   "fromName": "Nusa Penida",
+   "toName": "Gili Air",
+   "departs": "10:30",
+   "arrives": "13:15",
+   "priceAUD": 40,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "WaterJet",
+   "from": "nusa-penida",
+   "to": "gili-air",
+   "fromName": "Nusa Penida",
+   "toName": "Gili Air",
+   "departs": "13:15",
+   "arrives": "15:05",
+   "priceAUD": 26,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "WaterJet",
+   "from": "nusa-penida",
+   "to": "gili-air",
+   "fromName": "Nusa Penida",
+   "toName": "Gili Air",
+   "departs": "13:25",
+   "arrives": "15:40",
+   "priceAUD": 39,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Semaya One",
+   "from": "nusa-penida",
+   "to": "gili-air",
+   "fromName": "Nusa Penida",
+   "toName": "Gili Air",
+   "departs": "13:30",
+   "arrives": "16:30",
+   "priceAUD": 36,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "The Tanis Fast Cruise",
+   "from": "nusa-penida",
+   "to": "gili-air",
+   "fromName": "Nusa Penida",
+   "toName": "Gili Air",
+   "departs": "13:30",
+   "arrives": "16:05",
+   "priceAUD": 36,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "WaterJet",
+   "from": "nusa-penida",
+   "to": "gili-air",
+   "fromName": "Nusa Penida",
+   "toName": "Gili Air",
+   "departs": "13:30",
+   "arrives": "15:50",
+   "priceAUD": 39,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "WaterJet",
+   "from": "nusa-penida",
+   "to": "gili-air",
+   "fromName": "Nusa Penida",
+   "toName": "Gili Air",
+   "departs": "13:45",
+   "arrives": "15:35",
+   "priceAUD": 26,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "The Tanis Fast Cruise",
+   "from": "nusa-penida",
+   "to": "gili-air",
+   "fromName": "Nusa Penida",
+   "toName": "Gili Air",
+   "departs": "13:50",
+   "arrives": "16:20",
+   "priceAUD": 32,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Semaya One",
+   "from": "nusa-penida",
+   "to": "gili-air",
+   "fromName": "Nusa Penida",
+   "toName": "Gili Air",
+   "departs": "14:00",
+   "arrives": "16:30",
+   "priceAUD": 36,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Starfish Fast Cruise",
+   "from": "nusa-penida",
+   "to": "gili-air",
+   "fromName": "Nusa Penida",
+   "toName": "Gili Air",
+   "departs": "14:00",
+   "arrives": "15:15",
+   "priceAUD": 31,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "The Tanis Fast Cruise",
+   "from": "nusa-penida",
+   "to": "gili-air",
+   "fromName": "Nusa Penida",
+   "toName": "Gili Air",
+   "departs": "14:00",
+   "arrives": "16:30",
+   "priceAUD": 32,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Marina Group",
+   "from": "nusa-penida",
+   "to": "gili-air",
+   "fromName": "Nusa Penida",
+   "toName": "Gili Air",
+   "departs": "14:45",
+   "arrives": "17:00",
+   "priceAUD": 30,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Marina Luxury 99",
+   "from": "nusa-penida",
+   "to": "gili-air",
+   "fromName": "Nusa Penida",
+   "toName": "Gili Air",
+   "departs": "14:45",
+   "arrives": "16:45",
+   "priceAUD": 31,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Wahana Virendra",
+   "from": "nusa-penida",
+   "to": "gili-meno",
+   "fromName": "Nusa Penida",
+   "toName": "Gili Meno",
+   "departs": "10:00",
+   "arrives": "12:45",
+   "priceAUD": 40,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Gili Getaway",
+   "from": "nusa-penida",
+   "to": "gili-trawangan",
+   "fromName": "Nusa Penida",
+   "toName": "Gili Trawangan",
+   "departs": "09:00",
+   "arrives": "11:45",
+   "priceAUD": 50,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Wahana Virendra",
+   "from": "nusa-penida",
+   "to": "gili-trawangan",
+   "fromName": "Nusa Penida",
+   "toName": "Gili Trawangan",
+   "departs": "10:00",
+   "arrives": "12:30",
+   "priceAUD": 40,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "The Tanis Fast Cruise",
+   "from": "nusa-penida",
+   "to": "gili-trawangan",
+   "fromName": "Nusa Penida",
+   "toName": "Gili Trawangan",
+   "departs": "10:10",
+   "arrives": "12:25",
+   "priceAUD": 32,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Express Bali Travel",
+   "from": "nusa-penida",
+   "to": "gili-trawangan",
+   "fromName": "Nusa Penida",
+   "toName": "Gili Trawangan",
+   "departs": "10:20",
+   "arrives": "12:10",
+   "priceAUD": 35,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "The Tanis Fast Cruise",
+   "from": "nusa-penida",
+   "to": "gili-trawangan",
+   "fromName": "Nusa Penida",
+   "toName": "Gili Trawangan",
+   "departs": "10:30",
+   "arrives": "12:30",
+   "priceAUD": 36,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Wahana Virendra",
+   "from": "nusa-penida",
+   "to": "gili-trawangan",
+   "fromName": "Nusa Penida",
+   "toName": "Gili Trawangan",
+   "departs": "10:30",
+   "arrives": "13:30",
+   "priceAUD": 40,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "WaterJet",
+   "from": "nusa-penida",
+   "to": "gili-trawangan",
+   "fromName": "Nusa Penida",
+   "toName": "Gili Trawangan",
+   "departs": "13:15",
+   "arrives": "14:55",
+   "priceAUD": 26,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "WaterJet",
+   "from": "nusa-penida",
+   "to": "gili-trawangan",
+   "fromName": "Nusa Penida",
+   "toName": "Gili Trawangan",
+   "departs": "13:17",
+   "arrives": "15:02",
+   "priceAUD": 39,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "WaterJet",
+   "from": "nusa-penida",
+   "to": "gili-trawangan",
+   "fromName": "Nusa Penida",
+   "toName": "Gili Trawangan",
+   "departs": "13:25",
+   "arrives": "15:10",
+   "priceAUD": 39,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Express Bali Travel",
+   "from": "nusa-penida",
+   "to": "gili-trawangan",
+   "fromName": "Nusa Penida",
+   "toName": "Gili Trawangan",
+   "departs": "13:30",
+   "arrives": "15:20",
+   "priceAUD": 35,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Semaya One",
+   "from": "nusa-penida",
+   "to": "gili-trawangan",
+   "fromName": "Nusa Penida",
+   "toName": "Gili Trawangan",
+   "departs": "13:30",
+   "arrives": "17:00",
+   "priceAUD": 36,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "The Tanis Fast Cruise",
+   "from": "nusa-penida",
+   "to": "gili-trawangan",
+   "fromName": "Nusa Penida",
+   "toName": "Gili Trawangan",
+   "departs": "13:30",
+   "arrives": "15:35",
+   "priceAUD": 36,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "WaterJet",
+   "from": "nusa-penida",
+   "to": "gili-trawangan",
+   "fromName": "Nusa Penida",
+   "toName": "Gili Trawangan",
+   "departs": "13:30",
+   "arrives": "15:25",
+   "priceAUD": 39,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "WaterJet",
+   "from": "nusa-penida",
+   "to": "gili-trawangan",
+   "fromName": "Nusa Penida",
+   "toName": "Gili Trawangan",
+   "departs": "13:45",
+   "arrives": "15:25",
+   "priceAUD": 26,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "The Tanis Fast Cruise",
+   "from": "nusa-penida",
+   "to": "gili-trawangan",
+   "fromName": "Nusa Penida",
+   "toName": "Gili Trawangan",
+   "departs": "13:50",
+   "arrives": "15:50",
+   "priceAUD": 32,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Semaya One",
+   "from": "nusa-penida",
+   "to": "gili-trawangan",
+   "fromName": "Nusa Penida",
+   "toName": "Gili Trawangan",
+   "departs": "14:00",
+   "arrives": "17:00",
+   "priceAUD": 36,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Starfish Fast Cruise",
+   "from": "nusa-penida",
+   "to": "gili-trawangan",
+   "fromName": "Nusa Penida",
+   "toName": "Gili Trawangan",
+   "departs": "14:00",
+   "arrives": "15:00",
+   "priceAUD": 31,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "The Tanis Fast Cruise",
+   "from": "nusa-penida",
+   "to": "gili-trawangan",
+   "fromName": "Nusa Penida",
+   "toName": "Gili Trawangan",
+   "departs": "14:00",
+   "arrives": "16:00",
+   "priceAUD": 32,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Marina Group",
+   "from": "nusa-penida",
+   "to": "gili-trawangan",
+   "fromName": "Nusa Penida",
+   "toName": "Gili Trawangan",
+   "departs": "14:45",
+   "arrives": "16:45",
+   "priceAUD": 28,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Marina Luxury 99",
+   "from": "nusa-penida",
+   "to": "gili-trawangan",
+   "fromName": "Nusa Penida",
+   "toName": "Gili Trawangan",
+   "departs": "14:45",
+   "arrives": "16:30",
+   "priceAUD": 28,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Wahana Virendra",
+   "from": "padang-bai",
+   "to": "bangsal",
+   "fromName": "Padang Bai",
+   "toName": "Bangsal (Lombok)",
+   "departs": "08:30",
+   "arrives": "11:00",
+   "priceAUD": 39,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Karunia Luxury Fast Boat",
+   "from": "padang-bai",
+   "to": "bangsal",
+   "fromName": "Padang Bai",
+   "toName": "Bangsal (Lombok)",
+   "departs": "08:45",
+   "arrives": "11:30",
+   "priceAUD": 23,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "WaterJet",
+   "from": "padang-bai",
+   "to": "bangsal",
+   "fromName": "Padang Bai",
+   "toName": "Bangsal (Lombok)",
+   "departs": "09:00",
+   "arrives": "10:30",
+   "priceAUD": 43,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "WaterJet",
+   "from": "padang-bai",
+   "to": "bangsal",
+   "fromName": "Padang Bai",
+   "toName": "Bangsal (Lombok)",
+   "departs": "09:00",
+   "arrives": "10:45",
+   "priceAUD": 39,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Wijaya Tramena",
+   "from": "padang-bai",
+   "to": "bangsal",
+   "fromName": "Padang Bai",
+   "toName": "Bangsal (Lombok)",
+   "departs": "09:00",
+   "arrives": "10:30",
+   "priceAUD": 34,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Wijaya Tramena",
+   "from": "padang-bai",
+   "to": "bangsal",
+   "fromName": "Padang Bai",
+   "toName": "Bangsal (Lombok)",
+   "departs": "09:00",
+   "arrives": "11:15",
+   "priceAUD": 34,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Wijaya Buyuk",
+   "from": "padang-bai",
+   "to": "bangsal",
+   "fromName": "Padang Bai",
+   "toName": "Bangsal (Lombok)",
+   "departs": "11:35",
+   "arrives": "13:45",
+   "priceAUD": 33,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Wahana Virendra",
+   "from": "padang-bai",
+   "to": "bangsal",
+   "fromName": "Padang Bai",
+   "toName": "Bangsal (Lombok)",
+   "departs": "13:15",
+   "arrives": "14:45",
+   "priceAUD": 39,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Wahana Virendra",
+   "from": "padang-bai",
+   "to": "bangsal",
+   "fromName": "Padang Bai",
+   "toName": "Bangsal (Lombok)",
+   "departs": "13:15",
+   "arrives": "15:45",
+   "priceAUD": 39,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Karunia Luxury Fast Boat",
+   "from": "padang-bai",
+   "to": "bangsal",
+   "fromName": "Padang Bai",
+   "toName": "Bangsal (Lombok)",
+   "departs": "13:30",
+   "arrives": "16:30",
+   "priceAUD": 23,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "WaterJet",
+   "from": "padang-bai",
+   "to": "bangsal",
+   "fromName": "Padang Bai",
+   "toName": "Bangsal (Lombok)",
+   "departs": "13:45",
+   "arrives": "15:10",
+   "priceAUD": 43,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "WaterJet",
+   "from": "padang-bai",
+   "to": "bangsal",
+   "fromName": "Padang Bai",
+   "toName": "Bangsal (Lombok)",
+   "departs": "13:45",
+   "arrives": "15:15",
+   "priceAUD": 43,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "WaterJet",
+   "from": "padang-bai",
+   "to": "bangsal",
+   "fromName": "Padang Bai",
+   "toName": "Bangsal (Lombok)",
+   "departs": "13:45",
+   "arrives": "15:30",
+   "priceAUD": 43,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Wijaya Tramena",
+   "from": "padang-bai",
+   "to": "bangsal",
+   "fromName": "Padang Bai",
+   "toName": "Bangsal (Lombok)",
+   "departs": "13:45",
+   "arrives": "15:15",
+   "priceAUD": 34,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Wijaya Tramena",
+   "from": "padang-bai",
+   "to": "bangsal",
+   "fromName": "Padang Bai",
+   "toName": "Bangsal (Lombok)",
+   "departs": "13:45",
+   "arrives": "16:00",
+   "priceAUD": 34,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Wijaya Tramena",
+   "from": "padang-bai",
+   "to": "bangsal",
+   "fromName": "Padang Bai",
+   "toName": "Bangsal (Lombok)",
+   "departs": "13:50",
+   "arrives": "15:20",
+   "priceAUD": 34,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Wijaya Tramena",
+   "from": "padang-bai",
+   "to": "bangsal",
+   "fromName": "Padang Bai",
+   "toName": "Bangsal (Lombok)",
+   "departs": "13:50",
+   "arrives": "15:50",
+   "priceAUD": 34,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Karunia Luxury Fast Boat",
+   "from": "padang-bai",
+   "to": "gili-air",
+   "fromName": "Padang Bai",
+   "toName": "Gili Air",
+   "departs": "08:45",
+   "arrives": "11:15",
+   "priceAUD": 23,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Wijaya Tramena",
+   "from": "padang-bai",
+   "to": "gili-air",
+   "fromName": "Padang Bai",
+   "toName": "Gili Air",
+   "departs": "09:00",
+   "arrives": "11:00",
+   "priceAUD": 34,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Express Bali Travel",
+   "from": "padang-bai",
+   "to": "gili-air",
+   "fromName": "Padang Bai",
+   "toName": "Gili Air",
+   "departs": "09:15",
+   "arrives": "11:15",
+   "priceAUD": 35,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Wijaya Buyuk",
+   "from": "padang-bai",
+   "to": "gili-air",
+   "fromName": "Padang Bai",
+   "toName": "Gili Air",
+   "departs": "11:35",
+   "arrives": "13:35",
+   "priceAUD": 33,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Wahana Virendra",
+   "from": "padang-bai",
+   "to": "gili-air",
+   "fromName": "Padang Bai",
+   "toName": "Gili Air",
+   "departs": "13:15",
+   "arrives": "15:15",
+   "priceAUD": 39,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Express Bali Travel",
+   "from": "padang-bai",
+   "to": "gili-air",
+   "fromName": "Padang Bai",
+   "toName": "Gili Air",
+   "departs": "13:30",
+   "arrives": "15:30",
+   "priceAUD": 35,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Karunia Luxury Fast Boat",
+   "from": "padang-bai",
+   "to": "gili-air",
+   "fromName": "Padang Bai",
+   "toName": "Gili Air",
+   "departs": "13:30",
+   "arrives": "16:15",
+   "priceAUD": 23,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "WaterJet",
+   "from": "padang-bai",
+   "to": "gili-air",
+   "fromName": "Padang Bai",
+   "toName": "Gili Air",
+   "departs": "13:45",
+   "arrives": "15:15",
+   "priceAUD": 43,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Wijaya Tramena",
+   "from": "padang-bai",
+   "to": "gili-air",
+   "fromName": "Padang Bai",
+   "toName": "Gili Air",
+   "departs": "13:45",
+   "arrives": "15:45",
+   "priceAUD": 34,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Wijaya Tramena",
+   "from": "padang-bai",
+   "to": "gili-air",
+   "fromName": "Padang Bai",
+   "toName": "Gili Air",
+   "departs": "13:50",
+   "arrives": "15:40",
+   "priceAUD": 34,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Semaya One",
+   "from": "padang-bai",
+   "to": "gili-meno",
+   "fromName": "Padang Bai",
+   "toName": "Gili Meno",
+   "departs": "08:30",
+   "arrives": "10:30",
+   "priceAUD": 46,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Wijaya Tramena",
+   "from": "padang-bai",
+   "to": "gili-meno",
+   "fromName": "Padang Bai",
+   "toName": "Gili Meno",
+   "departs": "09:00",
+   "arrives": "10:45",
+   "priceAUD": 38,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Wijaya Buyuk",
+   "from": "padang-bai",
+   "to": "gili-meno",
+   "fromName": "Padang Bai",
+   "toName": "Gili Meno",
+   "departs": "11:35",
+   "arrives": "13:25",
+   "priceAUD": 38,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Semaya One",
+   "from": "padang-bai",
+   "to": "gili-meno",
+   "fromName": "Padang Bai",
+   "toName": "Gili Meno",
+   "departs": "13:20",
+   "arrives": "15:20",
+   "priceAUD": 46,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "WaterJet",
+   "from": "padang-bai",
+   "to": "gili-meno",
+   "fromName": "Padang Bai",
+   "toName": "Gili Meno",
+   "departs": "13:45",
+   "arrives": "16:00",
+   "priceAUD": 43,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Wijaya Tramena",
+   "from": "padang-bai",
+   "to": "gili-meno",
+   "fromName": "Padang Bai",
+   "toName": "Gili Meno",
+   "departs": "13:45",
+   "arrives": "15:30",
+   "priceAUD": 38,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Wijaya Tramena",
+   "from": "padang-bai",
+   "to": "gili-meno",
+   "fromName": "Padang Bai",
+   "toName": "Gili Meno",
+   "departs": "13:50",
+   "arrives": "15:30",
+   "priceAUD": 38,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Karunia Luxury Fast Boat",
+   "from": "padang-bai",
+   "to": "gili-trawangan",
+   "fromName": "Padang Bai",
+   "toName": "Gili Trawangan",
+   "departs": "08:45",
+   "arrives": "11:00",
+   "priceAUD": 23,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Express Bali Travel",
+   "from": "padang-bai",
+   "to": "gili-trawangan",
+   "fromName": "Padang Bai",
+   "toName": "Gili Trawangan",
+   "departs": "09:15",
+   "arrives": "10:45",
+   "priceAUD": 35,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Wijaya Buyuk",
+   "from": "padang-bai",
+   "to": "gili-trawangan",
+   "fromName": "Padang Bai",
+   "toName": "Gili Trawangan",
+   "departs": "11:35",
+   "arrives": "13:15",
+   "priceAUD": 33,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Wahana Virendra",
+   "from": "padang-bai",
+   "to": "gili-trawangan",
+   "fromName": "Padang Bai",
+   "toName": "Gili Trawangan",
+   "departs": "13:15",
+   "arrives": "14:45",
+   "priceAUD": 39,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Express Bali Travel",
+   "from": "padang-bai",
+   "to": "gili-trawangan",
+   "fromName": "Padang Bai",
+   "toName": "Gili Trawangan",
+   "departs": "13:30",
+   "arrives": "15:00",
+   "priceAUD": 35,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Karunia Luxury Fast Boat",
+   "from": "padang-bai",
+   "to": "gili-trawangan",
+   "fromName": "Padang Bai",
+   "toName": "Gili Trawangan",
+   "departs": "13:30",
+   "arrives": "16:00",
+   "priceAUD": 23,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "WaterJet",
+   "from": "padang-bai",
+   "to": "gili-trawangan",
+   "fromName": "Padang Bai",
+   "toName": "Gili Trawangan",
+   "departs": "13:45",
+   "arrives": "15:10",
+   "priceAUD": 43,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Wijaya Tramena",
+   "from": "padang-bai",
+   "to": "gili-trawangan",
+   "fromName": "Padang Bai",
+   "toName": "Gili Trawangan",
+   "departs": "13:45",
+   "arrives": "15:15",
+   "priceAUD": 34,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Wijaya Tramena",
+   "from": "padang-bai",
+   "to": "gili-trawangan",
+   "fromName": "Padang Bai",
+   "toName": "Gili Trawangan",
+   "departs": "13:50",
+   "arrives": "15:20",
+   "priceAUD": 34,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "The Tanis Fast Cruise",
+   "from": "sanur",
+   "to": "bangsal",
+   "fromName": "Sanur",
+   "toName": "Bangsal (Lombok)",
+   "departs": "08:45",
+   "arrives": "13:15",
+   "priceAUD": 46,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Nusa Nadhi Fast Ferry",
+   "from": "sanur",
+   "to": "bangsal",
+   "fromName": "Sanur",
+   "toName": "Bangsal (Lombok)",
+   "departs": "09:00",
+   "arrives": "12:30",
+   "priceAUD": 43,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Nusa Nadhi Fast Ferry",
+   "from": "sanur",
+   "to": "bangsal",
+   "fromName": "Sanur",
+   "toName": "Bangsal (Lombok)",
+   "departs": "09:00",
+   "arrives": "13:15",
+   "priceAUD": 43,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "The Tanis Fast Cruise",
+   "from": "sanur",
+   "to": "bangsal",
+   "fromName": "Sanur",
+   "toName": "Bangsal (Lombok)",
+   "departs": "09:00",
+   "arrives": "13:25",
+   "priceAUD": 46,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Semaya One",
+   "from": "sanur",
+   "to": "bangsal",
+   "fromName": "Sanur",
+   "toName": "Bangsal (Lombok)",
+   "departs": "12:30",
+   "arrives": "17:30",
+   "priceAUD": 49,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "WaterJet",
+   "from": "sanur",
+   "to": "bangsal",
+   "fromName": "Sanur",
+   "toName": "Bangsal (Lombok)",
+   "departs": "12:30",
+   "arrives": "15:10",
+   "priceAUD": 47,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "WaterJet",
+   "from": "sanur",
+   "to": "bangsal",
+   "fromName": "Sanur",
+   "toName": "Bangsal (Lombok)",
+   "departs": "12:30",
+   "arrives": "15:40",
+   "priceAUD": 34,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "WaterJet",
+   "from": "sanur",
+   "to": "bangsal",
+   "fromName": "Sanur",
+   "toName": "Bangsal (Lombok)",
+   "departs": "12:30",
+   "arrives": "16:05",
+   "priceAUD": 34,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Starfish Fast Cruise",
+   "from": "sanur",
+   "to": "bangsal",
+   "fromName": "Sanur",
+   "toName": "Bangsal (Lombok)",
+   "departs": "13:00",
+   "arrives": "15:00",
+   "priceAUD": 41,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Starfish Fast Cruise",
+   "from": "sanur",
+   "to": "bangsal",
+   "fromName": "Sanur",
+   "toName": "Bangsal (Lombok)",
+   "departs": "13:00",
+   "arrives": "15:15",
+   "priceAUD": 41,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Starfish Fast Cruise",
+   "from": "sanur",
+   "to": "bangsal",
+   "fromName": "Sanur",
+   "toName": "Bangsal (Lombok)",
+   "departs": "13:00",
+   "arrives": "15:30",
+   "priceAUD": 41,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "The Tanis Fast Cruise",
+   "from": "sanur",
+   "to": "bangsal",
+   "fromName": "Sanur",
+   "toName": "Bangsal (Lombok)",
+   "departs": "13:00",
+   "arrives": "17:00",
+   "priceAUD": 46,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "The Tanis Fast Cruise",
+   "from": "sanur",
+   "to": "gili-air",
+   "fromName": "Sanur",
+   "toName": "Gili Air",
+   "departs": "08:45",
+   "arrives": "12:45",
+   "priceAUD": 46,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "The Tanis Fast Cruise",
+   "from": "sanur",
+   "to": "gili-air",
+   "fromName": "Sanur",
+   "toName": "Gili Air",
+   "departs": "09:00",
+   "arrives": "12:55",
+   "priceAUD": 46,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Semaya One",
+   "from": "sanur",
+   "to": "gili-air",
+   "fromName": "Sanur",
+   "toName": "Gili Air",
+   "departs": "12:30",
+   "arrives": "16:30",
+   "priceAUD": 49,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "WaterJet",
+   "from": "sanur",
+   "to": "gili-air",
+   "fromName": "Sanur",
+   "toName": "Gili Air",
+   "departs": "12:30",
+   "arrives": "15:40",
+   "priceAUD": 34,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Starfish Fast Cruise",
+   "from": "sanur",
+   "to": "gili-air",
+   "fromName": "Sanur",
+   "toName": "Gili Air",
+   "departs": "13:00",
+   "arrives": "15:15",
+   "priceAUD": 41,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "The Tanis Fast Cruise",
+   "from": "sanur",
+   "to": "gili-air",
+   "fromName": "Sanur",
+   "toName": "Gili Air",
+   "departs": "13:00",
+   "arrives": "16:30",
+   "priceAUD": 46,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "The Tanis Fast Cruise",
+   "from": "sanur",
+   "to": "gili-trawangan",
+   "fromName": "Sanur",
+   "toName": "Gili Trawangan",
+   "departs": "08:45",
+   "arrives": "12:15",
+   "priceAUD": 46,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Nusa Nadhi Fast Ferry",
+   "from": "sanur",
+   "to": "gili-trawangan",
+   "fromName": "Sanur",
+   "toName": "Gili Trawangan",
+   "departs": "09:00",
+   "arrives": "12:30",
+   "priceAUD": 43,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Semaya One",
+   "from": "sanur",
+   "to": "gili-trawangan",
+   "fromName": "Sanur",
+   "toName": "Gili Trawangan",
+   "departs": "12:30",
+   "arrives": "17:00",
+   "priceAUD": 49,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "WaterJet",
+   "from": "sanur",
+   "to": "gili-trawangan",
+   "fromName": "Sanur",
+   "toName": "Gili Trawangan",
+   "departs": "12:30",
+   "arrives": "15:10",
+   "priceAUD": 47,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Starfish Fast Cruise",
+   "from": "sanur",
+   "to": "gili-trawangan",
+   "fromName": "Sanur",
+   "toName": "Gili Trawangan",
+   "departs": "13:00",
+   "arrives": "15:00",
+   "priceAUD": 41,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "The Tanis Fast Cruise",
+   "from": "sanur",
+   "to": "gili-trawangan",
+   "fromName": "Sanur",
+   "toName": "Gili Trawangan",
+   "departs": "13:00",
+   "arrives": "16:00",
+   "priceAUD": 46,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Express Bali Travel",
+   "from": "sanur",
+   "to": "nusa-lembongan",
+   "fromName": "Sanur",
+   "toName": "Nusa Lembongan",
+   "departs": "07:30",
+   "arrives": "08:15",
+   "priceAUD": 17,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Express Bali Travel",
+   "from": "sanur",
+   "to": "nusa-lembongan",
+   "fromName": "Sanur",
+   "toName": "Nusa Lembongan",
+   "departs": "08:30",
+   "arrives": "09:15",
+   "priceAUD": 17,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Express Bali Travel",
+   "from": "sanur",
+   "to": "nusa-lembongan",
+   "fromName": "Sanur",
+   "toName": "Nusa Lembongan",
+   "departs": "09:00",
+   "arrives": "09:45",
+   "priceAUD": 17,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Arthamas Express",
+   "from": "sanur",
+   "to": "nusa-lembongan",
+   "fromName": "Sanur",
+   "toName": "Nusa Lembongan",
+   "departs": "09:15",
+   "arrives": "09:45",
+   "priceAUD": 17,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Express Bali Travel",
+   "from": "sanur",
+   "to": "nusa-lembongan",
+   "fromName": "Sanur",
+   "toName": "Nusa Lembongan",
+   "departs": "10:00",
+   "arrives": "10:45",
+   "priceAUD": 17,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Express Bali Travel",
+   "from": "sanur",
+   "to": "nusa-lembongan",
+   "fromName": "Sanur",
+   "toName": "Nusa Lembongan",
+   "departs": "12:00",
+   "arrives": "12:45",
+   "priceAUD": 17,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Express Bali Travel",
+   "from": "sanur",
+   "to": "nusa-lembongan",
+   "fromName": "Sanur",
+   "toName": "Nusa Lembongan",
+   "departs": "14:00",
+   "arrives": "14:45",
+   "priceAUD": 17,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Arthamas Express",
+   "from": "sanur",
+   "to": "nusa-lembongan",
+   "fromName": "Sanur",
+   "toName": "Nusa Lembongan",
+   "departs": "14:30",
+   "arrives": "15:00",
+   "priceAUD": 17,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Express Bali Travel",
+   "from": "sanur",
+   "to": "nusa-lembongan",
+   "fromName": "Sanur",
+   "toName": "Nusa Lembongan",
+   "departs": "16:00",
+   "arrives": "16:45",
+   "priceAUD": 17,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Glory Fast Cruise",
+   "from": "sanur",
+   "to": "nusa-penida",
+   "fromName": "Sanur",
+   "toName": "Nusa Penida",
+   "departs": "07:30",
+   "arrives": "08:00",
+   "priceAUD": 16,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Golden Queen Fast Ferry",
+   "from": "sanur",
+   "to": "nusa-penida",
+   "fromName": "Sanur",
+   "toName": "Nusa Penida",
+   "departs": "07:30",
+   "arrives": "08:15",
+   "priceAUD": 15,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Maruti Group Fast Boat",
+   "from": "sanur",
+   "to": "nusa-penida",
+   "fromName": "Sanur",
+   "toName": "Nusa Penida",
+   "departs": "07:30",
+   "arrives": "08:15",
+   "priceAUD": 16,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Ocean Speed Fast Boat",
+   "from": "sanur",
+   "to": "nusa-penida",
+   "fromName": "Sanur",
+   "toName": "Nusa Penida",
+   "departs": "07:30",
+   "arrives": "08:05",
+   "priceAUD": 15,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Semabu Hills Fast Boat",
+   "from": "sanur",
+   "to": "nusa-penida",
+   "fromName": "Sanur",
+   "toName": "Nusa Penida",
+   "departs": "07:30",
+   "arrives": "08:00",
+   "priceAUD": 16,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "The Tanis Fast Cruise",
+   "from": "sanur",
+   "to": "nusa-penida",
+   "fromName": "Sanur",
+   "toName": "Nusa Penida",
+   "departs": "07:30",
+   "arrives": "08:15",
+   "priceAUD": 17,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Waruna Darma Express",
+   "from": "sanur",
+   "to": "nusa-penida",
+   "fromName": "Sanur",
+   "toName": "Nusa Penida",
+   "departs": "07:30",
+   "arrives": "08:00",
+   "priceAUD": 14,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Ocean Speed Fast Boat",
+   "from": "sanur",
+   "to": "nusa-penida",
+   "fromName": "Sanur",
+   "toName": "Nusa Penida",
+   "departs": "07:35",
+   "arrives": "08:10",
+   "priceAUD": 15,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Arjuna Fast Boat",
+   "from": "sanur",
+   "to": "nusa-penida",
+   "fromName": "Sanur",
+   "toName": "Nusa Penida",
+   "departs": "08:00",
+   "arrives": "08:30",
+   "priceAUD": 16,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Axe Stone Fast Cruise",
+   "from": "sanur",
+   "to": "nusa-penida",
+   "fromName": "Sanur",
+   "toName": "Nusa Penida",
+   "departs": "08:00",
+   "arrives": "08:45",
+   "priceAUD": 16,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Glory Fast Cruise",
+   "from": "sanur",
+   "to": "nusa-penida",
+   "fromName": "Sanur",
+   "toName": "Nusa Penida",
+   "departs": "08:00",
+   "arrives": "08:30",
+   "priceAUD": 16,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Maruti Group Fast Boat",
+   "from": "sanur",
+   "to": "nusa-penida",
+   "fromName": "Sanur",
+   "toName": "Nusa Penida",
+   "departs": "08:00",
+   "arrives": "08:45",
+   "priceAUD": 16,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Ocean Speed Fast Boat",
+   "from": "sanur",
+   "to": "nusa-penida",
+   "fromName": "Sanur",
+   "toName": "Nusa Penida",
+   "departs": "08:00",
+   "arrives": "08:35",
+   "priceAUD": 15,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Semabu Hills Fast Boat",
+   "from": "sanur",
+   "to": "nusa-penida",
+   "fromName": "Sanur",
+   "toName": "Nusa Penida",
+   "departs": "08:00",
+   "arrives": "08:30",
+   "priceAUD": 16,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "The Angkal Fast Boat",
+   "from": "sanur",
+   "to": "nusa-penida",
+   "fromName": "Sanur",
+   "toName": "Nusa Penida",
+   "departs": "08:00",
+   "arrives": "08:45",
+   "priceAUD": 17,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "The Tanis Fast Cruise",
+   "from": "sanur",
+   "to": "nusa-penida",
+   "fromName": "Sanur",
+   "toName": "Nusa Penida",
+   "departs": "08:00",
+   "arrives": "08:45",
+   "priceAUD": 17,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Axe Stone Fast Cruise",
+   "from": "sanur",
+   "to": "nusa-penida",
+   "fromName": "Sanur",
+   "toName": "Nusa Penida",
+   "departs": "08:30",
+   "arrives": "09:15",
+   "priceAUD": 16,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Glory Fast Cruise",
+   "from": "sanur",
+   "to": "nusa-penida",
+   "fromName": "Sanur",
+   "toName": "Nusa Penida",
+   "departs": "08:30",
+   "arrives": "09:00",
+   "priceAUD": 16,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "The Tanis Fast Cruise",
+   "from": "sanur",
+   "to": "nusa-penida",
+   "fromName": "Sanur",
+   "toName": "Nusa Penida",
+   "departs": "08:30",
+   "arrives": "09:15",
+   "priceAUD": 17,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Arjuna Fast Boat",
+   "from": "sanur",
+   "to": "nusa-penida",
+   "fromName": "Sanur",
+   "toName": "Nusa Penida",
+   "departs": "09:00",
+   "arrives": "09:30",
+   "priceAUD": 16,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Axe Stone Fast Cruise",
+   "from": "sanur",
+   "to": "nusa-penida",
+   "fromName": "Sanur",
+   "toName": "Nusa Penida",
+   "departs": "09:00",
+   "arrives": "09:45",
+   "priceAUD": 16,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Glory Fast Cruise",
+   "from": "sanur",
+   "to": "nusa-penida",
+   "fromName": "Sanur",
+   "toName": "Nusa Penida",
+   "departs": "09:00",
+   "arrives": "09:30",
+   "priceAUD": 16,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Ocean Speed Fast Boat",
+   "from": "sanur",
+   "to": "nusa-penida",
+   "fromName": "Sanur",
+   "toName": "Nusa Penida",
+   "departs": "09:00",
+   "arrives": "09:35",
+   "priceAUD": 15,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "The Angkal Fast Boat",
+   "from": "sanur",
+   "to": "nusa-penida",
+   "fromName": "Sanur",
+   "toName": "Nusa Penida",
+   "departs": "09:00",
+   "arrives": "09:45",
+   "priceAUD": 17,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "The Tanis Fast Cruise",
+   "from": "sanur",
+   "to": "nusa-penida",
+   "fromName": "Sanur",
+   "toName": "Nusa Penida",
+   "departs": "09:00",
+   "arrives": "09:45",
+   "priceAUD": 17,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Waruna Darma Express",
+   "from": "sanur",
+   "to": "nusa-penida",
+   "fromName": "Sanur",
+   "toName": "Nusa Penida",
+   "departs": "09:00",
+   "arrives": "09:30",
+   "priceAUD": 14,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Axe Stone Fast Cruise",
+   "from": "sanur",
+   "to": "nusa-penida",
+   "fromName": "Sanur",
+   "toName": "Nusa Penida",
+   "departs": "09:30",
+   "arrives": "10:15",
+   "priceAUD": 16,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "The Tanis Fast Cruise",
+   "from": "sanur",
+   "to": "nusa-penida",
+   "fromName": "Sanur",
+   "toName": "Nusa Penida",
+   "departs": "10:00",
+   "arrives": "10:45",
+   "priceAUD": 17,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Waruna Darma Express",
+   "from": "sanur",
+   "to": "nusa-penida",
+   "fromName": "Sanur",
+   "toName": "Nusa Penida",
+   "departs": "10:00",
+   "arrives": "10:30",
+   "priceAUD": 14,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Ocean Speed Fast Boat",
+   "from": "sanur",
+   "to": "nusa-penida",
+   "fromName": "Sanur",
+   "toName": "Nusa Penida",
+   "departs": "10:20",
+   "arrives": "10:55",
+   "priceAUD": 15,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Ocean Speed Fast Boat",
+   "from": "sanur",
+   "to": "nusa-penida",
+   "fromName": "Sanur",
+   "toName": "Nusa Penida",
+   "departs": "10:30",
+   "arrives": "11:05",
+   "priceAUD": 15,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "The Tanis Fast Cruise",
+   "from": "sanur",
+   "to": "nusa-penida",
+   "fromName": "Sanur",
+   "toName": "Nusa Penida",
+   "departs": "10:30",
+   "arrives": "11:15",
+   "priceAUD": 17,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Ocean Speed Fast Boat",
+   "from": "sanur",
+   "to": "nusa-penida",
+   "fromName": "Sanur",
+   "toName": "Nusa Penida",
+   "departs": "10:35",
+   "arrives": "11:10",
+   "priceAUD": 15,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Arjuna Fast Boat",
+   "from": "sanur",
+   "to": "nusa-penida",
+   "fromName": "Sanur",
+   "toName": "Nusa Penida",
+   "departs": "11:00",
+   "arrives": "11:30",
+   "priceAUD": 16,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Semaya One",
+   "from": "sanur",
+   "to": "nusa-penida",
+   "fromName": "Sanur",
+   "toName": "Nusa Penida",
+   "departs": "12:25",
+   "arrives": "13:25",
+   "priceAUD": 16,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Semaya One",
+   "from": "sanur",
+   "to": "nusa-penida",
+   "fromName": "Sanur",
+   "toName": "Nusa Penida",
+   "departs": "12:25",
+   "arrives": "13:55",
+   "priceAUD": 16,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Semaya One",
+   "from": "sanur",
+   "to": "nusa-penida",
+   "fromName": "Sanur",
+   "toName": "Nusa Penida",
+   "departs": "12:30",
+   "arrives": "13:15",
+   "priceAUD": 16,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Semaya One",
+   "from": "sanur",
+   "to": "nusa-penida",
+   "fromName": "Sanur",
+   "toName": "Nusa Penida",
+   "departs": "12:30",
+   "arrives": "14:00",
+   "priceAUD": 16,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "WaterJet",
+   "from": "sanur",
+   "to": "nusa-penida",
+   "fromName": "Sanur",
+   "toName": "Nusa Penida",
+   "departs": "12:30",
+   "arrives": "13:10",
+   "priceAUD": 17,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Arjuna Fast Boat",
+   "from": "sanur",
+   "to": "nusa-penida",
+   "fromName": "Sanur",
+   "toName": "Nusa Penida",
+   "departs": "13:00",
+   "arrives": "13:30",
+   "priceAUD": 16,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Starfish Fast Cruise",
+   "from": "sanur",
+   "to": "nusa-penida",
+   "fromName": "Sanur",
+   "toName": "Nusa Penida",
+   "departs": "13:00",
+   "arrives": "14:00",
+   "priceAUD": 14,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Waruna Darma Express",
+   "from": "sanur",
+   "to": "nusa-penida",
+   "fromName": "Sanur",
+   "toName": "Nusa Penida",
+   "departs": "13:30",
+   "arrives": "14:00",
+   "priceAUD": 14,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Ocean Speed Fast Boat",
+   "from": "sanur",
+   "to": "nusa-penida",
+   "fromName": "Sanur",
+   "toName": "Nusa Penida",
+   "departs": "13:45",
+   "arrives": "14:20",
+   "priceAUD": 15,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Ocean Speed Fast Boat",
+   "from": "sanur",
+   "to": "nusa-penida",
+   "fromName": "Sanur",
+   "toName": "Nusa Penida",
+   "departs": "13:50",
+   "arrives": "14:25",
+   "priceAUD": 15,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "The Tanis Fast Cruise",
+   "from": "sanur",
+   "to": "nusa-penida",
+   "fromName": "Sanur",
+   "toName": "Nusa Penida",
+   "departs": "14:00",
+   "arrives": "14:45",
+   "priceAUD": 17,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Ocean Speed Fast Boat",
+   "from": "sanur",
+   "to": "nusa-penida",
+   "fromName": "Sanur",
+   "toName": "Nusa Penida",
+   "departs": "14:10",
+   "arrives": "14:45",
+   "priceAUD": 15,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Arjuna Fast Boat",
+   "from": "sanur",
+   "to": "nusa-penida",
+   "fromName": "Sanur",
+   "toName": "Nusa Penida",
+   "departs": "15:00",
+   "arrives": "15:30",
+   "priceAUD": 16,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Glory Fast Cruise",
+   "from": "sanur",
+   "to": "nusa-penida",
+   "fromName": "Sanur",
+   "toName": "Nusa Penida",
+   "departs": "15:00",
+   "arrives": "15:30",
+   "priceAUD": 16,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "The Tanis Fast Cruise",
+   "from": "sanur",
+   "to": "nusa-penida",
+   "fromName": "Sanur",
+   "toName": "Nusa Penida",
+   "departs": "17:00",
+   "arrives": "17:45",
+   "priceAUD": 17,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Waruna Darma Express",
+   "from": "sanur",
+   "to": "nusa-penida",
+   "fromName": "Sanur",
+   "toName": "Nusa Penida",
+   "departs": "17:00",
+   "arrives": "17:30",
+   "priceAUD": 14,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Marina Group",
+   "from": "serangan",
+   "to": "bangsal",
+   "fromName": "Serangan",
+   "toName": "Bangsal (Lombok)",
+   "departs": "13:30",
+   "arrives": "17:00",
+   "priceAUD": 44,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Marina Luxury 99",
+   "from": "serangan",
+   "to": "bangsal",
+   "fromName": "Serangan",
+   "toName": "Bangsal (Lombok)",
+   "departs": "13:30",
+   "arrives": "17:00",
+   "priceAUD": 42,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Marina Group",
+   "from": "serangan",
+   "to": "gili-air",
+   "fromName": "Serangan",
+   "toName": "Gili Air",
+   "departs": "13:30",
+   "arrives": "16:45",
+   "priceAUD": 43,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Marina Luxury 99",
+   "from": "serangan",
+   "to": "gili-air",
+   "fromName": "Serangan",
+   "toName": "Gili Air",
+   "departs": "13:30",
+   "arrives": "16:45",
+   "priceAUD": 44,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Marina Group",
+   "from": "serangan",
+   "to": "gili-trawangan",
+   "fromName": "Serangan",
+   "toName": "Gili Trawangan",
+   "departs": "13:30",
+   "arrives": "16:30",
+   "priceAUD": 44,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Marina Luxury 99",
+   "from": "serangan",
+   "to": "gili-trawangan",
+   "fromName": "Serangan",
+   "toName": "Gili Trawangan",
+   "departs": "13:30",
+   "arrives": "16:30",
+   "priceAUD": 42,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Bali Line Fast Boat",
+   "from": "serangan",
+   "to": "nusa-penida",
+   "fromName": "Serangan",
+   "toName": "Nusa Penida",
+   "departs": "08:00",
+   "arrives": "09:00",
+   "priceAUD": 14,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Marina Group",
+   "from": "serangan",
+   "to": "nusa-penida",
+   "fromName": "Serangan",
+   "toName": "Nusa Penida",
+   "departs": "13:30",
+   "arrives": "14:30",
+   "priceAUD": 13,
+   "daysSeen": [
+    0
+   ]
+  },
+  {
+   "operator": "Marina Luxury 99",
+   "from": "serangan",
+   "to": "nusa-penida",
+   "fromName": "Serangan",
+   "toName": "Nusa Penida",
+   "departs": "13:30",
+   "arrives": "14:45",
+   "priceAUD": 12,
+   "daysSeen": [
+    0
+   ]
+  }
+ ]
+}

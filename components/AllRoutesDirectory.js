@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { COLORS } from "@/lib/theme";
-import { SAILINGS } from "@/data/sailings";
+// Booking links only (no times), so it lists every pair the planner knows, not just confirmed ones.
+import { PLANNER_SAILINGS as SAILINGS } from "@/data/sailings";
 import { routePageFor } from "@/data/routePages";
 import { bookingLink } from "@/lib/bookingLink";
 

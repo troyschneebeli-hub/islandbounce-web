@@ -53,7 +53,7 @@ const CONFIRMED_FAQ = (from, to, c) => ({
   q: `Which ${from} to ${to} boats are confirmed?`,
   a:
     c.confirmedCount
-      ? `${plural(c.confirmedCount, "departure")} with ${joinOps(c.confirmedOperators)} appeared on both the operator's own timetable and the booking site (${c.scanText}). They're marked Confirmed in the table above. The rest are listed on the booking site only.`
+      ? `${plural(c.confirmedCount, "departure")} with ${joinOps(c.confirmedOperators)} appeared on both the operator's own timetable and the booking page on every day we checked (${c.scanText}). Those are the departures listed above.`
       : "None yet. Every departure above is listed on the booking site only, so confirm with the operator before you plan around one boat.",
 });
 
@@ -105,7 +105,7 @@ export const ROUTE_PAGES = {
     faqs: (c) => [
       {
         q: "How long is the fast boat from Gili Trawangan to Bali?",
-        a: `Crossing times are ${c.durations}. Times differ by port and by departure, so check the Duration column above and confirm with the operator.`,
+        a: `Crossing times are ${c.durations}. Times differ by port and by departure, so check the Arrives column above and confirm with the operator.`,
       },
       {
         q: "What time is the first boat from Gili Trawangan to Bali?",
@@ -161,7 +161,7 @@ export const ROUTE_PAGES = {
       {
         heading: "Stops on the way",
         paragraphs: [
-          "Some fast boats run a circuit, calling at more than one port or island. Where we know a boat stops elsewhere, it's shown in the Notes column, and those stops add to your crossing time.",
+          "Some fast boats run a circuit, calling at more than one port or island. Those stops add to your crossing time, so compare the arrival times in the table.",
         ],
       },
       { heading: "Checking in", paragraphs: [CHECKIN_TEXT] },
@@ -169,7 +169,7 @@ export const ROUTE_PAGES = {
     faqs: (c) => [
       {
         q: "How long does the fast boat from Bali to the Gili Islands take?",
-        a: `Crossing times are: ${c.durations}. Boats that call at other ports on the way take longer, so compare the Duration and Notes columns.`,
+        a: `Crossing times are: ${c.durations}. Boats that call at other ports on the way take longer, so compare the Arrives column.`,
       },
       {
         q: "Which operators go from Bali to the Gili Islands?",
@@ -181,7 +181,7 @@ export const ROUTE_PAGES = {
       },
       {
         q: "Are there direct boats, or do they stop on the way?",
-        a: "Both exist. Some boats run a circuit and call at other ports or islands on the way to the Gilis. Where we know about those stops, they're listed in the Notes column above.",
+        a: "Both exist. Some boats run a circuit and call at other ports or islands on the way to the Gilis. Compare the arrival times above to spot the longer trips.",
       },
       CANCEL_FAQ("Bali", "the Gili Islands"),
       BOOK_FAQ,
@@ -284,7 +284,7 @@ export const ROUTE_PAGES = {
     faqs: (c) => [
       {
         q: "How long is the fast boat from Gili Air to Bali?",
-        a: `Crossing times are ${c.durations}. Times differ by port and by departure, so check the Duration column above and confirm with the operator.`,
+        a: `Crossing times are ${c.durations}. Times differ by port and by departure, so check the Arrives column above and confirm with the operator.`,
       },
       {
         q: "What time is the first boat from Gili Air to Bali?",
@@ -331,7 +331,7 @@ export const ROUTE_PAGES = {
       {
         heading: "Why the crossing takes a while",
         paragraphs: [
-          "Some boats call at more than one Gili on the way, and those stops add to the crossing. Where we know a boat stops elsewhere, it's shown in the Notes column.",
+          "Some boats call at more than one Gili on the way, and those stops add to the crossing.",
         ],
       },
       {
@@ -350,7 +350,7 @@ export const ROUTE_PAGES = {
       },
       {
         q: "How long is the fast boat from Nusa Penida to the Gili Islands?",
-        a: `Crossing times are ${c.durations}. Boats that call at other islands on the way take longer, so compare the Duration and Notes columns.`,
+        a: `Crossing times are ${c.durations}. Boats that call at other islands on the way take longer, so compare the Arrives column.`,
       },
       {
         q: "What time is the first boat from Nusa Penida to the Gilis?",
@@ -411,7 +411,7 @@ export const ROUTE_PAGES = {
       },
       {
         q: "How long is the fast boat from Nusa Lembongan to the Gili Islands?",
-        a: `Crossing times are ${c.durations}. Boats that call at other islands on the way take longer, so compare the Duration and Notes columns.`,
+        a: `Crossing times are ${c.durations}. Boats that call at other islands on the way take longer, so compare the Arrives column.`,
       },
       {
         q: "What time is the first boat from Nusa Lembongan to the Gilis?",
@@ -453,7 +453,7 @@ export const ROUTE_PAGES = {
       {
         heading: "Which boat should I take?",
         paragraphs: [
-          "Crossing times vary a lot between boats on this route. Some are quick direct crossings and others take much longer, so compare the Duration column as well as the departure time. Where we know a boat stops elsewhere it is shown in the Notes column.",
+          "Crossing times vary a lot between boats on this route. Some are quick direct crossings and others take much longer, so compare the Arrives column as well as the departure time.",
           "Morning departures usually have the calmest water and leave the rest of the day free.",
         ],
       },
@@ -469,7 +469,7 @@ export const ROUTE_PAGES = {
     faqs: (c) => [
       {
         q: "How long is the fast boat from Padang Bai to Gili Trawangan?",
-        a: `Crossing times are ${c.durations}. Boats that call at other islands on the way take longer, so compare the Duration and Notes columns before you book.`,
+        a: `Crossing times are ${c.durations}. Boats that call at other islands on the way take longer, so compare the Arrives column before you book.`,
       },
       {
         q: "What time is the first boat from Padang Bai to Gili T?",
@@ -517,7 +517,7 @@ export const ROUTE_PAGES = {
         heading: "A quieter Gili, a longer crossing",
         paragraphs: [
           "Gili Air sits closest to Lombok and is calmer than Gili Trawangan: cafes, yoga and swimming rather than nightlife. Many travellers pick it for exactly that.",
-          "Gili Air is often the last stop on a circuit, so some boats from Padang Bai call at Gili Trawangan or Gili Meno first. Those boats take longer than a direct crossing, so compare the Duration and Notes columns before you choose.",
+          "Gili Air is often the last stop on a circuit, so some boats from Padang Bai call at Gili Trawangan or Gili Meno first. Those boats take longer than a direct crossing, so compare the Arrives column before you choose.",
         ],
       },
       {
@@ -532,7 +532,7 @@ export const ROUTE_PAGES = {
     faqs: (c) => [
       {
         q: "How long is the fast boat from Padang Bai to Gili Air?",
-        a: `Crossing times are ${c.durations}. Boats that call at other islands on the way take longer, so compare the Duration and Notes columns before you book.`,
+        a: `Crossing times are ${c.durations}. Boats that call at other islands on the way take longer, so compare the Arrives column before you book.`,
       },
       {
         q: "What time is the first boat from Padang Bai to Gili Air?",
@@ -544,7 +544,7 @@ export const ROUTE_PAGES = {
       },
       {
         q: "Do all boats from Padang Bai to Gili Air go direct?",
-        a: "Not all of them. Some stop at Gili Trawangan or Gili Meno before reaching Gili Air, which makes the trip longer. The Notes column shows where a boat is known to call.",
+        a: "Not all of them. Some stop at Gili Trawangan or Gili Meno before reaching Gili Air, which makes the trip longer. Compare the arrival times above to spot the longer trips.",
       },
       CANCEL_FAQ("Padang Bai", "Gili Air"),
       BOOK_FAQ,
@@ -582,7 +582,7 @@ export const ROUTE_PAGES = {
       {
         heading: "Direct or via Nusa Penida?",
         paragraphs: [
-          "Some boats from Sanur call at Nusa Penida on the way to the Gilis, which makes a longer day but lets you drop in on Nusa. The Notes column shows where a boat stops.",
+          "Some boats from Sanur call at Nusa Penida on the way to the Gilis, which makes a longer day but lets you drop in on Nusa. Compare the arrival times in the table to spot them.",
           CHECKIN_TEXT,
         ],
         cta: PLANNER_CTA("Gili Trawangan"),
@@ -591,7 +591,7 @@ export const ROUTE_PAGES = {
     faqs: (c) => [
       {
         q: "How long is the fast boat from Sanur to Gili Trawangan?",
-        a: `Crossing times are ${c.durations}. Boats that call at other islands on the way take longer, so compare the Duration and Notes columns before you book.`,
+        a: `Crossing times are ${c.durations}. Boats that call at other islands on the way take longer, so compare the Arrives column before you book.`,
       },
       {
         q: "What time is the first boat from Sanur to Gili T?",
@@ -635,7 +635,7 @@ export const ROUTE_PAGES = {
         heading: "Sanur to the quiet Gili",
         paragraphs: [
           "Gili Air is the calmer choice of the three Gilis, and Sanur is the easy port from South and Central Bali, so this pairing suits travellers who want a short transfer and a relaxed island.",
-          "Crossing times vary widely from Sanur. Some boats stop at other islands such as Nusa Penida, Gili Trawangan or Gili Meno on the way, which adds time, so check the Duration and Notes columns and pick the boat that suits your day.",
+          "Crossing times vary widely from Sanur. Some boats stop at other islands such as Nusa Penida, Gili Trawangan or Gili Meno on the way, which adds time, so check the Arrives column and pick the boat that suits your day.",
         ],
       },
       {
@@ -650,7 +650,7 @@ export const ROUTE_PAGES = {
     faqs: (c) => [
       {
         q: "How long is the fast boat from Sanur to Gili Air?",
-        a: `Crossing times are ${c.durations}. Boats that call at other islands on the way take longer, so compare the Duration and Notes columns before you book.`,
+        a: `Crossing times are ${c.durations}. Boats that call at other islands on the way take longer, so compare the Arrives column before you book.`,
       },
       {
         q: "What time is the first boat from Sanur to Gili Air?",
@@ -696,7 +696,7 @@ export const ROUTE_PAGES = {
         heading: "Why most people leave from Sanur",
         paragraphs: [
           "Sanur is the easiest port to reach from south and central Bali: about 25 minutes from Kuta, 40 to 50 minutes from Canggu and 45 minutes to an hour from Ubud. That's why it has so many boats to Nusa Penida spread across the day.",
-          "With this many departures you can usually pick a time that suits you, so check the Duration column too: crossing times differ between boats.",
+          "With this many departures you can usually pick a time that suits you, so check the Arrives column too: crossing times differ between boats.",
         ],
       },
       {
@@ -711,7 +711,7 @@ export const ROUTE_PAGES = {
     faqs: (c) => [
       {
         q: "How long is the fast boat from Sanur to Nusa Penida?",
-        a: `Crossing times are ${c.durations}, depending on the boat. Check the Duration column above and confirm on your ticket.`,
+        a: `Crossing times are ${c.durations}, depending on the boat. Check the Arrives column above and confirm on your ticket.`,
       },
       {
         q: "What time is the first boat from Sanur to Nusa Penida?",
@@ -766,7 +766,7 @@ export const ROUTE_PAGES = {
     faqs: (c) => [
       {
         q: "How long is the fast boat from Sanur to Nusa Lembongan?",
-        a: `Crossing times are ${c.durations}, depending on the boat. Check the Duration column above and confirm on your ticket.`,
+        a: `Crossing times are ${c.durations}, depending on the boat. Check the Arrives column above and confirm on your ticket.`,
       },
       {
         q: "What time is the first boat from Sanur to Nusa Lembongan?",
@@ -822,7 +822,7 @@ export const ROUTE_PAGES = {
     faqs: (c) => [
       {
         q: "How long is the fast boat from Bali to Nusa Penida?",
-        a: `Crossing times are: ${c.durations}. Check the Duration column above for each boat.`,
+        a: `Crossing times are: ${c.durations}. Check the Arrives column above for each boat.`,
       },
       {
         q: "Which Bali ports have boats to Nusa Penida?",
@@ -874,7 +874,7 @@ export const ROUTE_PAGES = {
     faqs: (c) => [
       {
         q: "How long is the fast boat from Bali to Nusa Lembongan?",
-        a: `Crossing times are: ${c.durations}. Check the Duration column above for each boat.`,
+        a: `Crossing times are: ${c.durations}. Check the Arrives column above for each boat.`,
       },
       {
         q: "Which Bali ports have boats to Nusa Lembongan?",
@@ -926,7 +926,7 @@ export const ROUTE_PAGES = {
     faqs: (c) => [
       {
         q: "How long is the fast boat from Nusa Lembongan to Bali?",
-        a: `Crossing times are: ${c.durations}. Check the Duration column above for each boat.`,
+        a: `Crossing times are: ${c.durations}. Check the Arrives column above for each boat.`,
       },
       {
         q: "What time is the last boat from Nusa Lembongan to Bali?",
@@ -978,7 +978,7 @@ export const ROUTE_PAGES = {
     faqs: (c) => [
       {
         q: "How long is the fast boat from Nusa Penida to Bali?",
-        a: `Crossing times are: ${c.durations}. Check the Duration column above for each boat.`,
+        a: `Crossing times are: ${c.durations}. Check the Arrives column above for each boat.`,
       },
       {
         q: "What time is the last boat from Nusa Penida to Bali?",
@@ -1021,7 +1021,7 @@ export const ROUTE_PAGES = {
         heading: "Skipping the mainland",
         paragraphs: [
           "You don't have to go back to Bali first. Fast boats run from the Gilis straight to Nusa Penida, which saves a night and a drive on the mainland.",
-          "Some boats call at other islands or ports on the way, which adds to the crossing time, so compare the Duration column before you choose.",
+          "Some boats call at other islands or ports on the way, which adds to the crossing time, so compare the Arrives column before you choose.",
         ],
       },
       {
@@ -1076,7 +1076,7 @@ export const ROUTE_PAGES = {
         heading: "Skipping the mainland",
         paragraphs: [
           "Fast boats run from the Gilis straight to Nusa Lembongan, so you can carry on to the Nusa Islands without a night in Bali.",
-          "Some boats call at other islands or ports on the way, which adds to the crossing time, so compare the Duration column before you choose.",
+          "Some boats call at other islands or ports on the way, which adds to the crossing time, so compare the Arrives column before you choose.",
         ],
       },
       {
@@ -1295,7 +1295,7 @@ export const ROUTE_PAGES = {
     faqs: (c) => [
       {
         q: "How long is the fast boat from Gili Meno to Bali?",
-        a: `Crossing times are: ${c.durations}. Check the Duration column above for each boat.`,
+        a: `Crossing times are: ${c.durations}. Check the Arrives column above for each boat.`,
       },
       {
         q: "What time is the first boat from Gili Meno to Bali?",

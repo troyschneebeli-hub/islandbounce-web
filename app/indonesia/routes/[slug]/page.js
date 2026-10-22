@@ -2,8 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { COLORS } from "@/lib/theme";
 import { SITE_URL, CONTACT_EMAIL } from "@/lib/site";
-import { SAILINGS } from "@/data/sailings";
-import { CONFIRMED_SCAN } from "@/data/confirmed";
+import { SAILINGS, SAILINGS_CHECKED_TEXT } from "@/data/sailings";
 import { ROUTE_PAGES, ROUTE_SLUGS } from "@/data/routePages";
 import { BALI_PORTS, ISLAND_PORTS } from "@/data/ports";
 import { bookingLink } from "@/lib/bookingLink";
@@ -79,19 +78,18 @@ export default function RoutePage({ params }) {
   if (!route) notFound();
 
   const today = new Date().toISOString().slice(0, 10);
-  const { active, upcoming } = selectSailings(SAILINGS, route, today);
+  // SAILINGS = confirmed daily sailings only, so every row, count and pick below comes from the same table.
+  const { active } = selectSailings(SAILINGS, route, today);
   const summary = summarize(active);
   const hasData = summary.count > 0;
   const groups = groupByPair(active);
-  const upcomingGroups = groupByPair(upcoming);
-  const checked = lastChecked([...active, ...upcoming]);
+  const checked = lastChecked(active);
   const stale = isStale(checked, new Date().toISOString().slice(0, 10));
-  const confirmedActive = active.filter((s) => s.confidence === "confirmed");
-  const ctx = routeContext(route, active, CONFIRMED_SCAN.checkedText);
-  const typicalCount = summary.count - ctx.confirmedCount;
+  const confirmedActive = active;
+  const ctx = routeContext(route, active, SAILINGS_CHECKED_TEXT);
   const lead = hasData
     ? route.lead(ctx)
-    : "We're adding a current timetable for this route. Check back soon, or compare options on 12Go below.";
+    : `We haven't confirmed a daily timetable for ${route.name} yet. Choose your date below to see live times and fares on the booking page.`;
   const faqs = hasData ? route.faqs(ctx) : [];
 
   const url = `${SITE_URL}/indonesia/routes/${route.slug}`;
@@ -152,15 +150,16 @@ export default function RoutePage({ params }) {
         { n: summary.operators.length, label: summary.operators.length === 1 ? "operator" : "operators" },
       ]
     : [];
-  const bookingPairs = groups.map((g) => ({ from: g.from, to: g.to, minPrice: minOf(priced(g.sailings)) }));
+  // With no confirmed sailings the booking box still works, for the page's main pair.
+  const bookingPairs = hasData
+    ? groups.map((g) => ({ from: g.from, to: g.to, minPrice: minOf(priced(g.sailings)) }))
+    : [{ from: route.bookFrom, to: route.bookTo, minPrice: null }];
 
-  // Summary card for "Typical departures". The 12Go listings are one day's
-  // capture assumed to run daily, so the sailing count is a typical day.
+  // Summary card above the table, from the same confirmed daily rows.
   const slowestMin = pairMaxes.length ? Math.max(...pairMaxes) : null;
   const summaryCard = hasData
     ? [
-        // One tile, so the two numbers read together: "4 confirmed / of 10 departures".
-        { n: `${ctx.confirmedCount} confirmed`, label: `of ${summary.count} ${summary.count === 1 ? "departure" : "departures"}` },
+        { n: summary.count, label: summary.count === 1 ? "daily departure" : "daily departures" },
         { n: `${summary.earliest}–${summary.latest}`, label: "earliest to latest" },
         { n: summary.operators.length, label: summary.operators.length === 1 ? "operator" : "operators" },
         { n: rangeText(fastestMin, slowestMin), label: "crossing time" },
@@ -175,8 +174,7 @@ export default function RoutePage({ params }) {
   const opsFor = (list) => joinList([...new Set(list.map((s) => s.operator))]);
   const pickRows = [];
   if (hasData) {
-    // Fastest comes from confirmed sailings when there are any, so one odd listing can't win it.
-    const basis = confirmedActive.length ? confirmedActive : active;
+    const basis = active;
     const basisDurs = basis.map((s) => durationMins(s.departs, s.arrives)).filter((d) => d != null);
     const fastestPick = basisDurs.length ? Math.min(...basisDurs) : null;
     const fastest = basis.filter((s) => durationMins(s.departs, s.arrives) === fastestPick);
@@ -236,7 +234,19 @@ export default function RoutePage({ params }) {
               ))}
             </div>
           )}
-          {hasData && <BookingBox />}
+          {hasData ? (
+            <BookingBox />
+          ) : (
+            // No confirmed daily sailings: no time table, just live times on the booking page.
+            <section style={{ marginBottom: 32 }}>
+              <h2 style={h2}>Check live times</h2>
+              <p style={para}>
+                We haven&apos;t confirmed any daily departures for {route.name} against the operators&apos; own timetables yet. Pick a date to
+                see the boats, times and fares on the booking page.
+              </p>
+              <BookingBox />
+            </section>
+          )}
           {pickRows.length > 0 && (
             <section style={{ marginBottom: 32, border: `1px solid ${COLORS.foamLine}`, borderRadius: 14, padding: "16px 18px", background: COLORS.foam }}>
               <h2 style={{ ...h2, fontSize: 20, marginBottom: 10 }}>Our pick</h2>
@@ -260,9 +270,9 @@ export default function RoutePage({ params }) {
               {route.ourPick && <p style={{ ...para, marginTop: 10, marginBottom: 0 }}>{route.ourPick}</p>}
             </section>
           )}
+          {hasData && (
           <section style={{ marginBottom: 40 }}>
-            <h2 style={h2}>Typical departures</h2>
-            <p style={{ ...para, fontWeight: 600 }}>Times and prices change by day. Choose your date to see what&apos;s available.</p>
+            <h2 style={h2}>Daily departures</h2>
             {summaryCard.length > 0 && (
               <div style={{ border: `1px solid ${COLORS.foamLine}`, borderRadius: 14, padding: "14px 16px", margin: "12px 0 16px", background: "white" }}>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-y-3">
@@ -283,13 +293,9 @@ export default function RoutePage({ params }) {
               </div>
             )}
             <p style={{ ...para, fontSize: 13, opacity: 0.7 }}>
-              {ctx.confirmedCount > 0
-                ? `Departures marked Confirmed appeared on both the operator's own timetable and the booking site: ${CONFIRMED_SCAN.checkedText}. `
-                : ""}
-              Typical departures are booking-site listings that we haven&apos;t checked against the operator&apos;s timetable yet. Times and fares
-              are guides. Fares are the lowest adult price listed. Check in
-              at the time on your ticket, usually up to an hour before departure. Operators change schedules and prices, so confirm on the booking page
-              when you book.
+              Daily departures confirmed against each operator&apos;s own timetable and the booking page. Prices are the lowest fare for 1 adult
+              when {SAILINGS_CHECKED_TEXT}. Fares and times change, and this list may not include every boat on the route, so confirm on the
+              booking page when you book. Check in at the time on your ticket.
             </p>
             {stale && (
               <p style={{ ...para, fontSize: 13, background: "#FFF2CC", color: "#8A5A00", borderRadius: 8, padding: "8px 12px" }}>
@@ -306,39 +312,16 @@ export default function RoutePage({ params }) {
               </a>{" "}
               and we&apos;ll fix it.
             </p>
-            {hasData ? (
-              <>
-                {/* Confirmed departures are always open, so the times are in the visible HTML. */}
-                {ctx.confirmedCount > 0 && <RouteTimetable groups={groups} checkedText={CONFIRMED_SCAN.checkedText} show="confirmed" />}
-                {typicalCount > 0 && (
-                  // Closed by default but still in the HTML.
-                  <details style={{ border: `1px solid ${COLORS.foamLine}`, borderRadius: 12, padding: "10px 14px" }}>
-                    <summary style={{ cursor: "pointer", fontWeight: 700, fontSize: 14.5, color: COLORS.sea }}>
-                      See departure times ({typicalCount} typical {typicalCount === 1 ? "departure" : "departures"} from the booking site)
-                    </summary>
-                    <div style={{ marginTop: 12 }}>
-                      <RouteTimetable groups={groups} show="typical" />
-                    </div>
-                  </details>
-                )}
-                {summary.operators.length <= 2 && (
-                  <p style={{ ...para, fontSize: 12.5, opacity: 0.75, marginTop: 10 }}>
-                    These tables list the operators we found when we checked. Others may run this route too, so
-                    use the booking page below to see every option for your date.
-                  </p>
-                )}
-              </>
-            ) : (
-              <p style={para}>There&apos;s nothing to show yet. Check back soon, or compare options on 12Go below.</p>
-            )}
-            {upcomingGroups.length > 0 && (
-              <div style={{ marginTop: 8 }}>
-                <h3 style={{ fontWeight: 700, fontSize: 18, color: COLORS.sea, marginBottom: 4 }}>Starting soon</h3>
-                <p style={{ ...para, fontSize: 13, opacity: 0.7 }}>These run in a later season and aren&apos;t operating yet.</p>
-                <RouteTimetable groups={upcomingGroups} />
-              </div>
+            {/* One open table: every row is in the visible HTML for search engines. */}
+            <RouteTimetable groups={groups} />
+            {summary.operators.length <= 2 && (
+              <p style={{ ...para, fontSize: 12.5, opacity: 0.75, marginTop: 10 }}>
+                This table lists the daily boats we could confirm. Others may run this route too, so use the booking page to see
+                every option for your date.
+              </p>
             )}
           </section>
+          )}
           </RouteBookingProvider>
 
           <section style={{ marginBottom: 44, textAlign: "center" }}>
@@ -426,8 +409,8 @@ export default function RoutePage({ params }) {
           </section>
 
           <p style={{ fontSize: 12, color: COLORS.ink, opacity: 0.6, lineHeight: 1.6 }}>
-            How we compile this: We check seven days of departures on the booking site against each operator&apos;s own timetable. Sailings that
-            match are marked Confirmed.
+            How we compile this: We check seven days of departures on the booking page against each operator&apos;s own timetable. Only
+            sailings that match on every one of those days are listed here.
           </p>        </div>
       </div>
     </div>
