@@ -71,9 +71,13 @@ jobs:
           pattern: scan-*
           merge-multiple: true
       - name: Match operator timetables against 12Go
-        run: python3 scripts/weekly/match.py --scans scans --operators data/operator-sailings.json --out data/generated-new
+        run: |
+          python3 scripts/weekly/match.py --scans scans --operators data/operator-sailings.json --out data/generated-new
+          cat data/generated-new/report.md >> "$GITHUB_STEP_SUMMARY"   # counts on the run's Summary page
       - name: Safety checks (blocks the publish if the data looks wrong)
-        run: python3 scripts/weekly/publish_check.py --new data/generated-new --old data/generated
+        run: |
+          echo '### Safety checks' >> "$GITHUB_STEP_SUMMARY"
+          python3 scripts/weekly/publish_check.py --new data/generated-new --old data/generated 2>&1 | tee -a "$GITHUB_STEP_SUMMARY"
       - name: Publish (commit to main, Vercel redeploys)
         run: |
           rm -rf data/generated && mv data/generated-new data/generated

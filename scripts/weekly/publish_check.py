@@ -5,12 +5,14 @@ Usage: publish_check.py --new data/generated-new --old data/generated
 import argparse, json, os, sys, collections
 ap = argparse.ArgumentParser(); ap.add_argument('--new', required=True); ap.add_argument('--old', required=True)
 ap.add_argument('--max-drop', type=float, default=0.30); ap.add_argument('--min-total', type=int, default=120)
+# Same as match.py --max-missing: one failed day per route is left out of the daily count, so it is tolerated here.
+ap.add_argument('--max-missing', type=int, default=1)
 a = ap.parse_args(); problems = []
 load = lambda d, n: json.load(open(os.path.join(d, n)))
 new = load(a.new, 'confirmed-daily-sailings.json')['sailings']; health = load(a.new, 'scan-health.json')
 if len(new) < a.min_total: problems.append(f'only {len(new)} confirmed daily sailings (minimum {a.min_total})')
 for rk, h in health['routes'].items():
-    if h['failed']: problems.append(f'{rk}: {h["failed"]} day(s) failed to load')
+    if h['failed'] > a.max_missing: problems.append(f'{rk}: {h["failed"]} day(s) failed to load ({"; ".join(h.get("errors", [])[:2])})')
     for cap, hd in zip(h['captured'], h['header']):
         if 12 < hd <= 100 and cap < 0.5 * hd: problems.append(f'{rk}: captured {cap} of {hd} trips'); break
 oldp = os.path.join(a.old, 'confirmed-daily-sailings.json')
