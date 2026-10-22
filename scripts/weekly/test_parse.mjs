@@ -1,7 +1,7 @@
 // Checks parseRaw against trip cards copied from the live booking page.
 //     node scripts/weekly/test_parse.mjs
 import { readFileSync } from "node:fs";
-import { parseRaw, to24h } from "./parse_card.mjs";
+import { parseRaw, to24h, stationFits } from "./parse_card.mjs";
 
 const lines = readFileSync(new URL("./fixtures/cards-padang-bai-gili-trawangan-2026-10-29.txt", import.meta.url), "utf8").split(/\r?\n/).filter(Boolean);
 const expected = [
@@ -52,6 +52,29 @@ linesB.forEach((line, i) => {
 if (linesB.length !== expectedB.length) { failed++; console.log(`expected ${expectedB.length} layout B cards, fixture has ${linesB.length}`); }
 const b = parseRaw(linesB[6].replace("|$28|", "|A$37|")); // same card with curr=AUD
 if (!b || b.price !== 37 || b.currency !== "A$") { failed++; console.log(`FAIL layout B in A$: got ${JSON.stringify(b)}`); }
+
+// Stations: read in both layouts, and trips from another port on the page are told apart.
+const fits = (raw, a, b) => { const p = parseRaw(raw); return stationFits(p.from, a) && stationFits(p.to, b); };
+const stationCases = [
+  [lines[0], "padang-bai", "gili-trawangan", true, "Padang Bai", "Gili Trawangan"],
+  [lines[1], "padang-bai", "gili-trawangan", true, "Padangbai Harbour Shared, Padang Bai", "Gili Trawangan Harbour Shared"],
+  [linesB[3], "bangsal", "nusa-lembongan", false, "Gili Air Harbour Shared", "Nusa Lembongan Harbour Shared"],
+  [linesB[4], "bangsal", "nusa-lembongan", false, "Gili Trawangan Harbour Shared", "Nusa Lembongan Harbour Shared"],
+  [linesB[5], "bangsal", "nusa-lembongan", true, "Bangsal Harbour Shared, Lombok", "Nusa Lembongan Harbour Shared"],
+  [linesB[6], "bangsal", "nusa-penida", false, "Gili Trawangan", "Wahana Virendra Office Penida, Nusa Penida"],
+  [linesB[7], "bangsal", "nusa-penida", true, "Bangsal Lombok main Harbour", "Nusa Penida Banjar Nyuh"],
+  [linesB[8], "bangsal", "nusa-penida", true, "Bangsal, Lombok", "Marina Office Nusa penida, Nusa Penida"],
+];
+for (const [raw, a, b, want, from, to] of stationCases) {
+  const p = parseRaw(raw);
+  if (p.from !== from || p.to !== to) { failed++; console.log(`FAIL stations: want ${from} -> ${to}, got ${p.from} -> ${p.to}`); }
+  if (fits(raw, a, b) !== want) { failed++; console.log(`FAIL ${a}>${b} ${from}: want ${want ? "kept" : "left out"}`); }
+}
+// Every ferry in the Padang Bai -> Gili Trawangan capture really is that route: none may be left out.
+lines.forEach((raw, i) => { const p = parseRaw(raw); if (p && p.ty === "Ferry" && !fits(raw, "padang-bai", "gili-trawangan")) { failed++; console.log(`FAIL card ${i + 1} wrongly left out: ${p.from} -> ${p.to}`); } });
+for (const [st, port, want] of [["Banjar Nyuh", "nusa-penida", true], ["Teluk Nare, Lombok", "bangsal", false], ["Serangan Harbour", "benoa-nusa-dua", false], ["Tanjung Benoa", "benoa-nusa-dua", true], [undefined, "sanur", true]]) {
+  if (stationFits(st, port) !== want) { failed++; console.log(`FAIL stationFits("${st}", ${port}): want ${want}`); }
+}
 
 // 12-hour times (in case 12Go shows them that way to some visitors) parse to the same sailing.
 const pm = parseRaw("Instant confirmation|1:30 PM|3:30 PM|2h|Bangsal, Lombok|Nusa Penida|Fast Boat | Ferry|Nusa Nadhi Fast Ferry|4.2|A$28|per adult|Book now");

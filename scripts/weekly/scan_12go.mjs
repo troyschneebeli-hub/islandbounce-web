@@ -3,7 +3,7 @@
 // Read-only: it only scrolls and reads trip cards. It NEVER clicks a trip, "Book now" or anything that adds to a cart.
 import { chromium } from 'playwright';
 import fs from 'node:fs';
-import { parseRaw } from './parse_card.mjs';
+import { parseRaw, stationFits } from './parse_card.mjs';
 
 const [date, outPath] = process.argv.slice(2);
 if (!/^\d{4}-\d\d-\d\d$/.test(date || '') || !outPath) { console.error('usage: scan_12go.mjs YYYY-MM-DD out.json'); process.exit(2); }
@@ -112,15 +112,18 @@ async function scanRoute(a, b) {
 }
 
 function record(a, b, { best, error, diag }) {
-  const sailings = [];
+  const sailings = [], otherPort = [];
   for (const raw of best.trips) {
     const p = parseRaw(raw); if (!p || p.ty !== 'Ferry') continue;
     if (/Van|Bus|Taxi|Shuttle|Transfer|Minibus/i.test(p.cls || '') && !/Speedboat|Fast/i.test(p.cls || '')) continue;
+    // Trips from/to a nearby port that 12Go lists on this page (e.g. Gili Trawangan on Bangsal -> Nusa Penida).
+    if (!stationFits(p.from, a) || !stationFits(p.to, b)) { otherPort.push(`${p.dep} ${p.op}: ${p.from} -> ${p.to}`); continue; }
     sailings.push(p);
   }
+  if (otherPort.length) console.log(`  left out ${otherPort.length} from/to another port, e.g. ${otherPort.slice(0, 3).join('; ')}`);
   // A few raw cards, kept so a change in 12Go's card layout can be seen in the scan file and the log.
   const samples = best.trips.slice(0, 3);
-  result.routes[`${a}>${b}`] = { header: best.header, captured: best.trips.length, empty: !!best.empty, failed: !!best.failed, error, diag, samples, sailings };
+  result.routes[`${a}>${b}`] = { header: best.header, captured: best.trips.length, empty: !!best.empty, failed: !!best.failed, error, diag, samples, otherPort: otherPort.length, sailings };
   console.log(`${date} ${a}>${b}: ${sailings.length} ferries (${best.trips.length}/${best.header} cards)${error ? ` FAILED: ${error}` : ''}`);
   if (best.trips.length && !sailings.length) samples.forEach((s, i) => console.log(`  card ${i + 1}: ${s}`));
 }
