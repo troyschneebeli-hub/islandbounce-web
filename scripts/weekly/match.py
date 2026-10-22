@@ -30,6 +30,8 @@ def main():
     ap.add_argument('--scans', required=True); ap.add_argument('--operators', required=True); ap.add_argument('--out', required=True)
     ap.add_argument('--window', type=int, default=7, help='days expected in the scan'); ap.add_argument('--tol', type=int, default=10)
     ap.add_argument('--min-days', type=int, default=None, help='days a sailing must be seen to count as daily (default: window)')
+    ap.add_argument('--max-missing', type=int, default=1,
+                    help='days a route may fail to load and still get daily sailings; a failed day is left out of the count, not held against a sailing')
     a = ap.parse_args()
     min_days = a.min_days or a.window
 
@@ -41,11 +43,14 @@ def main():
     # 12Go listings: key (from,to,opkey,dep) -> days seen + min price
     G = {}
     health = {'dates': dates, 'routes': {}}
+    loaded = collections.defaultdict(set)  # (from, to) -> indexes of the days the route loaded
     for si, s in enumerate(scans):
         for rk, r in s['routes'].items():
-            h = health['routes'].setdefault(rk, {'captured': [], 'header': [], 'failed': 0, 'empty': 0})
+            h = health['routes'].setdefault(rk, {'captured': [], 'header': [], 'failed': 0, 'empty': 0, 'errors': []})
             h['captured'].append(r['captured']); h['header'].append(r['header']); h['failed'] += r['failed']; h['empty'] += r['empty']
+            if r.get('error'): h['errors'].append(f"{s['date']}: {r['error']}")
             f, t = rk.split('>')
+            if not r['failed']: loaded[(f, t)].add(si)
             for x in r['sailings']:
                 if (x['op'] or '').startswith(('Ferry #', 'Taxi #')): continue
                 k = (f, t, opkey(x['op']), x['dep'])
@@ -75,20 +80,30 @@ def main():
                            'toName': PORT_NAMES[g['to']], 'departs': g['dep'], 'arrives': g['arr'], 'priceAUD': g['price'], 'daysSeen': sorted(g['days'])})
     conf = []
     for c in confirmed.values():
-        c['daysSeen'] = sorted(c['daysSeen']); c['runsDaily'] = len(c['daysSeen']) >= min_days; conf.append(c)
+        c['daysSeen'] = sorted(c['daysSeen'])
+        # Daily = seen on (min_days minus the days the route failed to load) of the days it did load,
+        # with at most max_missing failed days. A failed day is unknown, not a day without the sailing.
+        ok_days = loaded[(c['from'], c['to'])]
+        missing = a.window - len(ok_days)
+        c['runsDaily'] = missing <= a.max_missing and len(set(c['daysSeen']) & ok_days) >= min_days - missing
+        conf.append(c)
     conf.sort(key=lambda c: (c['from'], c['to'], c['departs']))
     g_only.sort(key=lambda c: (c['from'], c['to'], c['departs']))
     daily = [c for c in conf if c['runsDaily']]
     op_only = [o for o in ops if id(o) not in used]
 
     os.makedirs(a.out, exist_ok=True)
-    meta = {'scannedDates': dates, 'generatedAt': scans[-1]['scannedAt'], 'dailyRule': f'seen on >= {min_days} of {a.window} days'}
+    meta = {'scannedDates': dates, 'generatedAt': min(s['scannedAt'] for s in scans),
+            'dailyRule': f'seen on >= {min_days} of {a.window} days (a day the route failed to load is left out; at most {a.max_missing})'}
     for name, rows in [('confirmed-sailings', conf), ('confirmed-daily-sailings', daily), ('twelvego-only-sailings', g_only)]:
         json.dump({**meta, 'sailings': rows}, open(os.path.join(a.out, name + '.json'), 'w'), indent=1, ensure_ascii=False)
     json.dump(health, open(os.path.join(a.out, 'scan-health.json'), 'w'), indent=1)
     lines = [f"# Weekly timetable run", f"Window: {dates[0]} to {dates[-1]}", '',
              f"- 12Go listings: {len(G)}", f"- Confirmed (on both): {len(conf)}", f"- Confirmed daily (shown on Fast Routes): {len(daily)}",
-             f"- 12Go only (Trip Planner, typical): {len(g_only)}", f"- Operator only (not shown): {len(op_only)}"]
+             f"- 12Go only (Trip Planner, typical): {len(g_only)}", f"- Operator only (not shown): {len(op_only)}",
+             f"- Route-days that failed to load: {sum(h['failed'] for h in health['routes'].values())}"]
+    errors = [f"  - {rk} {e}" for rk, h in sorted(health['routes'].items()) for e in h['errors']]
+    if errors: lines += ['', 'Load errors (first 20):'] + errors[:20]
     open(os.path.join(a.out, 'report.md'), 'w').write('\n'.join(lines) + '\n')
     print('\n'.join(lines))
 
