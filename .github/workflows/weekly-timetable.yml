@@ -32,7 +32,9 @@ jobs:
 
   scan:
     needs: plan
-    runs-on: ubuntu-latest
+    # Pinned: ubuntu-latest is moving to Ubuntu 26 (from 19 Oct 2026), which Playwright 1.49 doesn't list as supported
+    # for `install --with-deps`. Move up together with the Playwright version in scripts/weekly/package.json.
+    runs-on: ubuntu-24.04
     timeout-minutes: 120
     strategy:
       fail-fast: false
@@ -43,7 +45,11 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - run: npm install --no-save --no-package-lock playwright && npx playwright install --with-deps chromium
+      - name: Install Playwright (in its own folder so it cannot clash with the site's packages)
+        working-directory: scripts/weekly
+        run: |
+          npm install --no-audit --no-fund
+          npx playwright install --with-deps chromium
       - run: node scripts/weekly/scan_12go.mjs ${{ matrix.date }} out/scan-${{ matrix.date }}.json
       - uses: actions/upload-artifact@v4
         with:
