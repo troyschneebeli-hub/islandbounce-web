@@ -37,7 +37,7 @@ export default function RoutesIndex() {
             ))}
           </div>
           <p style={{ fontSize: 13, color: COLORS.ink, opacity: 0.65, textAlign: "center", maxWidth: 560, margin: "0 auto" }}>
-            More route pages are added as we verify each operator&apos;s timetable.
+            We check seven days of departures on the booking site against each operator&apos;s own timetable. Sailings that match are marked Confirmed.
           </p>
           <AllRoutesDirectory />
         </div>

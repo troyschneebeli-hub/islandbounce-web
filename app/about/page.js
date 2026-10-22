@@ -19,10 +19,9 @@ export default function AboutPage() {
         the informal port fee is — route by route, as we go.
       </p>
       <p style={{ fontSize: 15, lineHeight: 1.7, marginBottom: 16 }}>
-        We compile times from operators&apos; own timetables and booking platforms, and we confirm routes with the
-        operators directly as we go, so schedules can change. Always confirm with the operator before you travel. We
-        compare across operators and platforms, and some of those links earn us a commission if you book through
-        them, at no extra cost to you. That&apos;s how the site stays free and independent.
+        The departure times and fares we show are guides taken from the 12Go booking site, and schedules can change.
+        Always confirm on the booking page or with the operator before you travel. Our booking links go to 12Go, and
+        they earn us a commission if you book through them, at no extra cost to you. That&apos;s how the site stays free and independent.
       </p>
       <div style={{ background: COLORS.foam, borderRadius: 10, padding: 18, fontSize: 13, opacity: 0.85 }}>
         <strong>Disclosure:</strong> IslandBounce participates in the 12Go affiliate program, and may join other travel

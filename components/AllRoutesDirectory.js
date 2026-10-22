@@ -1,13 +1,14 @@
 import Link from "next/link";
 import { COLORS } from "@/lib/theme";
-import { SAILINGS } from "@/data/sailings";
-import { ROUTE_PAGES, ROUTE_SLUGS } from "@/data/routePages";
+// Booking links only (no times), so it lists every pair the planner knows, not just confirmed ones.
+import { PLANNER_SAILINGS as SAILINGS } from "@/data/sailings";
+import { routePageFor } from "@/data/routePages";
 import { bookingLink } from "@/lib/bookingLink";
 
-// Every route pair we have timetable evidence for, grouped by where it leaves
-// from. Pairs come from data/timetables.js, so this list grows automatically
-// as new operator timetables are added. Lombok ports we no longer serve are
-// left out.
+// Every route pair the 12Go sailings cover, grouped by where it leaves from.
+// Pairs come from data/sailings.js (12Go only), so this list grows
+// automatically when the 12Go capture is rebuilt. Lombok ports we no longer
+// serve are left out.
 const EXCLUDED = ["Senggigi (Lombok)", "Lembar (Lombok)", "Gili Gede"];
 const ORIGIN_ORDER = [
   "Padang Bai", "Sanur", "Serangan", "Benoa / Nusa Dua", "Kusamba",
@@ -21,9 +22,9 @@ const DEST_ORDER = [
   "Padang Bai", "Sanur", "Serangan", "Benoa / Nusa Dua", "Kusamba",
 ];
 
-function pageFor(from, to) {
-  return ROUTE_SLUGS.map((s) => ROUTE_PAGES[s]).find((r) => r.fromPorts.includes(from) && r.toPorts.includes(to));
-}
+// The most specific route page for the pair, e.g. Sanur -> Gili Air links to "Sanur to Gili Air",
+// not "Bali to the Gili Islands".
+const pageFor = routePageFor;
 
 export function allRoutePairs() {
   const seen = new Map();

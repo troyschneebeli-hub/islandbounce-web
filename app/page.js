@@ -21,15 +21,13 @@ export default function CoverPage() {
             SOUTHEAST ASIA · ISLAND-HOPPING SPECIALISTS
           </div>
           <h1 style={{ fontFamily: "'Big Shoulders Display', sans-serif", fontWeight: 800, fontSize: "clamp(32px, 6vw, 56px)", color: COLORS.seaDeep, lineHeight: 1.02, marginBottom: 14 }}>
-            COMPARE BOATS.
+            NOT SURE WHICH PORT OR BOAT?
             <br />
-            FIND YOUR ISLAND.
-            <br />
-            GO PROPERLY.
+            WE&apos;LL WORK IT OUT.
           </h1>
           <p style={{ color: COLORS.seaDeep, opacity: 0.75, maxWidth: 480, margin: "0 auto 26px", fontSize: 15 }}>
-            Real insight from people who actually know these places. Not a scraped schedule table — start with
-            Indonesia, the region we know best.
+            Tell us where you&apos;re staying and where you&apos;re headed. We show the best port, the real door-to-door time,
+            and which boats go. Then you book on 12Go.
           </p>
           <Link
             href="/indonesia"
@@ -44,9 +42,9 @@ export default function CoverPage() {
       <section style={{ background: "white", padding: "36px 20px 8px" }}>
         <div style={{ maxWidth: 780, margin: "0 auto" }} className="grid grid-cols-1 sm:grid-cols-3 gap-6">
           {[
-            { n: "01", title: "Pick a spot", blurb: "Where you're staying, where you're headed." },
-            { n: "02", title: "We compare", blurb: "Real timetables from operators and booking platforms." },
-            { n: "03", title: "You book", blurb: "Through a trusted booking platform, at no extra cost to you." },
+            { n: "01", title: "Tell us your start and finish", blurb: "Where you're staying and where you're going." },
+            { n: "02", title: "We find the best way there", blurb: "The right port, the drive, check-in time and crossing, side by side." },
+            { n: "03", title: "Book the boat", blurb: "On our booking partner 12Go, same price, no extra cost to you." },
           ].map((s) => (
             <div key={s.n} style={{ textAlign: "center" }}>
               <div style={{ fontFamily: "'Big Shoulders Display', sans-serif", fontWeight: 800, fontSize: 34, color: COLORS.brass, marginBottom: 2 }}>{s.n}</div>

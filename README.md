@@ -46,29 +46,27 @@ flipping its `status` to `"active"` in `data/regions.js` and building out
 code changes needed.
 
 - `/indonesia/destinations` — Places we cover (island blurbs). The old `/indonesia/guide/*` pages were retired and redirect here.
-- `/indonesia/find-port` — Find My Closest Port (real Google Maps driving times)
 - `/indonesia` — hub page, with the Trip Planner (drive + boat math) embedded under the heading (`components/TripPlanner.js`); `/indonesia/planner` redirects here
-- `/indonesia/compare` — Quick boat comparison tool
+- `/indonesia/routes` and `/indonesia/routes/[slug]` — route timetables (12Go sailings only, see CLAUDE.md)
 - `/indonesia/ports` — All Ports directory
 - `/indonesia/split-charter` — Split-charter waitlist
 - `/about` — Why IslandBounce / trust & affiliate disclosure (brand-level, not region-specific)
 
 When Philippines or Laos go live, they get their own `/philippines/` and
 `/laos/` trees with the same internal structure (a hub page + the same tool
-set) — see the preserved (inactive) `vang-vieng` entry in
-`data/destinations.js` as the content template.
+set).
 
 ## Project structure
 
 ```
 app/                  Next.js App Router pages (file-based routing)
-app/api/               Server-side route handlers (Distance Matrix proxy)
+app/api/               Server-side route handlers (sea conditions)
 components/           Shared UI: Nav, Footer, PortCard
 lib/theme.js          Color tokens (keep in sync with tailwind.config.js)
 lib/affiliateLinks.js Affiliate link builders (12Go, Klook, Viator, GYG)
-data/destinations.js  Destination content + transport/activities per destination
+data/sailings.js      Every sailing the site shows (12Go only, from data/twelvego.js)
 data/ports.js         Ports directory content + geocodable addresses
-data/planner.js       Trip Planner route data + calculation logic
+data/planner.js       Trip Planner route pairs + drive times
 data/regions.js       Region registry (drives cover page grid + Nav switching)
 ```
 
@@ -88,18 +86,12 @@ data/regions.js       Region registry (drives cover page grid + Nav switching)
 ## Still open (from the project's "Next real steps")
 
 1. Submit affiliate applications, then fill in real IDs in `.env.local`.
-2. Add the full 19-route Bali/Gili/Nusa/Lombok data set to `data/planner.js`
-   and `data/destinations.js` (currently only the original Gili Trawangan-era
-   subset).
-3. ~~Swap the Trip Planner's area-based drive-time estimates for real geocoding/routing~~ —
-   done for point-to-point lookups via the new **Find My Closest Port** page
-   (`/indonesia/find-port`), which calls Google's Distance Matrix API server-side
-   (REMOVED Oct 2026: those server routes were unused by the site and exposed a
-   paid key with no rate limit. The planner now uses the browser-side Google
-   Maps key only, so `GOOGLE_MAPS_API_KEY` is no longer needed.) The Trip Planner itself still uses the area-based
-   `DRIVE_TIMES` table in `data/planner.js` — worth revisiting whether to
-   replace that with the same live API now that it's wired in, or keep it
-   for speed/cost reasons (Distance Matrix is billed per request).
+2. Extend `BOAT_ROUTES` in `data/planner.js` to more of the 53 port pairs the
+   12Go data covers (only pairs with 12Go sailings may be added).
+3. The Trip Planner uses the browser-side Google Maps key for live driving
+   routes. The old server-side Distance Matrix routes (`/api/closest-port`,
+   `/api/route-finder`) and their pages were deleted in Oct 2026, so
+   `GOOGLE_MAPS_API_KEY` is no longer needed and can be revoked.
 4. Add per-page `schema.org` JSON-LD (Trip/FAQPage/BreadcrumbList) and a
    generated `sitemap.xml` before launch.
 5. Move `DESTINATIONS`/ports/planner data out of hardcoded JS and into a CMS

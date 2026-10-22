@@ -11,7 +11,7 @@ export const metadata = {
     template: "%s | IslandBounce",
   },
   description:
-    "Compare fast boats and ferries from Bali to the Gili Islands, Nusa Penida, Nusa Lembongan and Lombok. Real timetables, sea conditions and a trip planner in one place.",
+    "Compare fast boats and ferries from Bali to the Gili Islands, Nusa Penida, Nusa Lembongan and Lombok. Departure times, fares, sea conditions and a trip planner in one place.",
   openGraph: {
     siteName: "IslandBounce",
     type: "website",
