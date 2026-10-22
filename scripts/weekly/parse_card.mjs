@@ -1,10 +1,12 @@
 // Parses one 12Go trip card (its text lines joined with "|") into a sailing.
 // Kept apart from scan_12go.mjs so it can be tested without a browser: node scripts/weekly/test_parse.mjs
 //
-// Card layout (checked on the live page, 22 Oct 2026):
-//   [badges]|10:30|12:00|1h 30m|<from station>|<to station>|[7+]|<class> | Ferry|<operator>|[rating]|A$31|...|Book now
-// The station names vary in length and number of parts, so the operator is found next to the
-// transport type ("Ferry", "Van", ...), not at a fixed position after the duration.
+// 12Go serves two card layouts (both seen 22 Oct 2026; GitHub's runner gets layout B):
+//   A: [badges]|10:30|12:00|1h 30m|<from station>|<to station>|[7+]|<class> | Ferry|<operator>|[rating]|A$31|...|Book now
+//   B: [badges]|13:30|<from station>|2h | <operator> | Ferry | <class>|15:30|<to station>|[rating]|[+3]|View details|A$28|...|Book now
+// In B the operator comes straight after the duration and the type after it; in A the two stations
+// (and maybe a seats badge) come first, so the type is at least 4 places after the duration.
+// Multi-leg trips are dropped: in A their type is "Van+Ferry", in B their class is "Fast Ferry + Van".
 export const TRANSPORT_TYPES = ["Ferry", "Van", "Bus", "Taxi", "Flight", "Train", "Minibus", "Private"];
 
 // "13:30", "1:30 PM", "8:05am" -> "13:30" / "08:05"; anything else (e.g. "--:--") -> null.
@@ -20,12 +22,19 @@ export function parseRaw(raw) {
   const t = raw.split("|").map((s) => s.trim()).filter(Boolean);
   const di = t.findIndex((x) => /^(\d+h( \d+m)?|\d+m)$/.test(x));
   if (di < 0) return null;
-  const times = t.slice(0, di).map(to24h).filter(Boolean); // "--:--" (choose-a-time packages) has no times
-  if (times.length < 2) return null;
   const ti = t.findIndex((x, i) => i > di && TRANSPORT_TYPES.includes(x));
   if (ti < 0) return null; // flights and multi-leg packages ("Flight #IW1850", "Van+Ferry") have no plain type
-  const op = t[ti + 1];
-  if (!op || /^A\$|^\d(\.\d)?$/.test(op)) return null;
-  const pr = (raw.match(/A\$(\d+(?:\.\d+)?)/) || [])[1];
-  return { dep: times[0], arr: times[1], dur: t[di], op, ty: t[ti], cls: t[ti - 1], price: pr ? +pr : null };
+  const layoutB = ti === di + 2;
+  const op = layoutB ? t[di + 1] : t[ti + 1];
+  const cls = layoutB ? t[ti + 1] : t[ti - 1];
+  if (!op || /^(A|US)?\$|^\d(\.\d)?$/.test(op)) return null;
+  if (/\+/.test(cls || "")) return null; // "Fast Ferry + Van": boat plus road transfer
+  // Times: in A both come before the duration; in B departure before it, arrival after the class.
+  const times = (layoutB ? [...t.slice(0, di), ...t.slice(ti + 1)] : t.slice(0, di)).map(to24h).filter(Boolean); // "--:--" packages have none
+  if (times.length < 2) return null;
+  // Price only when shown in A$ (the scanner asks for curr=AUD); a US$ or other price is left out, not misread.
+  const pm = raw.match(/(?:^|\|)\s*(A\$|US\$|\$|IDR\s?|Rp\s?)\s?([\d,]+(?:\.\d+)?)/);
+  const currency = pm ? (pm[1].trim() === "$" ? "USD?" : pm[1].trim()) : null;
+  const price = pm && currency === "A$" ? +pm[2].replace(/,/g, "") : null;
+  return { dep: times[0], arr: times[1], dur: t[di], op, ty: t[ti], cls, price, currency };
 }

@@ -85,7 +85,8 @@ async function diagnose(tag) {
 }
 
 async function scanRoute(a, b) {
-  const url = `${BASE}/en/travel/${sl(a)}/${sl(b)}?date=${date}&people=1&adults=1`;
+  // curr=AUD: without it GitHub's (US) runner gets US$ prices. 12Go keeps it in a cookie and drops it from the URL.
+  const url = `${BASE}/en/travel/${sl(a)}/${sl(b)}?date=${date}&people=1&adults=1&curr=AUD`;
   let best = null, error = null;
   for (let attempt = 1; attempt <= 3; attempt++) {
     try {
