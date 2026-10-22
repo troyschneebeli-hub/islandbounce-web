@@ -7,6 +7,9 @@ on:
     - cron: '0 1 * * 2'
   workflow_dispatch:
     inputs:
+      limit:
+        description: 'Probe mode: only scan the first N routes (e.g. 2) and publish nothing. Leave empty for a full run.'
+        required: false
       start_date:
         description: 'Override first day to scan (YYYY-MM-DD). Leave empty for the coming Thursday.'
         required: false
@@ -50,15 +53,21 @@ jobs:
         run: |
           npm install --no-audit --no-fund
           npx playwright install --with-deps chromium
-      - run: node scripts/weekly/scan_12go.mjs ${{ matrix.date }} out/scan-${{ matrix.date }}.json
+      - name: Scan 12Go (read-only)
+        env:
+          LIMIT: ${{ github.event.inputs.limit }}
+        run: node scripts/weekly/scan_12go.mjs ${{ matrix.date }} out/scan-${{ matrix.date }}.json
+      # The whole out/ folder: the scan plus debug-*.png screenshots of any route that failed or came back empty.
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: scan-${{ matrix.date }}
-          path: out/scan-${{ matrix.date }}.json
+          path: out/
           retention-days: 30
 
   compile:
     needs: scan
+    if: ${{ github.event.inputs.limit == '' }}   # probe runs (limit set) stop after the scan
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
