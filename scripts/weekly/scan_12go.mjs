@@ -117,8 +117,11 @@ function record(a, b, { best, error, diag }) {
     if (/Van|Bus|Taxi|Shuttle|Transfer|Minibus/i.test(p.cls || '') && !/Speedboat|Fast/i.test(p.cls || '')) continue;
     sailings.push(p);
   }
-  result.routes[`${a}>${b}`] = { header: best.header, captured: best.trips.length, empty: !!best.empty, failed: !!best.failed, error, diag, sailings };
+  // A few raw cards, kept so a change in 12Go's card layout can be seen in the scan file and the log.
+  const samples = best.trips.slice(0, 3);
+  result.routes[`${a}>${b}`] = { header: best.header, captured: best.trips.length, empty: !!best.empty, failed: !!best.failed, error, diag, samples, sailings };
   console.log(`${date} ${a}>${b}: ${sailings.length} ferries (${best.trips.length}/${best.header} cards)${error ? ` FAILED: ${error}` : ''}`);
+  if (best.trips.length && !sailings.length) samples.forEach((s, i) => console.log(`  card ${i + 1}: ${s}`));
 }
 
 const result = { date, scannedAt: new Date().toISOString(), routes: {} };

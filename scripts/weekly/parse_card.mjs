@@ -7,11 +7,20 @@
 // transport type ("Ferry", "Van", ...), not at a fixed position after the duration.
 export const TRANSPORT_TYPES = ["Ferry", "Van", "Bus", "Taxi", "Flight", "Train", "Minibus", "Private"];
 
+// "13:30", "1:30 PM", "8:05am" -> "13:30" / "08:05"; anything else (e.g. "--:--") -> null.
+export function to24h(x) {
+  const m = /^(\d{1,2}):(\d\d)\s*([ap])?\.?m?\.?$/i.exec(x);
+  if (!m) return null;
+  let h = +m[1];
+  if (m[3]) h = (h % 12) + (/p/i.test(m[3]) ? 12 : 0);
+  return h < 24 ? `${String(h).padStart(2, "0")}:${m[2]}` : null;
+}
+
 export function parseRaw(raw) {
   const t = raw.split("|").map((s) => s.trim()).filter(Boolean);
   const di = t.findIndex((x) => /^(\d+h( \d+m)?|\d+m)$/.test(x));
   if (di < 0) return null;
-  const times = t.slice(0, di).filter((x) => /^\d\d:\d\d$/.test(x)); // "--:--" (choose-a-time packages) has no times
+  const times = t.slice(0, di).map(to24h).filter(Boolean); // "--:--" (choose-a-time packages) has no times
   if (times.length < 2) return null;
   const ti = t.findIndex((x, i) => i > di && TRANSPORT_TYPES.includes(x));
   if (ti < 0) return null; // flights and multi-leg packages ("Flight #IW1850", "Van+Ferry") have no plain type
