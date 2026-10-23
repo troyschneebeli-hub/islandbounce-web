@@ -87,9 +87,11 @@ export default function RoutePage({ params }) {
   const stale = isStale(checked, new Date().toISOString().slice(0, 10));
   const confirmedActive = active;
   const ctx = routeContext(route, active, SAILINGS_CHECKED_TEXT);
+  // A page can have no confirmed daily sailings in a given week (an operator drops off the booking site, or a boat
+  // isn't listed every day). The page stays up with live times instead of a table; the weekly report lists it.
   const lead = hasData
     ? route.lead(ctx)
-    : `We haven't confirmed a daily timetable for ${route.name} yet. Choose your date below to see live times and fares on the booking page.`;
+    : `No boat on ${route.name} matched the operators' timetables on all seven days when we ${SAILINGS_CHECKED_TEXT}. Choose your date below to see live times and fares on the booking page.`;
   const faqs = hasData ? route.faqs(ctx) : [];
 
   const url = `${SITE_URL}/indonesia/routes/${route.slug}`;
@@ -241,8 +243,8 @@ export default function RoutePage({ params }) {
             <section style={{ marginBottom: 32 }}>
               <h2 style={h2}>Check live times</h2>
               <p style={para}>
-                We haven&apos;t confirmed any daily departures for {route.name} against the operators&apos; own timetables yet. Pick a date to
-                see the boats, times and fares on the booking page.
+                We couldn&apos;t confirm a daily departure for {route.name} against the operators&apos; own timetables in our latest
+                check. Boats may still be running: pick a date to see the boats, times and fares on the booking page.
               </p>
               <BookingBox />
             </section>

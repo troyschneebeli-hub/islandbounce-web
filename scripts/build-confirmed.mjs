@@ -108,7 +108,8 @@ for (const s of conf.sailings) {
   if (s.checkIn && !checkIn) problems.push(`${where}: check-in "${s.checkIn}" dropped`);
 
   const seen = [...new Set(s.daysSeen || [])].sort((a, b) => a - b);
-  const isDaily = seen.length >= minDaily;
+  // match.py's runsDaily decides (it leaves out a day the route failed to load); the day count is the fallback.
+  const isDaily = (typeof s.runsDaily === "boolean" ? s.runsDaily : seen.length >= dates.length) || (INCLUDE_SIX_OF_SEVEN && seen.length >= minDaily);
   const weekdays = [...new Set(seen.map(weekdayOf))].sort();
   const operator = displayName(s.twelvegoOperator || s.operator);
   const row = {

@@ -1,0 +1,34 @@
+name: PR check
+
+# Runs on every pull request: the PR page shows a green tick when the site builds and its data checks pass,
+# or a red cross (with the reason in the log) before anything reaches main and the live site.
+on:
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: pr-check-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22   # check-data.mjs needs module.registerHooks (Node 22.15+)
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - name: Data checks (sailings, ports, dates)
+        run: node scripts/check-data.mjs
+      - name: Weekly scanner tests (trip card parsing, weekly report)
+        run: |
+          node scripts/weekly/test_parse.mjs
+          node scripts/weekly/changes.mjs --new data/generated --old data/generated --out "$RUNNER_TEMP/changes.md"
+          python3 -m py_compile scripts/weekly/match.py scripts/weekly/publish_check.py
+      - name: Build the site
+        run: npm run build
+      - name: Check the built route pages
+        run: node scripts/check-data.mjs

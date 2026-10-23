@@ -1,0 +1,44 @@
+name: Weekly booking link check
+
+# Wednesday 09:00 Perth / Bali (UTC+8) = Wednesday 01:00 UTC: the day after the timetable refresh, so it checks
+# the freshly published site. Opens every sitemap page and every booking route (read-only, never clicks Book now)
+# and checks each booking link still carries our affiliate ID. Problems open an issue, which emails the owner.
+on:
+  schedule:
+    - cron: '0 1 * * 3'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check:
+    # Same pin as the weekly scan: Playwright 1.49 doesn't support Ubuntu 26 for `install --with-deps`.
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install Playwright (in its own folder so it cannot clash with the site's packages)
+        working-directory: scripts/weekly
+        run: |
+          npm install --no-audit --no-fund
+          npx playwright install --with-deps chromium
+      - name: Check pages and booking links (read-only)
+        id: check
+        run: node scripts/weekly/check_links.mjs "$RUNNER_TEMP/links.md"
+      - name: Email the problems
+        if: ${{ failure() && steps.check.outcome == 'failure' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          {
+            echo "@${{ github.repository_owner }} the weekly booking link check found problems. Broken booking links lose bookings, and a link without our affiliate ID loses the commission."
+            echo
+            if [ -s "$RUNNER_TEMP/links.md" ]; then head -c 60000 "$RUNNER_TEMP/links.md"; else echo "The check stopped before writing its report."; fi
+            echo; echo "Full run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          } > "$RUNNER_TEMP/issue.md"
+          gh issue create --repo "${{ github.repository }}" --title "Booking link check: problems found ($(date -u +%d\ %b\ %Y))" --body-file "$RUNNER_TEMP/issue.md"
