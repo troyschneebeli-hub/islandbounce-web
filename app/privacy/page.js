@@ -40,8 +40,8 @@ export default function PrivacyPage() {
         server logs may briefly record requests.
       </p>
       <p style={p}>
-        <strong>Split Charters waitlist.</strong> If you join the waitlist we receive your email address and the route you
-        chose, and use them only to tell you when it launches.
+        <strong>&quot;Where should we go next?&quot; requests.</strong> If you suggest a new island or country, we receive your email
+        address and the place you named, and use them only to tell you when we add it.
       </p>
       <p style={p}>
         <strong>Emails to us.</strong> If you contact us, we keep your message and address so we can reply.

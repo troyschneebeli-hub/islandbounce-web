@@ -36,7 +36,8 @@ const PLANNER_CTA = (to) => ({
 });
 
 // Names of operators for the intro and FAQs: the first few, then "and N more operators".
-function joinOps(list, max = 5) {
+// Three names keep the intro short on a phone; the full list is in the operator chips and the table.
+function joinOps(list, max = 3) {
   if (list.length <= max) return joinList(list);
   return `${list.slice(0, max).join(", ")} and ${list.length - max} more operators`;
 }

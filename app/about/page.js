@@ -13,15 +13,21 @@ export default function AboutPage() {
         Why IslandBounce
       </h1>
       <p style={{ fontSize: 15, lineHeight: 1.7, marginBottom: 16 }}>
-        Most transport comparison sites are built from schedules and spreadsheets, not real knowledge of the place.
-        We&apos;re building IslandBounce the other way around — starting from real, on-the-ground familiarity with
-        these islands, and adding firsthand detail — which terminal, which operator&apos;s aircon actually works, what
-        the informal port fee is — route by route, as we go.
+        Most transport comparison sites list every boat a booking site sells and leave you to guess which ones actually
+        run. We do it the other way around: we start from the islands themselves and the operators&apos; own timetables,
+        and we&apos;re adding on-the-ground detail (which harbour, where to check in, how long the drive really takes)
+        route by route as we go.
       </p>
       <p style={{ fontSize: 15, lineHeight: 1.7, marginBottom: 16 }}>
-        The departure times and fares we show are guides taken from the 12Go booking site, and schedules can change.
-        Always confirm on the booking page or with the operator before you travel. Our booking links go to 12Go, and
-        they earn us a commission if you book through them, at no extra cost to you. That&apos;s how the site stays free and independent.
+        How we check the times: we look at seven days of departures on our booking site and compare each one with the
+        operator&apos;s own published timetable. A sailing is listed as a daily departure only when both agree, with the
+        same operator and a departure within ten minutes, on every one of those days. Each route page says when it was
+        last checked. Fares are the lowest we saw for one adult. Schedules still change, so always confirm on the booking
+        page when you book.
+      </p>
+      <p style={{ fontSize: 15, lineHeight: 1.7, marginBottom: 16 }}>
+        Our booking links go to our booking site, run with our partner 12Go. If you book through them we earn a
+        commission, at no extra cost to you. That&apos;s how the site stays free and independent.
       </p>
       <div style={{ background: COLORS.foam, borderRadius: 10, padding: 18, fontSize: 13, opacity: 0.85 }}>
         <strong>Disclosure:</strong> IslandBounce participates in the 12Go affiliate program, and may join other travel

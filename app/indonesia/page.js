@@ -24,7 +24,7 @@ const LISTED_ROUTES = new Set(SAILINGS.map((s) => `${s.from}|${s.to}`)).size;
 const FAQS = [
   {
     q: "Do I need to book my ferry in advance?",
-    a: "For popular routes (Sanur or Padang Bai to Gili Trawangan) in peak season, yes — the busiest morning departures can sell out a day or two ahead. Off-peak or less-traveled routes are usually fine to book the day before, or even the same morning.",
+    a: "For popular routes (Sanur or Padang Bai to Gili Trawangan) in peak season, yes — the busiest morning departures can sell out a day or two ahead. Off-peak or less-travelled routes are usually fine to book the day before, or even the same morning.",
   },
   {
     q: "What happens if my boat gets cancelled?",
@@ -32,7 +32,7 @@ const FAQS = [
   },
   {
     q: "Does IslandBounce sell tickets directly?",
-    a: "No — we compare real options and send you to the operator or booking platform to actually pay.",
+    a: "No. We compare the boats and send you to our booking site, run with our partner 12Go, where you pay. The price is the same as booking with 12Go directly.",
   },
 ];
 
@@ -80,7 +80,7 @@ export default function IndonesiaHub() {
           <PoppyCard
             href="/indonesia/ports"
             title="Which port should I use?"
-            blurb="Every harbor across Bali, the Gilis, Nusa & Lombok."
+            blurb="Every harbour across Bali, the Gilis, Nusa & Lombok."
             width="100%"
           />
         </div>
@@ -100,7 +100,7 @@ export default function IndonesiaHub() {
             ))}
           </div>
         </div>
-        <WaveDivider into="white" height={70} />
+        <WaveDivider into="white" height={70} bleed={20} />
       </section>
 
       <section className="relative left-1/2 right-1/2 -mx-[50vw] w-screen" style={{ background: "white", padding: "8px 20px 0" }}>
@@ -162,29 +162,6 @@ export default function IndonesiaHub() {
                 <div style={{ fontSize: 14, color: COLORS.ink, opacity: 0.78, lineHeight: 1.65 }}>{f.a}</div>
               </div>
             ))}
-          </div>
-        </section>
-
-        <section style={{ paddingBottom: 44 }}>
-          <div style={{ background: COLORS.sea, borderRadius: 14, padding: 28 }} className="flex flex-col sm:flex-row items-center gap-6 sm:justify-between">
-            <div>
-              <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, color: COLORS.brass, letterSpacing: 1.5, marginBottom: 6 }}>
-                NEW · COMING SOON
-              </div>
-              <div style={{ color: "white", fontWeight: 700, fontSize: 18, marginBottom: 4 }}>
-                Can&apos;t justify a private charter alone?
-              </div>
-              <div style={{ color: COLORS.foam, opacity: 0.85, fontSize: 13.5, maxWidth: 420 }}>
-                Split the cost with other travelers heading the same way. A $650 charter becomes ~$108/person, six
-                ways.
-              </div>
-            </div>
-            <Link
-              href="/indonesia/split-charter"
-              style={{ background: COLORS.coral, color: "white", fontWeight: 700, fontSize: 13, padding: "10px 18px", borderRadius: 999, textDecoration: "none", whiteSpace: "nowrap" }}
-            >
-              Learn more →
-            </Link>
           </div>
         </section>
         </div>

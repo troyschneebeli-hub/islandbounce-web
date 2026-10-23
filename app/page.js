@@ -36,7 +36,7 @@ export default function CoverPage() {
             Explore Indonesia →
           </Link>
         </div>
-        <WaveDivider into="white" height={70} />
+        <WaveDivider into="white" height={70} bleed={20} />
       </section>
 
       <section style={{ background: "white", padding: "36px 20px 8px" }}>

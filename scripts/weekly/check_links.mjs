@@ -7,7 +7,7 @@
 import { chromium } from "playwright";
 import fs from "node:fs";
 
-const SITE = (process.env.SITE_URL || "https://islandbouncetravel.com").replace(/\/$/, "");
+const SITE = (process.env.SITE_URL || "https://www.islandbouncetravel.com").replace(/\/$/, "");
 const Z = "17069158", SUB_ID = "islandbounce-web";
 const outPath = process.argv[2];
 const problems = [], warnings = [], notes = [];
