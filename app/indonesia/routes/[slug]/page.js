@@ -217,7 +217,7 @@ export default function RoutePage({ params }) {
             <PlacePhoto src={ROUTE_PHOTOS[route.slug].src} alt={ROUTE_PHOTOS[route.slug].alt} aspect="21 / 9" radius={16} priority />
           </div>
         )}
-        <WaveDivider into="white" height={64} />
+        <WaveDivider into="white" height={64} bleed={20} />
       </section>
 
       <div style={{ background: "white" }}>

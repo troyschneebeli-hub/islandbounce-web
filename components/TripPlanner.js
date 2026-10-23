@@ -205,7 +205,7 @@ function PlannerContent() {
       <FindPortMap origin={origin} destination={activeDestination} date={date} returnDate={isReturn ? returnDate : ""} travellers={travellers} />
 
       <p style={{ fontSize: 11, color: T.muted, marginTop: 14, maxWidth: 700 }}>
-        All check-ins are 1 hour before departure. Scooter times are estimates, so confirm before you travel.
+        Check-in is usually an hour before departure, but go by the time on your ticket. Drive and scooter times are estimates, so allow extra time.
       </p>
     </PlannerShell>
   );

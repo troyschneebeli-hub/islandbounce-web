@@ -15,8 +15,8 @@ export default function PortsPage() {
         All Ports
       </h1>
       <p style={{ fontSize: 13.5, opacity: 0.65, marginBottom: 28, maxWidth: 600 }}>
-        Every harbor covering Bali, the Gili Islands, Nusa Penida, Nusa Lembongan, and Bangsal on Lombok — which port you leave from
-        changes your options a lot more than most people realize.
+        Every harbour covering Bali, the Gili Islands, Nusa Penida, Nusa Lembongan, and Bangsal on Lombok — which port you leave from
+        changes your options a lot more than most people realise.
       </p>
 
       <PortsExplorer />

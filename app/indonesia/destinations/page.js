@@ -45,12 +45,12 @@ const PLACES = [
     photo: { src: "/images/indonesia/lembongan.jpg", alt: "Aerial view of the yellow suspension bridge over the channel between Nusa Lembongan and Nusa Ceningan, with boats below" },
     tagline: "Calmer, closer to Bali",
     blurb:
-      "Nusa Penida's smaller, quieter neighbor, and the shorter crossing from Bali. Known for surf breaks, mangrove tours, and the Devil's Tears viewpoint — a noticeably more laid-back, less-touristy feel than Bali's main areas, without going as remote as the Gilis.",
+      "Nusa Penida's smaller, quieter neighbour, and the shorter crossing from Bali. Known for surf breaks, mangrove tours, and the Devil's Tears viewpoint — a noticeably more laid-back, less-touristy feel than Bali's main areas, without going as remote as the Gilis.",
   },
   {
     name: "Lombok",
     photo: { src: "/images/indonesia/lombok.jpg", alt: "A turquoise bay with a pale sand beach and hills behind, on the Lombok coast" },
-    tagline: "Bali's bigger, quieter neighbor",
+    tagline: "Bali's bigger, quieter neighbour",
     blurb:
       "The main gateway to the Gilis (most boats land at Bangsal), but genuinely worth time on its own — Mount Rinjani for trekkers, beaches with a fraction of Bali's crowds.",
   },

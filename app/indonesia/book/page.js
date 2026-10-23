@@ -19,10 +19,11 @@ export default function BookPage() {
             Book your ferry
           </h1>
           <p style={{ color: COLORS.seaDeep, opacity: 0.8, margin: "12px auto 0", fontSize: 15, lineHeight: 1.6, maxWidth: 520 }}>
-            Search real fares and availability across Bali, the Gilis, Nusa Penida and Lombok, and book straight through 12Go.
+            Search live fares and availability between Bali, the Gili Islands, Nusa Penida, Nusa Lembongan and Lombok, in either direction, and book
+            through our partner 12Go.
           </p>
         </div>
-        <WaveDivider into="white" height={64} />
+        <WaveDivider into="white" height={64} bleed={20} />
       </section>
 
       <div style={{ background: "white" }}>

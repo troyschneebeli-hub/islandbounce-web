@@ -2,6 +2,9 @@
 
 Next.js 14 (app router) ferry-comparison affiliate site on Vercel. Owner: Troy (ClankINC partner). Earns via 12Go affiliate.
 
+## Site address
+- The live site is `https://www.islandbouncetravel.com` (Vercel 308-redirects the bare domain to it). `SITE_URL` in `lib/site.js` must stay the www address: canonicals, sitemap, robots and JSON-LD all come from it. Search Console: use the www sitemap URL.
+
 ## Money and links
 - 12Go affiliate ID `17069158` (param `z`), `sub_id=islandbounce-web`. White label: `https://booking.islandbouncetravel.com`.
 - Links are built in `lib/affiliateLinks.js` / `lib/bookingLink.js`: `/en/travel/<from>/<to>?date=&date2=&people=&adults=`. Slug quirk: our `benoa-nusa-dua` redirects to 12Go's `tanjung-benoa-nusa-dua`; confirm `z` survives the redirect.

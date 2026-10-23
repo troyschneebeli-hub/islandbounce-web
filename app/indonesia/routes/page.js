@@ -26,7 +26,7 @@ export default function RoutesIndex() {
             The main routes below list real departures and operators, plus live sea conditions. Scroll down for every other route we know about.
           </p>
         </div>
-        <WaveDivider into="white" height={64} />
+        <WaveDivider into="white" height={64} bleed={20} />
       </section>
 
       <div style={{ background: "white" }}>

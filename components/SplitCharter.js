@@ -45,7 +45,7 @@ export default function SplitCharter() {
       </h1>
       <p style={{ fontSize: 15, lineHeight: 1.7, opacity: 0.85, marginBottom: 24, maxWidth: 600 }}>
         Right now there&apos;s a big gap between a crowded shared fast boat and a $650/day private charter. This is the
-        option in between — team up with other travelers heading the same way on similar dates, split a private boat,
+        option in between — team up with other travellers heading the same way on similar dates, split a private boat,
         and pay a fraction each.
       </p>
 
@@ -72,7 +72,7 @@ export default function SplitCharter() {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-5" style={{ marginBottom: 32 }}>
         {[
           { n: "01", title: "Pick a route & window", body: "Choose the charter you want and a rough date range, not one fixed day — wider windows fill faster." },
-          { n: "02", title: "We match you with others", body: "Once enough travelers register interest in the same route and window, we'll bring you together." },
+          { n: "02", title: "We match you with others", body: "Once enough travellers register interest in the same route and window, we'll bring you together." },
           { n: "03", title: "Book direct, split the cost", body: "The group books the real charter through our partner platform and pays directly — we never hold anyone's money." },
         ].map((s) => (
           <div key={s.n}>
