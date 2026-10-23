@@ -30,8 +30,9 @@ const { ROUTE_PAGES, ROUTE_SLUGS } = await import("@/data/routePages");
 const { selectSailings, routeContext } = await import("@/lib/timetable");
 const daily = JSON.parse(readFileSync(join(ROOT, "data", "generated", "confirmed-daily-sailings.json"), "utf8"));
 
-const failures = [];
+const failures = [], warnings = [];
 const check = (ok, message) => { if (!ok) failures.push(message); };
+const warn = (ok, message) => { if (!ok) warnings.push(message); };
 
 // 1. Every listed row is in the daily file (same operator, route and departure).
 const dailyKeys = new Set(daily.sailings.map((s) => `${s.operator}|${s.fromName}|${s.toName}|${s.departs}`));
@@ -66,8 +67,9 @@ check(CONFIRMED_SCAN.checked < CONFIRMED_SCAN.from, `check date ${CONFIRMED_SCAN
 check(SAILINGS_UPDATED === CONFIRMED_SCAN.checked, `SAILINGS_UPDATED ${SAILINGS_UPDATED} is not the check date ${CONFIRMED_SCAN.checked}`);
 for (const s of PLANNER_SAILINGS) check(!s.verified || s.verified <= CONFIRMED_SCAN.checked, `${s.id}: verified ${s.verified} is later than the check date`);
 
-// 6. Route pages: each has at least one confirmed daily sailing; its copy renders without prices or blanks;
-//    and, if the site has been built, the rendered page shows exactly those rows and that count.
+// 6. Route pages: its copy renders without prices or blanks; and, if the site has been built, the rendered page
+//    shows exactly its confirmed daily rows and that count. A page with no confirmed daily sailings this week is a
+//    warning, not a failure: it stays up with the "Check live times" box (no table), and the weekly report lists it.
 const today = new Date().toISOString().slice(0, 10);
 const listedIds = new Set(SAILINGS.map((s) => s.id));
 const htmlDir = join(ROOT, ".next", "server", "app", "indonesia", "routes");
@@ -76,7 +78,7 @@ console.log(`${"route page".padEnd(34)} ${"daily".padStart(5)} ${"rendered".padS
 for (const slug of ROUTE_SLUGS) {
   const route = ROUTE_PAGES[slug];
   const { active } = selectSailings(SAILINGS, route, today);
-  check(active.length > 0, `route page ${slug}: no confirmed daily sailings (only pairs with one may have a page)`);
+  warn(active.length > 0, `route page ${slug}: no confirmed daily sailings this week, so it shows "Check live times" instead of a table`);
   for (const rel of route.related) check(Boolean(ROUTE_PAGES[rel]), `route page ${slug}: related slug "${rel}" does not exist`);
   if (active.length) {
     const ctx = routeContext(route, active, CONFIRMED_SCAN.checkedText);
@@ -93,17 +95,27 @@ for (const slug of ROUTE_SLUGS) {
     rendered = rows.length;
     check(rows.length === active.length, `route page ${slug}: renders ${rows.length} rows, expected ${active.length}`);
     for (const id of rows) check(listedIds.has(id), `route page ${slug}: renders ${id}, which is not a confirmed daily sailing`);
-    check(new RegExp(`>${active.length}<!-- --> ?</div><div[^>]*>daily departures?<`).test(html) || html.includes(`>${active.length}</div><div`),
-      `route page ${slug}: summary count doesn't show ${active.length}`);
+    if (active.length) {
+      check(new RegExp(`>${active.length}<!-- --> ?</div><div[^>]*>daily departures?<`).test(html) || html.includes(`>${active.length}</div><div`),
+        `route page ${slug}: summary count doesn't show ${active.length}`);
+    } else {
+      check(html.includes(">Check live times<"), `route page ${slug}: has no daily sailings but no "Check live times" box`);
+    }
     check(!/Typical departures|See departure times|<details/.test(html), `route page ${slug}: still has a typical/collapsed block`);
   }
   console.log(`${slug.padEnd(34)} ${String(active.length).padStart(5)} ${String(rendered).padStart(8)}`);
 }
 if (!haveHtml) console.log("(no .next build found: rendered pages not checked; run npm run build, then this again)");
+// One or two quiet routes is a normal week; many empty pages means the data went wrong, so don't publish it.
+const MAX_EMPTY_PAGES = 5;
+const emptyPages = ROUTE_SLUGS.filter((slug) => !selectSailings(SAILINGS, ROUTE_PAGES[slug], today).active.length);
+check(emptyPages.length <= MAX_EMPTY_PAGES, `${emptyPages.length} route pages have no confirmed daily sailings (more than ${MAX_EMPTY_PAGES}): ${emptyPages.join(", ")}`);
 
 const typical = PLANNER_SAILINGS.length - SAILINGS.length;
 console.log(`\n${SAILINGS.length} confirmed daily sailings on Fast Routes; ${typical} more in the Trip Planner, labelled typical.`);
 console.log(`${SAILINGS.filter((s) => !s.arrives).length} confirmed daily sailings have no arrival time.`);
+// "WARNING:" lines are copied into the weekly report email.
+if (warnings.length) console.log(`\n${warnings.map((w) => `WARNING: ${w}`).join("\n")}`);
 if (failures.length) {
   console.error(`\n${failures.length} check(s) failed:\n  ${failures.join("\n  ")}`);
   process.exit(1);

@@ -20,6 +20,11 @@ permissions:
 
 concurrency: weekly-timetable
 
+# "shell: bash" turns on pipefail: without it `publish_check.py ... | tee` passes even when the check blocks.
+defaults:
+  run:
+    shell: bash
+
 jobs:
   plan:
     runs-on: ubuntu-latest
@@ -98,7 +103,7 @@ jobs:
         run: |
           rm -rf data/generated && mv data/generated-new data/generated
           node scripts/build-confirmed.mjs   # data/generated/*.json -> the JS modules the site imports
-          node scripts/check-data.mjs        # stops here (nothing pushed) if the site data fails its checks
+          node scripts/check-data.mjs 2>&1 | tee "$RUNNER_TEMP/check-data.txt"   # stops here (nothing pushed) if the site data fails its checks
           git config user.name "timetable-bot"; git config user.email "timetable-bot@users.noreply.github.com"
           git add -A data
           git diff --cached --quiet && { echo "No changes this week"; exit 0; }
@@ -122,6 +127,11 @@ jobs:
             echo "@${{ github.repository_owner }} $STATUS"
             echo
             if [ -s "$RUNNER_TEMP/safety.txt" ]; then echo '### Safety checks'; echo '```'; head -c 6000 "$RUNNER_TEMP/safety.txt"; echo '```'; echo; fi
+            # Route pages with no daily sailings this week (they show "Check live times"), and any data check failures.
+            if [ -s "$RUNNER_TEMP/check-data.txt" ]; then
+              if grep -q '^WARNING:' "$RUNNER_TEMP/check-data.txt"; then echo '### Route pages showing "Check live times" this week'; grep '^WARNING:' "$RUNNER_TEMP/check-data.txt" | sed 's/^WARNING: /- /'; echo; fi
+              if grep -q 'check(s) failed' "$RUNNER_TEMP/check-data.txt"; then echo '### Data checks failed'; echo '```'; sed -n '/check(s) failed/,$p' "$RUNNER_TEMP/check-data.txt" | head -c 4000; echo '```'; echo; fi
+            fi
             head -c 50000 "$RUNNER_TEMP/changes.md"
             echo; echo "Full run: $RUN"
           } > "$RUNNER_TEMP/issue.md"

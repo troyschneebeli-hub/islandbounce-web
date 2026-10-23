@@ -25,7 +25,9 @@ for (const url of pages) {
   catch (e) { problems.push(`Page didn't load: ${url} (${shortError(e)})`); continue; }
   if (!res.ok) { problems.push(`Page returns HTTP ${res.status}: ${url}`); continue; }
   if (/\/indonesia\/routes\/[^/]+$/.test(new URL(url).pathname) && !html.includes("data-sailing-id=")) {
-    warnings.push(`Route page shows no sailings: ${url}`);
+    // No confirmed daily sailings this week is allowed: the page then shows a "Check live times" box instead.
+    if (html.includes(">Check live times<")) notes.push(`Route page shows "Check live times" this week (no confirmed daily sailings): ${url}`);
+    else problems.push(`Route page shows neither sailings nor the "Check live times" box: ${url}`);
   }
   for (const m of html.matchAll(/href="(https:\/\/(?:booking\.islandbouncetravel\.com|(?:www\.)?12go\.asia)[^"]*)"/g)) {
     const link = decode(m[1]);
@@ -48,24 +50,32 @@ for (const [link, page] of links) {
 }
 const browser = await chromium.launch();
 let opened = 0;
-for (const { link, page } of byRoute.values()) {
+const toOpen = [...byRoute.values()].slice(0, process.env.LINK_LIMIT ? +process.env.LINK_LIMIT : undefined); // LINK_LIMIT=3 for a quick try
+for (const { link, page } of toOpen) {
   const ctx = await browser.newContext({ viewport: { width: 1400, height: 900 } }); // fresh cookies per link
   const tab = await ctx.newPage();
   try {
     const res = await tab.goto(link, { waitUntil: "domcontentloaded", timeout: 60000 });
     const status = res ? res.status() : 0;
+    // 12Go loads the page a second time (it strips z / sub_id from the address), so wait for that to settle.
+    await tab.waitForLoadState("load", { timeout: 45000 }).catch(() => {});
     await tab.waitForSelector(".trip-cta, .trips-container", { timeout: 25000 }).catch(() => {});
+    await tab.waitForTimeout(1500);
     const final = new URL(tab.url());
-    const cookies = await ctx.cookies();
-    const zKept = final.searchParams.get("z") === Z || cookies.some((c) => c.value.includes(Z));
+    // 12Go keeps the affiliate ID in cookies named z and sub_id (seen 22 Oct 2026). Other cookies (referer,
+    // landing) hold the whole link, so only those two names count.
+    const cookie = Object.fromEntries((await ctx.cookies()).map((c) => [c.name, decodeURIComponent(c.value)]));
+    const zKept = final.searchParams.get("z") === Z || cookie.z === Z;
+    const subKept = final.searchParams.get("sub_id") === SUB_ID || cookie.sub_id === SUB_ID;
     const route = final.pathname.match(/^\/en\/travel\/([^/]+)\/([^/]+)/);
     const asked = new URL(link);
-    const trips = await tab.locator(".trip-card").count();
+    const trips = await tab.locator(".trip-card").count().catch(() => 0);
     opened++;
     if (status >= 400) problems.push(`Booking page returns HTTP ${status}: ${link} (from ${page})`);
     else if (!route) problems.push(`Booking link doesn't open a route page (lands on ${final.href}): ${link} (from ${page})`);
     else {
-      if (!zKept) problems.push(`Affiliate ID lost after opening ${link}: lands on ${final.href} with no z=${Z} in the URL or cookies`);
+      if (!zKept) problems.push(`Affiliate ID lost after opening ${link}: no z=${Z} in the address or the z cookie (cookie: ${cookie.z || "none"})`);
+      else if (!subKept) warnings.push(`sub_id lost after opening ${link} (cookie: ${cookie.sub_id || "none"})`);
       if (final.pathname !== asked.pathname) {
         const lost = ["people", "adults", "date", "date2"].filter((p) => asked.searchParams.has(p) && !final.searchParams.has(p));
         notes.push(`${asked.pathname} redirects to ${final.pathname}${lost.length ? ` and drops ${lost.join(", ")}` : ""}`);
@@ -86,7 +96,7 @@ const report = [
   `Checked ${pages.length} pages on ${SITE}, ${links.size} booking links, and opened ${opened} of ${byRoute.size} booking routes.`,
   ...section("Problems (fix these: they cost bookings or commission)", problems),
   ...section("Warnings", warnings),
-  ...section("Redirects (work, but worth pointing straight at the final address)", notes),
+  ...section("Notes (redirects that work but could point straight at the final address; route pages on live times)", notes),
   "",
 ].join("\n");
 console.log(report);
