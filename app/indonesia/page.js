@@ -164,29 +164,6 @@ export default function IndonesiaHub() {
             ))}
           </div>
         </section>
-
-        <section style={{ paddingBottom: 44 }}>
-          <div style={{ background: COLORS.sea, borderRadius: 14, padding: 28 }} className="flex flex-col sm:flex-row items-center gap-6 sm:justify-between">
-            <div>
-              <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, color: COLORS.brass, letterSpacing: 1.5, marginBottom: 6 }}>
-                NEW · COMING SOON
-              </div>
-              <div style={{ color: "white", fontWeight: 700, fontSize: 18, marginBottom: 4 }}>
-                Can&apos;t justify a private charter alone?
-              </div>
-              <div style={{ color: COLORS.foam, opacity: 0.85, fontSize: 13.5, maxWidth: 420 }}>
-                Split the cost with other travellers heading the same way. A $650 charter becomes ~$108/person, six
-                ways.
-              </div>
-            </div>
-            <Link
-              href="/indonesia/split-charter"
-              style={{ background: COLORS.coral, color: "white", fontWeight: 700, fontSize: 13, padding: "10px 18px", borderRadius: 999, textDecoration: "none", whiteSpace: "nowrap" }}
-            >
-              Learn more →
-            </Link>
-          </div>
-        </section>
         </div>
       </main>
 

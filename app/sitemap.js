@@ -5,7 +5,7 @@ import { SAILINGS_UPDATED } from "@/data/sailings";
 export default function sitemap() {
   // Pages that show sailing data change when the timetable does; the others carry no date rather than
   // "now" on every deploy, which would tell Google every page changed each time.
-  const pages = ["", "/about", "/indonesia/book", "/indonesia/ports", "/indonesia/destinations", "/indonesia/split-charter", "/privacy"];
+  const pages = ["", "/about", "/indonesia/book", "/indonesia/ports", "/indonesia/destinations", "/privacy"];
   const dataPages = ["/indonesia", "/indonesia/routes"];
   return [
     ...pages.map((path) => ({ url: `${SITE_URL}${path}` })),

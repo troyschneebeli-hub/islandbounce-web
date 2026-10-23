@@ -15,7 +15,6 @@ const COVER_ITEMS = [
 const regionItems = (slug) => [
   [`/${slug}/book`, "Book"],
   [`/${slug}/destinations`, "Places"],
-  [`/${slug}/split-charter`, "Split Charters"],
   [`/${slug}/ports`, "All Ports"],
 ];
 
