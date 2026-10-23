@@ -46,6 +46,8 @@ jobs:
     timeout-minutes: 120
     strategy:
       fail-fast: false
+      # Two days at a time, not all seven at once: seven scans in parallel set off 12Go's bot check (23 Oct 2026).
+      max-parallel: 2
       matrix:
         date: ${{ fromJSON(needs.plan.outputs.dates) }}
     steps:
