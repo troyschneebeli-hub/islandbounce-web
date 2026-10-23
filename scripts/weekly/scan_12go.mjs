@@ -144,19 +144,30 @@ function record(a, b, { best, error, diag }) {
 // the day is recorded as failed (match.py treats it as one day that failed to load) rather than pushed through.
 const ROUTE_GAP_MS = +(process.env.ROUTE_GAP_MS || 8000);
 const BLOCK_PAUSE_MS = +(process.env.BLOCK_PAUSE_MS || 300000);
+// Time budget: GitHub kills the job at 120 minutes (timeout-minutes), which loses the whole day and stops the week
+// from being matched (23 Oct 2026: two days ran past it after repeated bot-check pauses). Stopping ourselves first
+// keeps what was scanned; the routes not reached are recorded as failed loads.
+const BUDGET_MS = +(process.env.SCAN_BUDGET_MIN || 100) * 60000;
+const startedAt = Date.now();
+const outOfTime = (needMs = 0) => Date.now() - startedAt + needMs > BUDGET_MS;
 const result = { date, scannedAt: new Date().toISOString(), routes: {} };
 await freshPage();
 let failedInARow = 0, blockedInARow = 0, gaveUp = null;
 const skip = (a, b, why) => record(a, b, { best: { empty: true, trips: [], header: 0, failed: true }, error: why });
 async function pass(list) {
   for (const [a, b] of list) {
+    if (!gaveUp && outOfTime()) { gaveUp = `skipped: scan time budget (${BUDGET_MS / 60000} min) used up`; console.error(gaveUp); }
     if (gaveUp) { skip(a, b, gaveUp); continue; }
     const r = await scanRoute(a, b);
     if (!r.best.failed || !result.routes[`${a}>${b}`] || result.routes[`${a}>${b}`].failed) record(a, b, r);
     failedInARow = r.best.failed ? failedInARow + 1 : 0;
     blockedInARow = r.blocked ? blockedInARow + 1 : 0;
     if (blockedInARow >= 3) { gaveUp = `skipped: ${BLOCKED} on 3 routes in a row`; console.error(`${gaveUp}: stopping this day`); continue; }
-    if (r.blocked) { console.error(`Bot check: pausing ${BLOCK_PAUSE_MS / 60000} minutes and starting a new browser`); await sleep(BLOCK_PAUSE_MS); await freshPage().catch(() => {}); continue; }
+    if (r.blocked) {
+      if (outOfTime(BLOCK_PAUSE_MS)) continue; // no time left to wait it out; the budget check above ends the day
+      console.error(`Bot check: pausing ${BLOCK_PAUSE_MS / 60000} minutes and starting a new browser`);
+      await sleep(BLOCK_PAUSE_MS); await freshPage().catch(() => {}); continue;
+    }
     if (failedInARow === 4) { console.error('4 routes failed in a row: pausing 2 minutes and restarting the browser'); await sleep(120000); await freshPage().catch(() => {}); }
     if (failedInARow >= 8) { gaveUp = 'skipped: 8 routes in a row failed'; console.error(`${gaveUp}: stopping this day`); continue; }
     await sleep(ROUTE_GAP_MS);
@@ -166,7 +177,8 @@ await pass(routes);
 
 // Second pass: routes that failed or came back empty get another go after a pause, in a new browser.
 const again = gaveUp ? [] : routes.filter(([a, b]) => { const r = result.routes[`${a}>${b}`]; return r.failed || (r.empty && !r.header); });
-if (again.length) {
+if (again.length && outOfTime(BLOCK_PAUSE_MS + 60000)) console.log(`Not retrying ${again.length} route(s): not enough of the time budget left`);
+else if (again.length) {
   console.log(`Retrying ${again.length} route(s) after a 5 minute pause`);
   await sleep(BLOCK_PAUSE_MS);
   await freshPage().catch((e) => console.error(`browser restart failed: ${shortError(e)}`));

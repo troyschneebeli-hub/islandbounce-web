@@ -143,10 +143,12 @@ jobs:
   notify:
     needs: [scan, compile]
     # Only when the weekly report above could not be sent (it already says whether the update was blocked).
-    if: ${{ always() && (needs.scan.result == 'failure' || (needs.compile.result == 'failure' && needs.compile.outputs.reported != 'true')) }}
+    # 'cancelled' too: a job that hits its time limit is cancelled, not failed (23 Oct 2026: no email was sent).
+    if: ${{ always() && (contains(fromJSON('["failure","cancelled"]'), needs.scan.result) || (contains(fromJSON('["failure","cancelled"]'), needs.compile.result) && needs.compile.outputs.reported != 'true')) }}
     runs-on: ubuntu-latest
     steps:
       - name: Open an issue (GitHub emails the repo owner)
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh issue create --repo "${{ github.repository }}" --title "Weekly timetable refresh did not publish" --body "The run was blocked or failed, so last week's data is still live. See ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+        run: |
+          gh issue create --repo "${{ github.repository }}" --title "Weekly timetable refresh did not publish" --body "@${{ github.repository_owner }} the weekly run stopped before the update could be checked (scan ${{ needs.scan.result }}, compile ${{ needs.compile.result }}), so last week's data is still live. See ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
