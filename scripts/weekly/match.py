@@ -30,8 +30,9 @@ def main():
     ap.add_argument('--scans', required=True); ap.add_argument('--operators', required=True); ap.add_argument('--out', required=True)
     ap.add_argument('--window', type=int, default=7, help='days expected in the scan'); ap.add_argument('--tol', type=int, default=10)
     ap.add_argument('--min-days', type=int, default=None, help='days a sailing must be seen to count as daily (default: window)')
-    ap.add_argument('--max-missing', type=int, default=1,
-                    help='days a route may fail to load and still get daily sailings; a failed day is left out of the count, not held against a sailing')
+    ap.add_argument('--allow-missed', type=int, default=1,
+                    help="nights a sailing may be missing (sold out on 12Go, or the route didn't load) and still count as daily, "
+                         "but only when the operator's own timetable says it runs daily")
     a = ap.parse_args()
     min_days = a.min_days or a.window
 
@@ -72,7 +73,8 @@ def main():
             ck = (g['from'], g['to'], o['operator'], o['dep'])
             c = confirmed.setdefault(ck, {'operator': o['operator'], 'twelvegoOperator': g['twelvegoOperator'], 'from': g['from'], 'to': g['to'],
                 'fromName': PORT_NAMES[g['from']], 'toName': PORT_NAMES[g['to']], 'departs': o['dep'], 'twelvegoDeparts': g['dep'],
-                'checkIn': o.get('checkIn'), 'arrives': o.get('arr'), 'twelvegoArrives': g['arr'], 'operatorSource': o.get('source'), 'priceAUD': g['price'], 'daysSeen': set()})
+                'checkIn': o.get('checkIn'), 'arrives': o.get('arr'), 'twelvegoArrives': g['arr'], 'operatorSource': o.get('source'),
+                'operatorDays': o.get('days'), 'priceAUD': g['price'], 'daysSeen': set()})
             c['daysSeen'] |= g['days']
             if g['price'] is not None and (c['priceAUD'] is None or g['price'] < c['priceAUD']): c['priceAUD'] = g['price']
         else:
@@ -81,11 +83,12 @@ def main():
     conf = []
     for c in confirmed.values():
         c['daysSeen'] = sorted(c['daysSeen'])
-        # Daily = seen on (min_days minus the days the route failed to load) of the days it did load,
-        # with at most max_missing failed days. A failed day is unknown, not a day without the sailing.
-        ok_days = loaded[(c['from'], c['to'])]
-        missing = a.window - len(ok_days)
-        c['runsDaily'] = missing <= a.max_missing and len(set(c['daysSeen']) & ok_days) >= min_days - missing
+        # Daily = seen on every night of the window. When the operator's own timetable says the sailing runs daily,
+        # allow_missed nights may be missing: 12Go hides sold-out trips, and a route can fail to load. Without that
+        # statement a missing night could be a day the boat doesn't run (e.g. no Sunday service), so all nights count.
+        seen = len(set(c['daysSeen']) & loaded[(c['from'], c['to'])])
+        op_daily = (c.get('operatorDays') or '').strip().lower().startswith('daily')
+        c['runsDaily'] = seen >= min_days or (op_daily and seen >= min_days - a.allow_missed)
         conf.append(c)
     conf.sort(key=lambda c: (c['from'], c['to'], c['departs']))
     g_only.sort(key=lambda c: (c['from'], c['to'], c['departs']))
@@ -93,8 +96,9 @@ def main():
     op_only = [o for o in ops if id(o) not in used]
 
     os.makedirs(a.out, exist_ok=True)
-    meta = {'scannedDates': dates, 'generatedAt': min(s['scannedAt'] for s in scans),
-            'dailyRule': f'seen on >= {min_days} of {a.window} days (a day the route failed to load is left out; at most {a.max_missing})'}
+    # generatedAt = the latest check: the window holds one scan per weekday, made on different nights.
+    meta = {'scannedDates': sorted(dates), 'generatedAt': max(s['scannedAt'] for s in scans),
+            'dailyRule': f"seen on all {min_days} nights, or {min_days - a.allow_missed} when the operator's timetable says daily"}
     for name, rows in [('confirmed-sailings', conf), ('confirmed-daily-sailings', daily), ('twelvego-only-sailings', g_only)]:
         json.dump({**meta, 'sailings': rows}, open(os.path.join(a.out, name + '.json'), 'w'), indent=1, ensure_ascii=False)
     json.dump(health, open(os.path.join(a.out, 'scan-health.json'), 'w'), indent=1)

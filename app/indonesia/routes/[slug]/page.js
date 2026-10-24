@@ -412,7 +412,8 @@ export default function RoutePage({ params }) {
 
           <p style={{ fontSize: 12, color: COLORS.ink, opacity: 0.6, lineHeight: 1.6 }}>
             How we compile this: We check seven days of departures on the booking page against each operator&apos;s own timetable. Only
-            sailings that match on every one of those days are listed here.
+            sailings that match on every one of those days are listed here, or on all but one when the operator&apos;s timetable says the
+            boat runs daily (the booking page hides boats that are sold out).
           </p>        </div>
       </div>
     </div>

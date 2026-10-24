@@ -1,11 +1,12 @@
 name: Daily timetable refresh
 
-# Every night at 01:00 Bali (17:00 UTC) scan ONE date, 3 days ahead (far enough out that sold-out trips don't hide a
-# sailing), then re-match the newest 7 nightly scans and publish if the safety checks pass. A sailing is "daily" when
-# it was on all 7 nights (match.py allows one night that failed to load). One small scan a night instead of seven at
-# once keeps clear of 12Go's bot check (23 Oct 2026) and keeps the site at most a day old.
-# The window lives in the "scan-window" artifact of the previous run (kept 30 days); git only changes when the
-# published data does, so Vercel only redeploys then.
+# Every night at 01:00 Bali (17:00 UTC) scan ONE date, 3 days ahead (far enough out that sold-out trips rarely hide a
+# sailing), put it in that weekday's slot of the window (window.mjs: one slot per weekday, a route that fails tonight
+# keeps its last good reading up to 14 days old), and once all 7 weekdays are filled re-match and publish if the safety
+# checks pass. "Daily" = seen on all 7, or 6 of 7 when the operator's own timetable says it runs daily (match.py).
+# One small scan a night keeps clear of 12Go's bot check (23 Oct 2026) and keeps the site at most a day old.
+# The window and the weekly reference live in the "scan-window" artifact of the previous run (kept 30 days); git only
+# changes when the published data does, so Vercel only redeploys then.
 on:
   schedule:
     - cron: '0 17 * * *'
@@ -105,13 +106,6 @@ jobs:
           if [ -n "$SEED_RUN" ]; then ARGS+=(--seed seed); fi
           node scripts/weekly/window.mjs "${ARGS[@]}" | tee -a "$GITHUB_STEP_SUMMARY"
 
-      - uses: actions/upload-artifact@v4
-        if: ${{ steps.window.outcome == 'success' }}
-        with:
-          name: scan-window
-          path: window/scan-*.json
-          retention-days: 30
-
       - name: Match operator timetables against 12Go
         id: match
         if: ${{ steps.window.outputs.nights == '7' }}
@@ -128,7 +122,9 @@ jobs:
         if: ${{ steps.match.outcome == 'success' }}
         run: |
           echo '### Safety checks' >> "$GITHUB_STEP_SUMMARY"
-          python3 scripts/weekly/publish_check.py --new data/generated-new --old data/generated 2>&1 | tee -a "$RUNNER_TEMP/safety.txt" | tee -a "$GITHUB_STEP_SUMMARY"
+          # --baseline: also compare with the data published about a week ago, so a slow slide is caught too.
+          BASE=(); if [ -f window/baseline/confirmed-daily-sailings.json ]; then BASE=(--baseline window/baseline); fi
+          python3 scripts/weekly/publish_check.py --new data/generated-new --old data/generated "${BASE[@]}" 2>&1 | tee -a "$RUNNER_TEMP/safety.txt" | tee -a "$GITHUB_STEP_SUMMARY"
 
       - name: Publish (commit to main, Vercel redeploys)
         id: publish
@@ -183,6 +179,34 @@ jobs:
           else
             post "Timetable update blocked" "$RUNNER_TEMP/issue.md"
           fi
+
+      # Weekly reference point: after a publish, if the reference is a week old (or missing), email a summary of the
+      # week's changes against it, then make tonight's published data the new reference. The safety checks compare
+      # against it every night.
+      - name: Weekly reference and summary
+        if: ${{ steps.publish.outcome == 'success' }}
+        run: |
+          TODAY=$(TZ=Asia/Makassar date +%F)
+          REF=$(cat window/baseline/reference-date 2>/dev/null || true)
+          if [ -n "$REF" ] && [ $(( ($(date -d "$TODAY" +%s) - $(date -d "$REF" +%s)) / 86400 )) -lt 7 ]; then echo "Weekly reference from $REF is still current"; exit 0; fi
+          if [ -n "$REF" ]; then
+            node scripts/weekly/changes.mjs --new data/generated --old window/baseline --out "$RUNNER_TEMP/weekly.md" --status "Weekly summary: changes since $REF"
+            { echo "@${{ github.repository_owner }} this week's timetable changes (since $REF), published on the site."; echo; cat "$RUNNER_TEMP/weekly.md"; echo; echo "Run: ${{ github.server_url }}/$REPO/actions/runs/${{ github.run_id }}"; } > "$RUNNER_TEMP/weekly-issue.md"
+            gh issue create --repo "$REPO" --title "Weekly timetable summary: $REF to $TODAY" --body-file "$RUNNER_TEMP/weekly-issue.md"
+          fi
+          rm -rf window/baseline && mkdir -p window/baseline
+          cp data/generated/confirmed-sailings.json data/generated/twelvego-only-sailings.json window/baseline/
+          jq --arg d "$TODAY" '. + {referenceDate: $d}' data/generated/confirmed-daily-sailings.json > window/baseline/confirmed-daily-sailings.json
+          echo "$TODAY" > window/baseline/reference-date
+          echo "New weekly reference: $TODAY"
+
+      # Saved after everything else so it carries tonight's scan and the weekly reference.
+      - uses: actions/upload-artifact@v4
+        if: ${{ always() && steps.window.outcome == 'success' }}
+        with:
+          name: scan-window
+          path: window/
+          retention-days: 30
 
       # The run broke before it could match (install, scan or window step): one thread for it too.
       - name: Email if the run broke

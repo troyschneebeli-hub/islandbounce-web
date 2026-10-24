@@ -28,6 +28,7 @@ jobs:
           node scripts/weekly/test_parse.mjs
           node scripts/weekly/changes.mjs --new data/generated --old data/generated --out "$RUNNER_TEMP/changes.md"
           python3 -m py_compile scripts/weekly/match.py scripts/weekly/publish_check.py
+          node scripts/weekly/test_match.mjs   # the "daily" rule and the weekly-reference safety check
       - name: Build the site
         run: npm run build
       - name: Check the built route pages

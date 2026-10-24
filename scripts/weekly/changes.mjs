@@ -43,6 +43,12 @@ const newOn12Go = [...opsNow].filter((o) => !opsBefore.has(o)).sort();
 const dailyOps = (d) => new Set(d.daily.sailings.map((s) => s.operator));
 const goneFromFastRoutes = [...dailyOps(before)].filter((o) => !dailyOps(now).has(o)).sort();
 
+// Boats on 12Go (nearly) every night that aren't in data/operator-sailings.json: probably a new or changed operator
+// timetable. They can't be confirmed until someone adds them to the operator list.
+const nights = (now.only.scannedDates || []).length;
+const unlisted = sortRows(nights >= 7 ? now.only.sailings.filter((s) => (s.daysSeen || []).length >= nights - 1) : [])
+  .map((s) => `${route(s)} ${s.departs} ${s.operator} (seen ${(s.daysSeen || []).length} of ${nights} nights)`);
+
 // Routes whose daily count changed.
 const countBy = (rows) => rows.reduce((m, s) => m.set(route(s), (m.get(route(s)) || 0) + 1), new Map());
 const cOld = countBy(before.daily.sailings), cNew = countBy(now.daily.sailings);
@@ -70,6 +76,9 @@ const out = [
   "", `### Sailings removed from Fast Routes (${removed.length})`, ...list(removed.map(line)),
   "", `### Sailings added to Fast Routes (${added.length})`, ...list(added.map(line)),
   "", `### Price changes on Fast Routes (${priced.length}, biggest first)`, ...list(priced),
+  "", `### On 12Go every night but not in the operator timetables (${unlisted.length})`,
+  "Add these to data/operator-sailings.json if the operator's own site lists them, so they can be confirmed.",
+  ...list(unlisted),
   "",
 ];
 fs.writeFileSync(args.out, out.join("\n"));

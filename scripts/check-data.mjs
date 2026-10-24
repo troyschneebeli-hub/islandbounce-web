@@ -63,7 +63,9 @@ for (const s of SAILINGS) {
 }
 
 // 5. Dates: the check was run before the days it covers, and nothing claims a later check.
-check(CONFIRMED_SCAN.checked < CONFIRMED_SCAN.from, `check date ${CONFIRMED_SCAN.checked} is not before the first scanned day ${CONFIRMED_SCAN.from}`);
+// The nightly run checks dates up to 3 days ahead, so the latest check is before the last scanned day, and never in the future.
+check(CONFIRMED_SCAN.checked <= CONFIRMED_SCAN.to, `check date ${CONFIRMED_SCAN.checked} is after the last scanned day ${CONFIRMED_SCAN.to}`);
+check(CONFIRMED_SCAN.checked <= new Date().toISOString().slice(0, 10), `check date ${CONFIRMED_SCAN.checked} is in the future`);
 check(SAILINGS_UPDATED === CONFIRMED_SCAN.checked, `SAILINGS_UPDATED ${SAILINGS_UPDATED} is not the check date ${CONFIRMED_SCAN.checked}`);
 for (const s of PLANNER_SAILINGS) check(!s.verified || s.verified <= CONFIRMED_SCAN.checked, `${s.id}: verified ${s.verified} is later than the check date`);
 
