@@ -1,0 +1,193 @@
+name: Daily timetable refresh
+
+# Every night at 01:00 Bali (17:00 UTC) scan ONE date, 3 days ahead (far enough out that sold-out trips don't hide a
+# sailing), then re-match the newest 7 nightly scans and publish if the safety checks pass. A sailing is "daily" when
+# it was on all 7 nights (match.py allows one night that failed to load). One small scan a night instead of seven at
+# once keeps clear of 12Go's bot check (23 Oct 2026) and keeps the site at most a day old.
+# The window lives in the "scan-window" artifact of the previous run (kept 30 days); git only changes when the
+# published data does, so Vercel only redeploys then.
+on:
+  schedule:
+    - cron: '0 17 * * *'
+  workflow_dispatch:
+    inputs:
+      date:
+        description: 'Scan this date instead (YYYY-MM-DD). Leave empty for 3 days from now (Bali time).'
+        required: false
+      limit:
+        description: 'Probe mode: only scan the first N routes (e.g. 2), keep and publish nothing. Leave empty for a normal run.'
+        required: false
+      seed_run_id:
+        description: 'One-off: start the window from the scan-YYYY-MM-DD artifacts of this earlier run (run id from its address).'
+        required: false
+      seed_dates:
+        description: 'With seed_run_id: only these dates, comma-separated (e.g. 2026-10-25,2026-10-26). Empty = all.'
+        required: false
+
+permissions:
+  contents: write
+  issues: write
+  actions: read   # to download the previous run's scan-window artifact
+
+concurrency: timetable-refresh
+
+# "shell: bash" turns on pipefail: without it `publish_check.py ... | tee` passes even when the check blocks.
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  refresh:
+    # Pinned: Playwright 1.49 doesn't support Ubuntu 26 for `install --with-deps`. Move up together with
+    # the Playwright version in scripts/weekly/package.json.
+    runs-on: ubuntu-24.04
+    timeout-minutes: 150   # the scan stops itself at 100 minutes (SCAN_BUDGET_MIN); the rest is install and matching
+    env:
+      GH_TOKEN: ${{ github.token }}
+      REPO: ${{ github.repository }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22   # check-data.mjs needs module.registerHooks (Node 22.15+)
+
+      - name: Pick the date
+        id: d
+        run: |
+          D="${{ github.event.inputs.date }}"
+          if [ -z "$D" ]; then D=$(TZ=Asia/Makassar date -d '+3 days' +%F); fi
+          echo "date=$D" >> "$GITHUB_OUTPUT"; echo "Scanning $D"
+
+      - name: Install Playwright (in its own folder so it cannot clash with the site's packages)
+        working-directory: scripts/weekly
+        run: |
+          npm install --no-audit --no-fund
+          npx playwright install --with-deps chromium
+
+      - name: Scan 12Go (read-only)
+        env:
+          LIMIT: ${{ github.event.inputs.limit }}
+          SCAN_BUDGET_MIN: 100
+        run: node scripts/weekly/scan_12go.mjs ${{ steps.d.outputs.date }} out/scan-${{ steps.d.outputs.date }}.json
+
+      # Tonight's scan plus debug-*.png screenshots of any route that failed or came back empty.
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: scan-${{ steps.d.outputs.date }}
+          path: out/
+          retention-days: 30
+
+      - name: Update the 7-night window
+        id: window
+        if: ${{ github.event.inputs.limit == '' }}
+        env:
+          SEED_RUN: ${{ github.event.inputs.seed_run_id }}
+          SEED_DATES: ${{ github.event.inputs.seed_dates }}
+        run: |
+          mkdir -p window seed
+          if [ -n "$SEED_RUN" ]; then
+            if [ -n "$SEED_DATES" ]; then
+              for d in ${SEED_DATES//,/ }; do gh run download "$SEED_RUN" --repo "$REPO" --name "scan-$d" --dir "seed/$d"; done
+            else
+              gh run download "$SEED_RUN" --repo "$REPO" --pattern 'scan-*' --dir seed
+            fi
+          else
+            ID=$(gh api "repos/$REPO/actions/artifacts?name=scan-window&per_page=20" --jq '[.artifacts[] | select(.expired | not)][0].id // empty')
+            if [ -n "$ID" ]; then
+              curl -sSL -H "Authorization: Bearer $GH_TOKEN" "https://api.github.com/repos/$REPO/actions/artifacts/$ID/zip" -o window.zip
+              unzip -o -q window.zip -d window
+            else
+              echo "No earlier window found: starting a new one"
+            fi
+          fi
+          ARGS=(--dir window --add "out/scan-${{ steps.d.outputs.date }}.json" --keep 7)
+          if [ -n "$SEED_RUN" ]; then ARGS+=(--seed seed); fi
+          node scripts/weekly/window.mjs "${ARGS[@]}" | tee -a "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@v4
+        if: ${{ steps.window.outcome == 'success' }}
+        with:
+          name: scan-window
+          path: window/scan-*.json
+          retention-days: 30
+
+      - name: Match operator timetables against 12Go
+        id: match
+        if: ${{ steps.window.outputs.nights == '7' }}
+        run: |
+          python3 scripts/weekly/match.py --scans window --operators data/operator-sailings.json --out data/generated-new
+          cat data/generated-new/report.md >> "$GITHUB_STEP_SUMMARY"   # counts on the run's Summary page
+
+      - name: What changed since the last published data
+        if: ${{ steps.match.outcome == 'success' }}
+        run: node scripts/weekly/changes.mjs --new data/generated-new --old data/generated --out "$RUNNER_TEMP/changes.md" --flags "$RUNNER_TEMP/flags.json"
+
+      - name: Safety checks (blocks the publish if the data looks wrong)
+        id: safety
+        if: ${{ steps.match.outcome == 'success' }}
+        run: |
+          echo '### Safety checks' >> "$GITHUB_STEP_SUMMARY"
+          python3 scripts/weekly/publish_check.py --new data/generated-new --old data/generated 2>&1 | tee -a "$RUNNER_TEMP/safety.txt" | tee -a "$GITHUB_STEP_SUMMARY"
+
+      - name: Publish (commit to main, Vercel redeploys)
+        id: publish
+        if: ${{ steps.safety.outcome == 'success' }}
+        run: |
+          rm -rf data/generated && mv data/generated-new data/generated
+          node scripts/build-confirmed.mjs   # data/generated/*.json -> the JS modules the site imports
+          node scripts/check-data.mjs 2>&1 | tee "$RUNNER_TEMP/check-data.txt"   # stops here (nothing pushed) if the site data fails its checks
+          git config user.name "timetable-bot"; git config user.email "timetable-bot@users.noreply.github.com"
+          git add -A data
+          git diff --cached --quiet && { echo "No changes tonight"; exit 0; }
+          git commit -m "Timetable refresh (sailings $(jq -r .window "$RUNNER_TEMP/flags.json"))"
+          git push origin HEAD:main
+
+      # Email (an issue that @mentions the owner, so GitHub emails them) only when it matters:
+      # - published with sailings or operators added/removed: a new "Timetable updated" issue
+      # - published with only price moves, or nothing changed: no email
+      # - blocked or not published: a comment on the open "Timetable update blocked" issue (or a new one), so a
+      #   problem that lasts several nights is one thread, not one email a night
+      - name: Email if it matters
+        id: email
+        if: ${{ always() && steps.match.outcome == 'success' }}
+        env:
+          SAFETY: ${{ steps.safety.outcome }}
+          PUBLISH: ${{ steps.publish.outcome }}
+        run: |
+          RUN="${{ github.server_url }}/$REPO/actions/runs/${{ github.run_id }}"
+          post() { # title, body file: comment on the open issue with this title, or open one
+            N=$(gh issue list --repo "$REPO" --state open --search "in:title \"$1\"" --json number,title --jq "[.[] | select(.title == \"$1\")][0].number // empty")
+            if [ -n "$N" ]; then gh issue comment "$N" --repo "$REPO" --body-file "$2"; else gh issue create --repo "$REPO" --title "$1" --body-file "$2"; fi
+          }
+          NOTABLE=$(jq -r .notable "$RUNNER_TEMP/flags.json" 2>/dev/null || echo true)
+          if [ "$PUBLISH" = success ] && [ "$NOTABLE" != true ]; then echo "Published; nothing notable changed, so no email"; exit 0; fi
+          if [ "$PUBLISH" = success ]; then STATUS="Published: the site now shows the updated sailings (Vercel redeploys in a few minutes)."
+          elif [ "$SAFETY" = failure ]; then STATUS="BLOCKED by the safety checks: the site still shows the last published sailings. Nothing changed on the site."
+          else STATUS="NOT published: a step after the safety checks failed, so the site still shows the last published sailings."; fi
+          {
+            echo "@${{ github.repository_owner }} $STATUS"
+            echo
+            if [ -s "$RUNNER_TEMP/safety.txt" ]; then echo '### Safety checks'; echo '```'; head -c 6000 "$RUNNER_TEMP/safety.txt"; echo '```'; echo; fi
+            # Route pages with no daily sailings (they show "Check live times"), and any data check failures.
+            if [ -s "$RUNNER_TEMP/check-data.txt" ]; then
+              if grep -q '^WARNING:' "$RUNNER_TEMP/check-data.txt"; then echo '### Route pages showing "Check live times"'; grep '^WARNING:' "$RUNNER_TEMP/check-data.txt" | sed 's/^WARNING: /- /'; echo; fi
+              if grep -q 'check(s) failed' "$RUNNER_TEMP/check-data.txt"; then echo '### Data checks failed'; echo '```'; sed -n '/check(s) failed/,$p' "$RUNNER_TEMP/check-data.txt" | head -c 4000; echo '```'; echo; fi
+            fi
+            head -c 50000 "$RUNNER_TEMP/changes.md"
+            echo; echo "Full run: $RUN"
+          } > "$RUNNER_TEMP/issue.md"
+          WINDOW=$(jq -r .window "$RUNNER_TEMP/flags.json")
+          if [ "$PUBLISH" = success ]; then
+            gh issue create --repo "$REPO" --title "Timetable updated: sailings $WINDOW (+$(jq -r .added "$RUNNER_TEMP/flags.json") / -$(jq -r .removed "$RUNNER_TEMP/flags.json"))" --body-file "$RUNNER_TEMP/issue.md"
+          else
+            post "Timetable update blocked" "$RUNNER_TEMP/issue.md"
+          fi
+
+      # The run broke before it could match (install, scan or window step): one thread for it too.
+      - name: Email if the run broke
+        if: ${{ failure() && steps.email.outcome != 'success' }}
+        run: |
+          printf '%s\n' "@${{ github.repository_owner }} the daily timetable run for ${{ steps.d.outputs.date }} stopped before the update could be checked, so the site still shows the last published sailings. See ${{ github.server_url }}/$REPO/actions/runs/${{ github.run_id }}" > "$RUNNER_TEMP/broke.md"
+          N=$(gh issue list --repo "$REPO" --state open --search 'in:title "Daily timetable run failed"' --json number,title --jq '[.[] | select(.title == "Daily timetable run failed")][0].number // empty')
+          if [ -n "$N" ]; then gh issue comment "$N" --repo "$REPO" --body-file "$RUNNER_TEMP/broke.md"; else gh issue create --repo "$REPO" --title "Daily timetable run failed" --body-file "$RUNNER_TEMP/broke.md"; fi

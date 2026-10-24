@@ -7,7 +7,7 @@
 //                     listings. The Trip Planner, port cards and ports map use these.
 // Operator-only sailings (not on 12Go) are never shown. data/twelvego.js, data/timetables.js and the
 // spreadsheets are research files: nothing in app/ or components/ may import them.
-// All of it is generated weekly from data/generated/ (see WEEKLY_AUTOMATION.md and CLAUDE.md).
+// All of it is generated from data/generated/ by the daily timetable run (see TIMETABLE_AUTOMATION.md and CLAUDE.md).
 import { CONFIRMED_DAILY, CONFIRMED_NOT_DAILY, CONFIRMED_SCAN } from "@/data/confirmed";
 import { TYPICAL_SAILINGS } from "@/data/typical";
 

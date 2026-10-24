@@ -1,5 +1,5 @@
 // Writes the weekly "what changed" report: this week's matcher output against last week's.
-// Usage: node scripts/weekly/changes.mjs --new data/generated-new --old data/generated --out changes.md [--status "Published"]
+// Usage: node scripts/weekly/changes.mjs --new data/generated-new --old data/generated --out changes.md [--status "Published"] [--flags flags.json]
 // The weekly workflow posts it as a GitHub issue, which emails the repo owner.
 import fs from "node:fs";
 import path from "node:path";
@@ -73,4 +73,12 @@ const out = [
   "",
 ];
 fs.writeFileSync(args.out, out.join("\n"));
+// --flags FILE: the counts the daily workflow uses to decide whether a published update is worth an email
+// (sailings or operators changed) or not (only prices moved).
+if (args.flags) {
+  const flags = { added: added.length, removed: removed.length, priceChanges: priced.length, operatorsGone: goneFrom12Go.length, operatorsNew: newOn12Go.length,
+    dailyBefore: before.daily.sailings.length, dailyNow: now.daily.sailings.length, window: win(now.daily) };
+  flags.notable = flags.added + flags.removed + flags.operatorsGone + flags.operatorsNew > 0;
+  fs.writeFileSync(args.flags, JSON.stringify(flags));
+}
 console.log(`Fast Routes daily: ${n(before.daily.sailings.length, now.daily.sailings.length)}; ${removed.length} removed, ${added.length} added, ${priced.length} price changes; ${goneFrom12Go.length} operator(s) gone from 12Go`);

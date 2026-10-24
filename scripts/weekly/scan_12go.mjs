@@ -91,11 +91,18 @@ async function isBotCheck(resp) {
   if (resp && resp.status() === 405) return true;
   try { return /human verification|confirm you are human/i.test(await page.title()); } catch { return false; }
 }
+// An empty result only means "no boats" when the page is 12Go's real timetable saying so ("0 trips" in the header).
+// Anything else (a challenge in another form, a half-loaded or error page) is an unknown, i.e. a failed load:
+// 27, 30 and 31 Oct 2026 produced dozens of empty pages that weren't the "Human Verification" one.
+async function showsNoTrips() {
+  try { return await page.evaluate(() => /(^|\s)0 trips\b/.test(document.body.innerText)); } catch { return false; }
+}
+const NO_TIMETABLE = 'page showed no timetable (not 12Go\'s "0 trips" page)';
 
 async function scanRoute(a, b) {
   // curr=AUD: without it GitHub's (US) runner gets US$ prices. 12Go keeps it in a cookie and drops it from the URL.
   const url = `${BASE}/en/travel/${sl(a)}/${sl(b)}?date=${date}&people=1&adults=1&curr=AUD`;
-  let best = null, error = null, blocked = false;
+  let best = null, error = null, blocked = false, unknownPage = false;
   for (let attempt = 1; attempt <= 3; attempt++) {
     try {
       if (!page || page.isClosed()) await freshPage();
@@ -104,22 +111,23 @@ async function scanRoute(a, b) {
       if (resp && resp.status() >= 400) throw new Error(`HTTP ${resp.status()} for ${url}`);
       const r = await scrapeRobust(page, 120000);
       if (r.empty && await isBotCheck(null)) { blocked = true; error = BLOCKED; console.error(`${a}>${b} ${date}: ${BLOCKED}`); break; }
+      if (r.empty && !(await showsNoTrips())) throw new Error(NO_TIMETABLE);
       if (!best || r.trips.length > best.trips.length) best = r;
       const enough = r.empty || r.header <= 12 || r.trips.length >= 0.5 * r.header || r.header > 100; // >100 = known lazy-load cap (Sanur->Nusa Penida)
       if (enough) break;
     } catch (e) {
       error = shortError(e);
       console.error(`${a}>${b} ${date} attempt ${attempt}: ${error}`);
+      if (error === NO_TIMETABLE) { unknownPage = true; break; } // probably the bot check in another form: back off, don't hammer
       if (attempt === 3) break; // keep this page for diagnose()
       await sleep(5000 * attempt);
       await freshPage().catch((e2) => console.error(`browser restart failed: ${shortError(e2)}`));
     }
   }
-  if (blocked && !best) best = { empty: true, trips: [], header: 0, failed: true };
-  best = best || { empty: true, trips: [], header: 0, failed: true };
+  if (!best || unknownPage) best = { empty: true, trips: [], header: 0, failed: true };
   let diag;
   if ((best.failed || best.empty) && !blocked) { diag = await diagnose(`${date}-${a}-${b}`); console.error('DIAG', JSON.stringify(diag)); }
-  return { best, error: best.failed ? error : null, diag, blocked };
+  return { best, error: best.failed ? error : null, diag, blocked: blocked || unknownPage };
 }
 
 function record(a, b, { best, error, diag }) {
