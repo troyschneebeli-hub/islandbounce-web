@@ -34,10 +34,44 @@ export function RouteBookingProvider({ pairs, defaultPair, children }) {
   // Until the date is set (first paint), links carry no date rather than one
   // worked out on the server.
   const linkFor = (from, to) => bookingLink(from, to, date || undefined, undefined, travellers);
+  // "Look for" note: the booking site can't open one sailing (no per-trip links), only the route, so after a tap on a
+  // time or Book we say which card to pick there. It stays until closed, so it's still there when they come back.
+  const [hint, setHint] = useState(null);
   return (
-    <BookingContext.Provider value={{ pairs, date, setDate, travellers, setTravellers, pair, setPair, linkFor }}>
+    <BookingContext.Provider value={{ pairs, date, setDate, travellers, setTravellers, pair, setPair, linkFor, setHint }}>
       {children}
+      {hint && <LookForNote hint={hint} date={date} travellers={travellers} onClose={() => setHint(null)} />}
     </BookingContext.Provider>
+  );
+}
+
+const fmtDay = (iso) => (iso ? new Date(`${iso}T00:00:00`).toLocaleDateString("en-AU", { weekday: "short", day: "numeric", month: "short" }) : "");
+
+function LookForNote({ hint, date, travellers, onClose }) {
+  return (
+    <div
+      role="status"
+      aria-live="polite"
+      style={{ position: "fixed", left: 16, right: 16, bottom: "calc(84px + env(safe-area-inset-bottom))", zIndex: 50, maxWidth: 440, margin: "0 auto", background: COLORS.seaDeep, color: "white", borderRadius: 14, padding: "12px 40px 12px 14px", boxShadow: "0 8px 24px rgba(0,0,0,0.25)", fontSize: 13.5, lineHeight: 1.45 }}
+    >
+      <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, letterSpacing: 1, opacity: 0.75, marginBottom: 2 }}>OPENED THE BOOKING PAGE IN A NEW TAB</div>
+      On {short(hint.from)} → {short(hint.to)}, look for{" "}
+      <strong>
+        {hint.listedAt || hint.time} {hint.operator}
+        {hint.fare ? `, from A$${hint.fare}` : ""}
+      </strong>
+      {hint.listedAt && hint.listedAt !== hint.time ? ` (the operator's timetable says ${hint.time})` : ""}
+      {date ? ` on ${fmtDay(date)}` : ""}
+      {travellers ? `, ${travellers} ${travellers === 1 ? "traveller" : "travellers"}` : ""}. Fares can differ by date.
+      <button
+        type="button"
+        onClick={onClose}
+        aria-label="Close"
+        style={{ position: "absolute", top: 8, right: 10, background: "none", border: "none", color: "white", fontSize: 18, lineHeight: 1, cursor: "pointer", opacity: 0.8 }}
+      >
+        ×
+      </button>
+    </div>
   );
 }
 
@@ -132,15 +166,16 @@ export function BookingBox() {
 
 // A departure time as a chip that opens the route on the booking page with the chosen date and
 // travellers. Never a per-sailing link: the booking site has no stable link to one sailing.
-/** @param {{ from: string, to: string, time: string, operator: string, listedAt?: string | null }} props */
-export function TimeChip({ from, to, time, operator, listedAt }) {
-  const { linkFor } = useBooking();
+/** @param {{ from: string, to: string, time: string, operator: string, listedAt?: string | null, fare?: number | null }} props */
+export function TimeChip({ from, to, time, operator, listedAt, fare }) {
+  const { linkFor, setHint } = useBooking();
   const listed = listedAt && listedAt !== time ? ` (listed there at ${listedAt})` : "";
   return (
     <a
       href={linkFor(from, to)}
       target="_blank"
       rel="sponsored noopener noreferrer"
+      onClick={() => setHint({ from, to, time, operator, listedAt, fare })}
       title={`Opens ${short(from)} to ${short(to)} on the booking page. Look for the ${time} ${operator} sailing${listed}.`}
       style={{ display: "inline-block", fontWeight: 700, color: COLORS.sea, background: COLORS.foam, border: `1px solid ${COLORS.foamLine}`, borderRadius: 999, padding: "2px 9px", textDecoration: "none", whiteSpace: "nowrap" }}
     >
@@ -149,14 +184,15 @@ export function TimeChip({ from, to, time, operator, listedAt }) {
   );
 }
 
-/** @param {{ from: string, to: string, time: string, operator: string }} props */
-export function RowBookButton({ from, to, time, operator }) {
-  const { linkFor } = useBooking();
+/** @param {{ from: string, to: string, time: string, operator: string, listedAt?: string | null, fare?: number | null }} props */
+export function RowBookButton({ from, to, time, operator, listedAt, fare }) {
+  const { linkFor, setHint } = useBooking();
   return (
     <a
       href={linkFor(from, to)}
       target="_blank"
       rel="sponsored noopener noreferrer"
+      onClick={() => setHint({ from, to, time, operator, listedAt, fare })}
       title={`Opens this route on the booking page. Look for the ${time} ${operator} sailing.`}
       style={{ display: "inline-block", background: COLORS.coral, color: "white", fontWeight: 700, fontSize: 12.5, padding: "5px 12px", borderRadius: 999, textDecoration: "none", whiteSpace: "nowrap" }}
     >

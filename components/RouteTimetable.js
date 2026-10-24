@@ -60,7 +60,7 @@ export default function RouteTimetable({ groups }) {
                     return (
                       <tr key={s.id} data-sailing-id={s.id}>
                         <td style={td}>
-                          <TimeChip from={s.from} to={s.to} time={s.departs} operator={s.operator} listedAt={s.twelvegoDeparts} />
+                          <TimeChip from={s.from} to={s.to} time={s.departs} operator={s.operator} listedAt={s.twelvegoDeparts} fare={fare} />
                         </td>
                         <td style={{ ...td, fontWeight: 600 }}>
                           {s.operator}
@@ -82,7 +82,7 @@ export default function RouteTimetable({ groups }) {
                           )}
                         </td>
                         <td style={{ ...td, ...bookCol, textAlign: "right" }}>
-                          <RowBookButton from={s.from} to={s.to} time={s.departs} operator={s.operator} />
+                          <RowBookButton from={s.from} to={s.to} time={s.departs} operator={s.operator} listedAt={s.twelvegoDeparts} fare={fare} />
                         </td>
                       </tr>
                     );
