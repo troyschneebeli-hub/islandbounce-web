@@ -159,12 +159,16 @@ function DepartureList({ departures, from, to, date, returnDate, travellers }) {
         {/* Only the chips scroll; the note below stays visible in full. */}
         <div style={{ maxHeight: 220, overflowY: "auto" }}>
           {departures.groups.map((g) => (
-            <div key={`${g.operator}|${g.confirmed}`} style={{ marginBottom: 8 }}>
+            <div key={`${g.operator}|${g.kind}`} style={{ marginBottom: 8 }}>
               <div style={{ fontWeight: 700 }}>
                 {g.operator}{" "}
-                {g.confirmed ? (
+                {g.kind === "confirmed" ? (
                   <span style={{ fontWeight: 700, fontSize: 9.5, letterSpacing: 0.5, textTransform: "uppercase", background: COLORS.sea, color: "white", borderRadius: 999, padding: "1px 6px", marginLeft: 4 }}>
                     Confirmed
+                  </span>
+                ) : g.kind === "daily" ? (
+                  <span style={{ fontWeight: 700, fontSize: 9.5, letterSpacing: 0.5, textTransform: "uppercase", border: `1px solid ${COLORS.sea}`, color: COLORS.sea, borderRadius: 999, padding: "0 6px", marginLeft: 4 }}>
+                    Daily
                   </span>
                 ) : (
                   <span style={{ fontWeight: 600, fontSize: 10.5, opacity: 0.65, marginLeft: 4 }}>Typical, check live times</span>
@@ -188,8 +192,8 @@ function DepartureList({ departures, from, to, date, returnDate, travellers }) {
           ))}
         </div>
           <div style={{ opacity: 0.65, marginTop: 6, lineHeight: 1.45 }}>
-            Confirmed times are on both the operator&apos;s own timetable and the booking page every day we checked. Typical times are
-            booking-page listings we haven&apos;t confirmed, so check live times. Tap a time to open that route on the booking page, then pick
+            Daily times were on the booking page on at least 6 of the 7 days we checked; Confirmed ones also match the operator&apos;s own
+            timetable. Typical times aren&apos;t on every day, so check live times. Tap a time to open that route on the booking page, then pick
             the same operator and time. Fares are the lowest for 1 adult. Checked {formatDate(departures.checked)}.
           </div>
         </div>

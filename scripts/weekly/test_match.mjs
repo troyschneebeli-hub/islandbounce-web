@@ -26,10 +26,13 @@ const dates = ["2026-11-02", "2026-11-03", "2026-11-04", "2026-11-05", "2026-11-
 const sail = (op, dep, arr) => ({ dep, arr, op, ty: "Ferry", price: 20 });
 dates.forEach((d, i) => {
   const sn = [];
-  if (i !== 3) sn.push(sail("Alpha Fast Boat", "08:00", "08:45"));       // 6 of 7, operator says daily  -> daily
-  if (i !== 3) sn.push(sail("Bravo Fast Boat", "09:00", "09:45"));       // 6 of 7, not stated            -> not daily
-  if (i > 1) sn.push(sail("Delta Fast Boat", "10:00", "10:45"));         // 5 of 7, operator says daily  -> not daily
-  sn.push(sail("Echo Fast Boat", "11:00", "11:45"));                     // 7 of 7, not stated            -> daily
+  if (i !== 3) sn.push(sail("Alpha Fast Boat", "08:00", "08:45"));       // 6 of 7                        -> daily
+  if (i !== 3) sn.push(sail("Bravo Fast Boat", "09:00", "09:45"));       // 6 of 7                        -> daily
+  if (i > 1) sn.push(sail("Delta Fast Boat", "10:00", "10:45"));         // 5 of 7                        -> not daily
+  sn.push(sail("Echo Fast Boat", "11:00", "11:45"));                     // 7 of 7                        -> daily
+  sn.push(sail("Golf Express", "13:30", "14:15"));                       // 12Go only, 7 of 7             -> daily, not confirmed
+  sn.push(sail("Golf Express", "13:35", "14:20"));                       // the same boat listed twice    -> merged
+  if (i < 4) sn.push(sail("Hotel Cruise", "15:00", "15:45"));            // 12Go only, 4 of 7             -> not daily
   const pb = i === 5 ? { header: 0, captured: 0, empty: true, failed: true, error: "blocked", sailings: [] } // failed night
     : { header: 1, captured: 1, empty: false, failed: false, error: null, sailings: [sail("Charlie Fast Boat", "10:00", "11:30")] };
   const scannedAt = new Date(Date.parse(`${d}T17:00:00Z`) - 3 * 86400000).toISOString(); // scanned 3 days ahead
@@ -42,9 +45,14 @@ dates.forEach((d, i) => {
 execFileSync(py, [path.join(here, "match.py"), "--scans", scans, "--operators", path.join(tmp, "ops.json"), "--out", out], { stdio: "pipe" });
 const conf = JSON.parse(fs.readFileSync(path.join(out, "confirmed-sailings.json"), "utf8"));
 const daily = Object.fromEntries(conf.sailings.map((s) => [s.operator, s.runsDaily]));
-const want = { "Alpha Fast Boat": true, "Bravo Fast Boat": false, "Charlie Fast Boat": true, "Delta Fast Boat": false, "Echo Fast Boat": true };
+const want = { "Alpha Fast Boat": true, "Bravo Fast Boat": true, "Charlie Fast Boat": true, "Delta Fast Boat": false, "Echo Fast Boat": true };
 let failed = 0;
 for (const [op, w] of Object.entries(want)) if (daily[op] !== w) { failed++; console.log(`FAIL ${op}: runsDaily ${daily[op]}, want ${w}`); }
+// daily-sailings.json: the route pages' list = confirmed daily (4) + Golf once, not confirmed; no Delta, no Hotel.
+const shown = JSON.parse(fs.readFileSync(path.join(out, "daily-sailings.json"), "utf8")).sailings;
+const names = shown.map((s) => `${s.operator}${s.confirmed ? "" : " (12Go only)"}`).sort();
+const wantNames = ["Alpha Fast Boat", "Bravo Fast Boat", "Charlie Fast Boat", "Echo Fast Boat", "Golf Express (12Go only)"];
+if (JSON.stringify(names) !== JSON.stringify(wantNames)) { failed++; console.log(`FAIL daily-sailings: ${names.join(", ")}\n  want ${wantNames.join(", ")}`); }
 if (conf.generatedAt !== "2026-11-05T17:00:00.000Z") { failed++; console.log(`FAIL generatedAt ${conf.generatedAt}, want the latest scan 2026-11-05T17:00:00.000Z`); }
 if (JSON.stringify(conf.scannedDates) !== JSON.stringify(dates)) { failed++; console.log(`FAIL scannedDates ${conf.scannedDates}`); }
 

@@ -54,8 +54,8 @@ const CONFIRMED_FAQ = (from, to, c) => ({
   q: `Which ${from} to ${to} boats are confirmed?`,
   a:
     c.confirmedCount
-      ? `${plural(c.confirmedCount, "departure")} with ${joinOps(c.confirmedOperators)} appeared on both the operator's own timetable and the booking page on every day we checked (${c.scanText}), or on all but one where the operator says the boat runs daily, since sold-out boats drop off the booking page. Those are the departures listed above.`
-      : "None yet. Every departure above is listed on the booking site only, so confirm with the operator before you plan around one boat.",
+      ? `${plural(c.confirmedCount, "departure")} with ${joinOps(c.confirmedOperators)} also match the operator's own timetable (${c.scanText}). They're tagged Confirmed in the table above. The others are on the booking page every day but aren't on an operator timetable we've checked.`
+      : "None yet. Every departure above is on the booking page every day, but we haven't matched it to the operator's own timetable, so confirm with the operator before you plan around one boat.",
 });
 
 const LEMBONGAN_LANDING =

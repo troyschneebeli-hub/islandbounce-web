@@ -19,10 +19,10 @@ export default function AboutPage() {
         route by route as we go.
       </p>
       <p style={{ fontSize: 15, lineHeight: 1.7, marginBottom: 16 }}>
-        How we check the times: we look at seven days of departures on our booking site and compare each one with the
-        operator&apos;s own published timetable. A sailing is listed as a daily departure only when both agree, with the
-        same operator and a departure within ten minutes, on every one of those days. If the operator&apos;s own timetable
-        says the boat runs daily, we allow one missing day, because the booking site hides boats that are sold out. Each
+        How we check the times: we look at seven days of departures on our booking site. A boat is listed as a daily
+        departure when it was bookable on at least six of those days (the
+        booking site hides a boat on a day it&apos;s sold out). We also compare each one with the operator&apos;s own
+        published timetable: the ones that match (same operator, departure within ten minutes) are tagged Confirmed. Each
         route page says when it was last checked. Fares are the lowest we saw for one adult. Schedules still change, so
         always confirm on the booking page when you book.
       </p>

@@ -31,8 +31,7 @@ def main():
     ap.add_argument('--window', type=int, default=7, help='days expected in the scan'); ap.add_argument('--tol', type=int, default=10)
     ap.add_argument('--min-days', type=int, default=None, help='days a sailing must be seen to count as daily (default: window)')
     ap.add_argument('--allow-missed', type=int, default=1,
-                    help="nights a sailing may be missing (sold out on 12Go, or the route didn't load) and still count as daily, "
-                         "but only when the operator's own timetable says it runs daily")
+                    help="nights a sailing may be missing (sold out on 12Go, or the route didn't load) and still count as daily")
     a = ap.parse_args()
     min_days = a.min_days or a.window
 
@@ -80,31 +79,43 @@ def main():
         else:
             g_only.append({'operator': g['twelvegoOperator'], 'from': g['from'], 'to': g['to'], 'fromName': PORT_NAMES[g['from']],
                            'toName': PORT_NAMES[g['to']], 'departs': g['dep'], 'arrives': g['arr'], 'priceAUD': g['price'], 'daysSeen': sorted(g['days'])})
+    # Daily = listed on 12Go on all but allow_missed nights of the window (12Go hides sold-out trips for a night, and a
+    # route can fail to load). This applies to every listing: the route pages show every bookable daily boat, and the
+    # ones that also match the operator's own timetable are tagged confirmed (decided 24 Oct 2026).
+    is_daily = lambda r: len(set(r['daysSeen']) & loaded[(r['from'], r['to'])]) >= min_days - a.allow_missed
     conf = []
     for c in confirmed.values():
         c['daysSeen'] = sorted(c['daysSeen'])
-        # Daily = seen on every night of the window. When the operator's own timetable says the sailing runs daily,
-        # allow_missed nights may be missing: 12Go hides sold-out trips, and a route can fail to load. Without that
-        # statement a missing night could be a day the boat doesn't run (e.g. no Sunday service), so all nights count.
-        seen = len(set(c['daysSeen']) & loaded[(c['from'], c['to'])])
-        op_daily = (c.get('operatorDays') or '').strip().lower().startswith('daily')
-        c['runsDaily'] = seen >= min_days or (op_daily and seen >= min_days - a.allow_missed)
+        c['runsDaily'] = is_daily(c); c['confirmed'] = True
         conf.append(c)
+    for g in g_only:
+        g['runsDaily'] = is_daily(g); g['confirmed'] = False
     conf.sort(key=lambda c: (c['from'], c['to'], c['departs']))
     g_only.sort(key=lambda c: (c['from'], c['to'], c['departs']))
     daily = [c for c in conf if c['runsDaily']]
+    # Every bookable daily boat: the confirmed ones, plus 12Go-only listings that ran daily. A 12Go-only listing of the
+    # same operator within tol minutes of one already in the list is the same boat listed twice: keep the first
+    # (confirmed first, then the cheapest).
+    bookable = list(daily)
+    for g in sorted([g for g in g_only if g['runsDaily']], key=lambda g: (g['priceAUD'] is None, g['priceAUD'] or 0)):
+        dup = any(b['from'] == g['from'] and b['to'] == g['to'] and opkey(b.get('twelvegoOperator') or b['operator']) == opkey(g['operator'])
+                  and abs(mins(b.get('twelvegoDeparts') or b['departs']) - mins(g['departs'])) <= a.tol for b in bookable)
+        if not dup: bookable.append(g)
+    bookable.sort(key=lambda c: (c['from'], c['to'], c['departs']))
     op_only = [o for o in ops if id(o) not in used]
 
     os.makedirs(a.out, exist_ok=True)
     # generatedAt = the latest check: the window holds one scan per weekday, made on different nights.
     meta = {'scannedDates': sorted(dates), 'generatedAt': max(s['scannedAt'] for s in scans),
-            'dailyRule': f"seen on all {min_days} nights, or {min_days - a.allow_missed} when the operator's timetable says daily"}
-    for name, rows in [('confirmed-sailings', conf), ('confirmed-daily-sailings', daily), ('twelvego-only-sailings', g_only)]:
+            'dailyRule': f"listed on the booking page on at least {min_days - a.allow_missed} of {min_days} nights"}
+    # daily-sailings.json is what the route pages show (and what the safety checks and emails compare).
+    for name, rows in [('confirmed-sailings', conf), ('confirmed-daily-sailings', daily), ('twelvego-only-sailings', g_only), ('daily-sailings', bookable)]:
         json.dump({**meta, 'sailings': rows}, open(os.path.join(a.out, name + '.json'), 'w'), indent=1, ensure_ascii=False)
     json.dump(health, open(os.path.join(a.out, 'scan-health.json'), 'w'), indent=1)
-    lines = [f"# Weekly timetable run", f"Window: {dates[0]} to {dates[-1]}", '',
-             f"- 12Go listings: {len(G)}", f"- Confirmed (on both): {len(conf)}", f"- Confirmed daily (shown on Fast Routes): {len(daily)}",
-             f"- 12Go only (Trip Planner, typical): {len(g_only)}", f"- Operator only (not shown): {len(op_only)}",
+    lines = [f"# Timetable run", f"Window: {dates[0]} to {dates[-1]}", '',
+             f"- 12Go listings: {len(G)}", f"- Daily, shown on route pages: {len(bookable)} ({len(daily)} confirmed with the operator, {len(bookable) - len(daily)} 12Go only)",
+             f"- Confirmed (on both), all: {len(conf)}",
+             f"- 12Go only, not daily (Trip Planner, typical): {sum(1 for g in g_only if not g['runsDaily'])}", f"- Operator only (not shown): {len(op_only)}",
              f"- Route-days that failed to load: {sum(h['failed'] for h in health['routes'].values())}"]
     errors = [f"  - {rk} {e}" for rk, h in sorted(health['routes'].items()) for e in h['errors']]
     if errors: lines += ['', 'Load errors (first 20):'] + errors[:20]

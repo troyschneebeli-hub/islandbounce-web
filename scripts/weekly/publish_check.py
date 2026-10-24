@@ -12,8 +12,11 @@ ap.add_argument('--max-drop', type=float, default=0.30); ap.add_argument('--min-
 ap.add_argument('--max-missing', type=int, default=1)
 a = ap.parse_args(); problems = []
 load = lambda d, n: json.load(open(os.path.join(d, n)))
-new = load(a.new, 'confirmed-daily-sailings.json')['sailings']; health = load(a.new, 'scan-health.json')
-if len(new) < a.min_total: problems.append(f'only {len(new)} confirmed daily sailings (minimum {a.min_total})')
+# The daily list the route pages show: daily-sailings.json (every bookable daily boat, from 24 Oct 2026), or the
+# confirmed daily file in data published before that.
+daily_path = lambda d: next((os.path.join(d, n) for n in ('daily-sailings.json', 'confirmed-daily-sailings.json') if os.path.exists(os.path.join(d, n))), None)
+new = json.load(open(daily_path(a.new)))['sailings']; health = load(a.new, 'scan-health.json')
+if len(new) < a.min_total: problems.append(f'only {len(new)} daily sailings (minimum {a.min_total})')
 for rk, h in health['routes'].items():
     if h['failed'] > a.max_missing: problems.append(f'{rk}: {h["failed"]} night(s) failed to load ({"; ".join(h.get("errors", [])[:2])})')
     for cap, hd in zip(h['captured'], h['header']):
@@ -26,15 +29,15 @@ def drops(old, label):
     for rk, n in co.items():
         if n >= 5 and cn.get(rk, 0) < (1 - a.max_drop) * n: problems.append(f'{rk[0]}>{rk[1]} fell from {n} to {cn.get(rk, 0)} {label}')
 
-oldp = os.path.join(a.old, 'confirmed-daily-sailings.json')
-if os.path.exists(oldp):
+oldp = daily_path(a.old)
+if oldp:
     old = json.load(open(oldp))['sailings']
     drops(old, 'since the last update')
     key = lambda s: (s['from'], s['to'], s['operator'], s['departs'])
     ko, kn = {key(s) for s in old}, {key(s) for s in new}
     open(os.path.join(a.new, 'diff.md'), 'w').write(f'# Changes vs last run\nAdded: {len(kn-ko)}\nRemoved: {len(ko-kn)}\n\n## Removed\n' + '\n'.join(f'- {k[2]} {k[0]}>{k[1]} {k[3]}' for k in sorted(ko-kn)) + '\n\n## Added\n' + '\n'.join(f'- {k[2]} {k[0]}>{k[1]} {k[3]}' for k in sorted(kn-ko)) + '\n')
-basep = os.path.join(a.baseline, 'confirmed-daily-sailings.json') if a.baseline else None
-if basep and os.path.exists(basep):
+basep = daily_path(a.baseline) if a.baseline else None
+if basep:
     base = json.load(open(basep))
     drops(base['sailings'], f"since the weekly reference ({base.get('referenceDate', 'about a week ago')})")
 if problems:

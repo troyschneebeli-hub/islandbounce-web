@@ -12,8 +12,11 @@ const load = (dir, name) => {
   const f = path.join(dir, `${name}.json`);
   return fs.existsSync(f) ? JSON.parse(fs.readFileSync(f, "utf8")) : { sailings: [] };
 };
-const now = { daily: load(args.new, "confirmed-daily-sailings"), all: load(args.new, "confirmed-sailings"), only: load(args.new, "twelvego-only-sailings") };
-const before = { daily: load(args.old, "confirmed-daily-sailings"), all: load(args.old, "confirmed-sailings"), only: load(args.old, "twelvego-only-sailings") };
+// The daily list the route pages show: daily-sailings (every bookable daily boat, from 24 Oct 2026), or the confirmed
+// daily file in data published before that.
+const loadDaily = (dir) => (fs.existsSync(path.join(dir, "daily-sailings.json")) ? load(dir, "daily-sailings") : load(dir, "confirmed-daily-sailings"));
+const now = { daily: loadDaily(args.new), all: load(args.new, "confirmed-sailings"), only: load(args.new, "twelvego-only-sailings") };
+const before = { daily: loadDaily(args.old), all: load(args.old, "confirmed-sailings"), only: load(args.old, "twelvego-only-sailings") };
 
 const MAX = 40; // lines per list, so the issue stays readable
 const fmtDay = (d) => (d ? new Date(`${d}T00:00:00Z`).toLocaleDateString("en-AU", { day: "numeric", month: "short", timeZone: "UTC" }) : "?");
@@ -25,7 +28,7 @@ const list = (rows) => (rows.length ? [...rows.slice(0, MAX).map((r) => `- ${r}`
 const byKey = (rows) => new Map(rows.map((s) => [key(s), s]));
 const sortRows = (rows) => rows.sort((a, b) => route(a).localeCompare(route(b)) || a.departs.localeCompare(b.departs));
 
-// Fast Routes (confirmed daily) sailings added, removed and re-priced.
+// Route page (daily) sailings added, removed and re-priced.
 const oldDaily = byKey(before.daily.sailings), newDaily = byKey(now.daily.sailings);
 const removed = sortRows([...oldDaily.values()].filter((s) => !newDaily.has(key(s))));
 const added = sortRows([...newDaily.values()].filter((s) => !oldDaily.has(key(s))));
@@ -65,17 +68,17 @@ const out = [
   "",
   "| | Last run | This run |",
   "|---|---|---|",
-  `| Confirmed daily (Fast Routes) | ${before.daily.sailings.length} | ${now.daily.sailings.length} |`,
+  `| Daily on route pages | ${before.daily.sailings.length} | ${now.daily.sailings.length} |`,
   `| Confirmed, all | ${before.all.sailings.length} | ${now.all.sailings.length} |`,
   `| 12Go only (Trip Planner, typical) | ${before.only.sailings.length} | ${now.only.sailings.length} |`,
   "",
   `### Operators no longer listed on 12Go (${goneFrom12Go.length})`, ...list(goneFrom12Go),
   "", `### Operators new on 12Go (${newOn12Go.length})`, ...list(newOn12Go),
-  "", `### Operators dropped from Fast Routes (${goneFromFastRoutes.length})`, ...list(goneFromFastRoutes),
-  "", `### Fast Routes counts that changed (${routeChanges.length})`, ...list(routeChanges),
-  "", `### Sailings removed from Fast Routes (${removed.length})`, ...list(removed.map(line)),
-  "", `### Sailings added to Fast Routes (${added.length})`, ...list(added.map(line)),
-  "", `### Price changes on Fast Routes (${priced.length}, biggest first)`, ...list(priced),
+  "", `### Operators no longer on the route pages (${goneFromFastRoutes.length})`, ...list(goneFromFastRoutes),
+  "", `### Route page counts that changed (${routeChanges.length})`, ...list(routeChanges),
+  "", `### Sailings removed from the route pages (${removed.length})`, ...list(removed.map(line)),
+  "", `### Sailings added to the route pages (${added.length})`, ...list(added.map(line)),
+  "", `### Price changes on the route pages (${priced.length}, biggest first)`, ...list(priced),
   "", `### On 12Go every night but not in the operator timetables (${unlisted.length})`,
   "Add these to data/operator-sailings.json if the operator's own site lists them, so they can be confirmed.",
   ...list(unlisted),
@@ -90,4 +93,4 @@ if (args.flags) {
   flags.notable = flags.added + flags.removed + flags.operatorsGone + flags.operatorsNew > 0;
   fs.writeFileSync(args.flags, JSON.stringify(flags));
 }
-console.log(`Fast Routes daily: ${n(before.daily.sailings.length, now.daily.sailings.length)}; ${removed.length} removed, ${added.length} added, ${priced.length} price changes; ${goneFrom12Go.length} operator(s) gone from 12Go`);
+console.log(`Route pages daily: ${n(before.daily.sailings.length, now.daily.sailings.length)}; ${removed.length} removed, ${added.length} added, ${priced.length} price changes; ${goneFrom12Go.length} operator(s) gone from 12Go`);

@@ -123,7 +123,7 @@ jobs:
         run: |
           echo '### Safety checks' >> "$GITHUB_STEP_SUMMARY"
           # --baseline: also compare with the data published about a week ago, so a slow slide is caught too.
-          BASE=(); if [ -f window/baseline/confirmed-daily-sailings.json ]; then BASE=(--baseline window/baseline); fi
+          BASE=(); if [ -f window/baseline/daily-sailings.json ] || [ -f window/baseline/confirmed-daily-sailings.json ]; then BASE=(--baseline window/baseline); fi
           python3 scripts/weekly/publish_check.py --new data/generated-new --old data/generated "${BASE[@]}" 2>&1 | tee -a "$RUNNER_TEMP/safety.txt" | tee -a "$GITHUB_STEP_SUMMARY"
 
       - name: Publish (commit to main, Vercel redeploys)
@@ -195,10 +195,24 @@ jobs:
             gh issue create --repo "$REPO" --title "Weekly timetable summary: $REF to $TODAY" --body-file "$RUNNER_TEMP/weekly-issue.md"
           fi
           rm -rf window/baseline && mkdir -p window/baseline
-          cp data/generated/confirmed-sailings.json data/generated/twelvego-only-sailings.json window/baseline/
-          jq --arg d "$TODAY" '. + {referenceDate: $d}' data/generated/confirmed-daily-sailings.json > window/baseline/confirmed-daily-sailings.json
+          cp data/generated/confirmed-sailings.json data/generated/twelvego-only-sailings.json data/generated/confirmed-daily-sailings.json window/baseline/
+          jq --arg d "$TODAY" '. + {referenceDate: $d}' data/generated/daily-sailings.json > window/baseline/daily-sailings.json
           echo "$TODAY" > window/baseline/reference-date
           echo "New weekly reference: $TODAY"
+
+      # Safeguard: whatever the reason, if the live site's timetable is 3+ days old, say so (one thread, a comment a
+      # night) so it can't go stale quietly. Only once the window is full, i.e. the run is meant to be publishing.
+      - name: Alert if the site hasn't been updated for 3 days
+        if: ${{ always() && steps.window.outputs.nights == '7' && steps.publish.outcome != 'success' }}
+        run: |
+          LIVE=$(git show origin/main:data/generated/confirmed-sailings.json | jq -r '.generatedAt[0:10]')
+          TODAY=$(TZ=Asia/Makassar date +%F)
+          AGE=$(( ($(date -d "$TODAY" +%s) - $(date -d "$LIVE" +%s)) / 86400 ))
+          echo "Live timetable last checked $LIVE ($AGE days ago)"
+          if [ "$AGE" -lt 3 ]; then exit 0; fi
+          printf '%s\n' "@${{ github.repository_owner }} the site's timetable hasn't been updated for $AGE days (last check $LIVE). Route pages show a 'may be out of date' notice after 7 days. Tonight's run: ${{ github.server_url }}/$REPO/actions/runs/${{ github.run_id }}" > "$RUNNER_TEMP/stale.md"
+          N=$(gh issue list --repo "$REPO" --state open --search 'in:title "Site timetable not updated"' --json number,title --jq '[.[] | select(.title == "Site timetable not updated")][0].number // empty')
+          if [ -n "$N" ]; then gh issue comment "$N" --repo "$REPO" --body-file "$RUNNER_TEMP/stale.md"; else gh issue create --repo "$REPO" --title "Site timetable not updated" --body-file "$RUNNER_TEMP/stale.md"; fi
 
       # Saved after everything else so it carries tonight's scan and the weekly reference.
       - uses: actions/upload-artifact@v4

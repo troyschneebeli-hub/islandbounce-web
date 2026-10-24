@@ -17,7 +17,13 @@ const td = { padding: "10px", fontSize: 13.5, color: COLORS.ink, borderBottom: `
 // The Book column stays pinned to the right edge while a phone scrolls the table sideways.
 const bookCol = { position: "sticky", right: 0, background: "white", boxShadow: "-6px 0 8px -6px rgba(0,0,0,0.12)" };
 
-// One open table per from -> to pair: confirmed daily sailings only, rendered on the server so
+// Small tag on rows that also match the operator's own timetable (confidence "confirmed").
+const confirmedTag = {
+  display: "inline-block", marginLeft: 6, fontSize: 9.5, fontWeight: 700, letterSpacing: 0.5, textTransform: "uppercase",
+  background: COLORS.sea, color: "white", borderRadius: 999, padding: "1px 6px", verticalAlign: "middle", whiteSpace: "nowrap",
+};
+
+// One open table per from -> to pair: every daily sailing you can book, rendered on the server so
 // search engines see every row. Only the time chips and Book buttons are client components: they
 // read the date and travellers from the booking box, so this must sit inside RouteBookingProvider.
 export default function RouteTimetable({ groups }) {
@@ -56,7 +62,12 @@ export default function RouteTimetable({ groups }) {
                         <td style={td}>
                           <TimeChip from={s.from} to={s.to} time={s.departs} operator={s.operator} listedAt={s.twelvegoDeparts} />
                         </td>
-                        <td style={{ ...td, fontWeight: 600 }}>{s.operator}</td>
+                        <td style={{ ...td, fontWeight: 600 }}>
+                          {s.operator}
+                          {s.confidence === "confirmed" && (
+                            <span style={confirmedTag} title="Also on the operator's own timetable">Confirmed</span>
+                          )}
+                        </td>
                         <td style={{ ...td, whiteSpace: "nowrap" }}>{fare ? `A$${fare}` : "—"}</td>
                         <td style={{ ...td, whiteSpace: "nowrap" }}>
                           {s.arrives ? (
