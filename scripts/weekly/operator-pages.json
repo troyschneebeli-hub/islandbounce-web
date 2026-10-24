@@ -1,0 +1,29 @@
+{
+  "_about": "Operator timetable pages read once a week by scripts/weekly/operator_watch.mjs. 'operators' = the exact operator names in data/operator-sailings.json that the page covers. checkOurs=false when our rows for that operator came from somewhere else (a booking engine or a reseller), so 'our time isn't on this page' would be noise.",
+  "pages": [
+    { "operators": ["Wijaya Buyuk"], "url": "https://wijayabuyuk.com/schedule/", "checkOurs": true },
+    { "operators": ["Eka Jaya Fast Boat"], "url": "https://ekajayafastferry.com/schedule.aspx", "checkOurs": true },
+    { "operators": ["Semaya One"], "url": "https://semayaone.com/", "checkOurs": true },
+    { "operators": ["Scoot Cruise"], "url": "https://scootcruise.com/time-table", "checkOurs": true },
+    { "operators": ["The Tanis Fast Cruise"], "url": "https://tanisfastcruise.com/time-table/", "checkOurs": true },
+    { "operators": ["Gili Gili Fast Boat"], "url": "https://giligilifastboat.com/boat-schedules/", "checkOurs": true },
+    { "operators": ["Axestone Fast Cruise"], "url": "https://axestonefastcruise.com/time-schedule/", "checkOurs": true },
+    { "operators": ["Gili Getaway"], "url": "https://giligetaway.com/routes/", "checkOurs": true },
+    { "operators": ["The Angkal Fast Cruise"], "url": "https://theangkalfastcruise.com/nusa-penida-boat-schedule/", "checkOurs": true },
+    { "operators": ["Maruti Group Fast Boat"], "url": "https://marutigroupfastboat.com/", "checkOurs": true },
+    { "operators": ["Angel Billabong Fast Cruises"], "url": "https://angelbillabongfastcruises.com/", "checkOurs": true },
+    { "operators": ["El Rey Fast Cruise"], "url": "https://elreyfastcruise.com/time-schedule/", "checkOurs": true },
+    { "operators": ["Rocky Fast Cruise"], "url": "https://rockyfastcruise.com/time-table/", "checkOurs": true },
+    { "operators": ["D'Stars Fast Ferry"], "url": "https://dstarsfastferry.com/boat-transfer/", "checkOurs": true },
+    { "operators": ["Sanjaya Fast Boat"], "url": "https://sanjayafastboat.com/", "checkOurs": true },
+    { "operators": ["Wijaya Tramena (per Caspla page)", "Caspla Bali Fast Boat"], "url": "https://casplabaligroup.com/fast-boat-to-nusa-penida-and-gili", "checkOurs": true },
+    { "operators": ["Ocean Speed Fast Boat"], "url": "https://oceanspeedfastboat.com/price-schedule", "checkOurs": true },
+    { "operators": ["Marina Group (Miko Natalia)"], "url": "https://marinafastferry.com/buy-tickets/", "checkOurs": false },
+    { "operators": ["Semabu Hills Fast Boat"], "url": "https://semabuhillssanur.com/", "checkOurs": false },
+    { "operators": ["Arjuna Cruise"], "url": "https://arjunacruise.com/", "checkOurs": true }
+  ],
+  "manual": [
+    { "operators": ["BlueWater Express"], "why": "timetable is published as images" },
+    { "operators": ["D'Camel Fast Ferry", "WaterJet", "Wahana Virendra", "Golden Queen Fast Ferry", "Arthamas Express", "Dream Beach Express", "Nusa Nadhi Fast Ferry", "Tanis ModernDream", "Wijaya Tramena"], "why": "times only come from a booking search, no published timetable page" }
+  ]
+}
