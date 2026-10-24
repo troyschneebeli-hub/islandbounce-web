@@ -28,7 +28,9 @@ const { CONFIRMED_SCAN } = await import("@/data/confirmed");
 const { BALI_PORTS, ISLAND_PORTS } = await import("@/data/ports");
 const { ROUTE_PAGES, ROUTE_SLUGS } = await import("@/data/routePages");
 const { selectSailings, routeContext } = await import("@/lib/timetable");
-const daily = JSON.parse(readFileSync(join(ROOT, "data", "generated", "confirmed-daily-sailings.json"), "utf8"));
+// daily-sailings.json (every bookable daily boat, from 24 Oct 2026); older data only has the confirmed daily file.
+const dailyFile = existsSync(join(ROOT, "data", "generated", "daily-sailings.json")) ? "daily-sailings.json" : "confirmed-daily-sailings.json";
+const daily = JSON.parse(readFileSync(join(ROOT, "data", "generated", dailyFile), "utf8"));
 
 const failures = [], warnings = [];
 const check = (ok, message) => { if (!ok) failures.push(message); };
@@ -37,10 +39,9 @@ const warn = (ok, message) => { if (!ok) warnings.push(message); };
 // 1. Every listed row is in the daily file (same operator, route and departure).
 const dailyKeys = new Set(daily.sailings.map((s) => `${s.operator}|${s.fromName}|${s.toName}|${s.departs}`));
 for (const s of SAILINGS) {
-  check(dailyKeys.has(`${s.operatorBrand}|${s.from}|${s.to}|${s.departs}`), `${s.id}: not in data/generated/confirmed-daily-sailings.json`);
-  check(s.confidence === "confirmed" && s.runsDaily === true, `${s.id}: listed on Fast Routes but not confirmed daily`);
+  check(dailyKeys.has(`${s.operatorBrand}|${s.from}|${s.to}|${s.departs}`), `${s.id}: not in data/generated/${dailyFile}`);
+  check(["confirmed", "listed"].includes(s.confidence) && s.runsDaily === true, `${s.id}: on the route pages but not daily`);
 }
-
 // 2. No duplicate ids (route-page rows and planner rows).
 for (const [name, list] of [["SAILINGS", SAILINGS], ["PLANNER_SAILINGS", PLANNER_SAILINGS]]) {
   const ids = new Map();
@@ -63,7 +64,9 @@ for (const s of SAILINGS) {
 }
 
 // 5. Dates: the check was run before the days it covers, and nothing claims a later check.
-check(CONFIRMED_SCAN.checked < CONFIRMED_SCAN.from, `check date ${CONFIRMED_SCAN.checked} is not before the first scanned day ${CONFIRMED_SCAN.from}`);
+// The nightly run checks dates up to 3 days ahead, so the latest check is before the last scanned day, and never in the future.
+check(CONFIRMED_SCAN.checked <= CONFIRMED_SCAN.to, `check date ${CONFIRMED_SCAN.checked} is after the last scanned day ${CONFIRMED_SCAN.to}`);
+check(CONFIRMED_SCAN.checked <= new Date().toISOString().slice(0, 10), `check date ${CONFIRMED_SCAN.checked} is in the future`);
 check(SAILINGS_UPDATED === CONFIRMED_SCAN.checked, `SAILINGS_UPDATED ${SAILINGS_UPDATED} is not the check date ${CONFIRMED_SCAN.checked}`);
 for (const s of PLANNER_SAILINGS) check(!s.verified || s.verified <= CONFIRMED_SCAN.checked, `${s.id}: verified ${s.verified} is later than the check date`);
 
@@ -112,8 +115,8 @@ const emptyPages = ROUTE_SLUGS.filter((slug) => !selectSailings(SAILINGS, ROUTE_
 check(emptyPages.length <= MAX_EMPTY_PAGES, `${emptyPages.length} route pages have no confirmed daily sailings (more than ${MAX_EMPTY_PAGES}): ${emptyPages.join(", ")}`);
 
 const typical = PLANNER_SAILINGS.length - SAILINGS.length;
-console.log(`\n${SAILINGS.length} confirmed daily sailings on Fast Routes; ${typical} more in the Trip Planner, labelled typical.`);
-console.log(`${SAILINGS.filter((s) => !s.arrives).length} confirmed daily sailings have no arrival time.`);
+console.log(`\n${SAILINGS.length} daily sailings on the route pages (${SAILINGS.filter((s) => s.confidence === "confirmed").length} confirmed with the operator); ${typical} more in the Trip Planner, labelled typical.`);
+console.log(`${SAILINGS.filter((s) => !s.arrives).length} daily sailings have no arrival time.`);
 // "WARNING:" lines are copied into the weekly report email.
 if (warnings.length) console.log(`\n${warnings.map((w) => `WARNING: ${w}`).join("\n")}`);
 if (failures.length) {

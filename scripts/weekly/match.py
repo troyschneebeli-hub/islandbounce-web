@@ -30,8 +30,8 @@ def main():
     ap.add_argument('--scans', required=True); ap.add_argument('--operators', required=True); ap.add_argument('--out', required=True)
     ap.add_argument('--window', type=int, default=7, help='days expected in the scan'); ap.add_argument('--tol', type=int, default=10)
     ap.add_argument('--min-days', type=int, default=None, help='days a sailing must be seen to count as daily (default: window)')
-    ap.add_argument('--max-missing', type=int, default=1,
-                    help='days a route may fail to load and still get daily sailings; a failed day is left out of the count, not held against a sailing')
+    ap.add_argument('--allow-missed', type=int, default=1,
+                    help="nights a sailing may be missing (sold out on 12Go, or the route didn't load) and still count as daily")
     a = ap.parse_args()
     min_days = a.min_days or a.window
 
@@ -72,35 +72,50 @@ def main():
             ck = (g['from'], g['to'], o['operator'], o['dep'])
             c = confirmed.setdefault(ck, {'operator': o['operator'], 'twelvegoOperator': g['twelvegoOperator'], 'from': g['from'], 'to': g['to'],
                 'fromName': PORT_NAMES[g['from']], 'toName': PORT_NAMES[g['to']], 'departs': o['dep'], 'twelvegoDeparts': g['dep'],
-                'checkIn': o.get('checkIn'), 'arrives': o.get('arr'), 'twelvegoArrives': g['arr'], 'operatorSource': o.get('source'), 'priceAUD': g['price'], 'daysSeen': set()})
+                'checkIn': o.get('checkIn'), 'arrives': o.get('arr'), 'twelvegoArrives': g['arr'], 'operatorSource': o.get('source'),
+                'operatorDays': o.get('days'), 'priceAUD': g['price'], 'daysSeen': set()})
             c['daysSeen'] |= g['days']
             if g['price'] is not None and (c['priceAUD'] is None or g['price'] < c['priceAUD']): c['priceAUD'] = g['price']
         else:
             g_only.append({'operator': g['twelvegoOperator'], 'from': g['from'], 'to': g['to'], 'fromName': PORT_NAMES[g['from']],
                            'toName': PORT_NAMES[g['to']], 'departs': g['dep'], 'arrives': g['arr'], 'priceAUD': g['price'], 'daysSeen': sorted(g['days'])})
+    # Daily = listed on 12Go on all but allow_missed nights of the window (12Go hides sold-out trips for a night, and a
+    # route can fail to load). This applies to every listing: the route pages show every bookable daily boat, and the
+    # ones that also match the operator's own timetable are tagged confirmed (decided 24 Oct 2026).
+    is_daily = lambda r: len(set(r['daysSeen']) & loaded[(r['from'], r['to'])]) >= min_days - a.allow_missed
     conf = []
     for c in confirmed.values():
         c['daysSeen'] = sorted(c['daysSeen'])
-        # Daily = seen on (min_days minus the days the route failed to load) of the days it did load,
-        # with at most max_missing failed days. A failed day is unknown, not a day without the sailing.
-        ok_days = loaded[(c['from'], c['to'])]
-        missing = a.window - len(ok_days)
-        c['runsDaily'] = missing <= a.max_missing and len(set(c['daysSeen']) & ok_days) >= min_days - missing
+        c['runsDaily'] = is_daily(c); c['confirmed'] = True
         conf.append(c)
+    for g in g_only:
+        g['runsDaily'] = is_daily(g); g['confirmed'] = False
     conf.sort(key=lambda c: (c['from'], c['to'], c['departs']))
     g_only.sort(key=lambda c: (c['from'], c['to'], c['departs']))
     daily = [c for c in conf if c['runsDaily']]
+    # Every bookable daily boat: the confirmed ones, plus 12Go-only listings that ran daily. A 12Go-only listing of the
+    # same operator within tol minutes of one already in the list is the same boat listed twice: keep the first
+    # (confirmed first, then the cheapest).
+    bookable = list(daily)
+    for g in sorted([g for g in g_only if g['runsDaily']], key=lambda g: (g['priceAUD'] is None, g['priceAUD'] or 0)):
+        dup = any(b['from'] == g['from'] and b['to'] == g['to'] and opkey(b.get('twelvegoOperator') or b['operator']) == opkey(g['operator'])
+                  and abs(mins(b.get('twelvegoDeparts') or b['departs']) - mins(g['departs'])) <= a.tol for b in bookable)
+        if not dup: bookable.append(g)
+    bookable.sort(key=lambda c: (c['from'], c['to'], c['departs']))
     op_only = [o for o in ops if id(o) not in used]
 
     os.makedirs(a.out, exist_ok=True)
-    meta = {'scannedDates': dates, 'generatedAt': min(s['scannedAt'] for s in scans),
-            'dailyRule': f'seen on >= {min_days} of {a.window} days (a day the route failed to load is left out; at most {a.max_missing})'}
-    for name, rows in [('confirmed-sailings', conf), ('confirmed-daily-sailings', daily), ('twelvego-only-sailings', g_only)]:
+    # generatedAt = the latest check: the window holds one scan per weekday, made on different nights.
+    meta = {'scannedDates': sorted(dates), 'generatedAt': max(s['scannedAt'] for s in scans),
+            'dailyRule': f"listed on the booking page on at least {min_days - a.allow_missed} of {min_days} nights"}
+    # daily-sailings.json is what the route pages show (and what the safety checks and emails compare).
+    for name, rows in [('confirmed-sailings', conf), ('confirmed-daily-sailings', daily), ('twelvego-only-sailings', g_only), ('daily-sailings', bookable)]:
         json.dump({**meta, 'sailings': rows}, open(os.path.join(a.out, name + '.json'), 'w'), indent=1, ensure_ascii=False)
     json.dump(health, open(os.path.join(a.out, 'scan-health.json'), 'w'), indent=1)
-    lines = [f"# Weekly timetable run", f"Window: {dates[0]} to {dates[-1]}", '',
-             f"- 12Go listings: {len(G)}", f"- Confirmed (on both): {len(conf)}", f"- Confirmed daily (shown on Fast Routes): {len(daily)}",
-             f"- 12Go only (Trip Planner, typical): {len(g_only)}", f"- Operator only (not shown): {len(op_only)}",
+    lines = [f"# Timetable run", f"Window: {dates[0]} to {dates[-1]}", '',
+             f"- 12Go listings: {len(G)}", f"- Daily, shown on route pages: {len(bookable)} ({len(daily)} confirmed with the operator, {len(bookable) - len(daily)} 12Go only)",
+             f"- Confirmed (on both), all: {len(conf)}",
+             f"- 12Go only, not daily (Trip Planner, typical): {sum(1 for g in g_only if not g['runsDaily'])}", f"- Operator only (not shown): {len(op_only)}",
              f"- Route-days that failed to load: {sum(h['failed'] for h in health['routes'].values())}"]
     errors = [f"  - {rk} {e}" for rk, h in sorted(health['routes'].items()) for e in h['errors']]
     if errors: lines += ['', 'Load errors (first 20):'] + errors[:20]

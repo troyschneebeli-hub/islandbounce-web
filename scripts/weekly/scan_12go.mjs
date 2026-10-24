@@ -91,11 +91,18 @@ async function isBotCheck(resp) {
   if (resp && resp.status() === 405) return true;
   try { return /human verification|confirm you are human/i.test(await page.title()); } catch { return false; }
 }
+// An empty result only means "no boats" when the page is 12Go's real timetable saying so ("0 trips" in the header).
+// Anything else (a challenge in another form, a half-loaded or error page) is an unknown, i.e. a failed load:
+// 27, 30 and 31 Oct 2026 produced dozens of empty pages that weren't the "Human Verification" one.
+async function showsNoTrips() {
+  try { return await page.evaluate(() => /(^|\s)0 trips\b/.test(document.body.innerText)); } catch { return false; }
+}
+const NO_TIMETABLE = 'page showed no timetable (not 12Go\'s "0 trips" page)';
 
 async function scanRoute(a, b) {
   // curr=AUD: without it GitHub's (US) runner gets US$ prices. 12Go keeps it in a cookie and drops it from the URL.
   const url = `${BASE}/en/travel/${sl(a)}/${sl(b)}?date=${date}&people=1&adults=1&curr=AUD`;
-  let best = null, error = null, blocked = false;
+  let best = null, error = null, blocked = false, unknownPage = false;
   for (let attempt = 1; attempt <= 3; attempt++) {
     try {
       if (!page || page.isClosed()) await freshPage();
@@ -104,22 +111,23 @@ async function scanRoute(a, b) {
       if (resp && resp.status() >= 400) throw new Error(`HTTP ${resp.status()} for ${url}`);
       const r = await scrapeRobust(page, 120000);
       if (r.empty && await isBotCheck(null)) { blocked = true; error = BLOCKED; console.error(`${a}>${b} ${date}: ${BLOCKED}`); break; }
+      if (r.empty && !(await showsNoTrips())) throw new Error(NO_TIMETABLE);
       if (!best || r.trips.length > best.trips.length) best = r;
       const enough = r.empty || r.header <= 12 || r.trips.length >= 0.5 * r.header || r.header > 100; // >100 = known lazy-load cap (Sanur->Nusa Penida)
       if (enough) break;
     } catch (e) {
       error = shortError(e);
       console.error(`${a}>${b} ${date} attempt ${attempt}: ${error}`);
+      if (error === NO_TIMETABLE) { unknownPage = true; break; } // probably the bot check in another form: back off, don't hammer
       if (attempt === 3) break; // keep this page for diagnose()
       await sleep(5000 * attempt);
       await freshPage().catch((e2) => console.error(`browser restart failed: ${shortError(e2)}`));
     }
   }
-  if (blocked && !best) best = { empty: true, trips: [], header: 0, failed: true };
-  best = best || { empty: true, trips: [], header: 0, failed: true };
+  if (!best || unknownPage) best = { empty: true, trips: [], header: 0, failed: true };
   let diag;
   if ((best.failed || best.empty) && !blocked) { diag = await diagnose(`${date}-${a}-${b}`); console.error('DIAG', JSON.stringify(diag)); }
-  return { best, error: best.failed ? error : null, diag, blocked };
+  return { best, error: best.failed ? error : null, diag, blocked: blocked || unknownPage };
 }
 
 function record(a, b, { best, error, diag }) {
@@ -144,19 +152,30 @@ function record(a, b, { best, error, diag }) {
 // the day is recorded as failed (match.py treats it as one day that failed to load) rather than pushed through.
 const ROUTE_GAP_MS = +(process.env.ROUTE_GAP_MS || 8000);
 const BLOCK_PAUSE_MS = +(process.env.BLOCK_PAUSE_MS || 300000);
+// Time budget: GitHub kills the job at 120 minutes (timeout-minutes), which loses the whole day and stops the week
+// from being matched (23 Oct 2026: two days ran past it after repeated bot-check pauses). Stopping ourselves first
+// keeps what was scanned; the routes not reached are recorded as failed loads.
+const BUDGET_MS = +(process.env.SCAN_BUDGET_MIN || 100) * 60000;
+const startedAt = Date.now();
+const outOfTime = (needMs = 0) => Date.now() - startedAt + needMs > BUDGET_MS;
 const result = { date, scannedAt: new Date().toISOString(), routes: {} };
 await freshPage();
 let failedInARow = 0, blockedInARow = 0, gaveUp = null;
 const skip = (a, b, why) => record(a, b, { best: { empty: true, trips: [], header: 0, failed: true }, error: why });
 async function pass(list) {
   for (const [a, b] of list) {
+    if (!gaveUp && outOfTime()) { gaveUp = `skipped: scan time budget (${BUDGET_MS / 60000} min) used up`; console.error(gaveUp); }
     if (gaveUp) { skip(a, b, gaveUp); continue; }
     const r = await scanRoute(a, b);
     if (!r.best.failed || !result.routes[`${a}>${b}`] || result.routes[`${a}>${b}`].failed) record(a, b, r);
     failedInARow = r.best.failed ? failedInARow + 1 : 0;
     blockedInARow = r.blocked ? blockedInARow + 1 : 0;
     if (blockedInARow >= 3) { gaveUp = `skipped: ${BLOCKED} on 3 routes in a row`; console.error(`${gaveUp}: stopping this day`); continue; }
-    if (r.blocked) { console.error(`Bot check: pausing ${BLOCK_PAUSE_MS / 60000} minutes and starting a new browser`); await sleep(BLOCK_PAUSE_MS); await freshPage().catch(() => {}); continue; }
+    if (r.blocked) {
+      if (outOfTime(BLOCK_PAUSE_MS)) continue; // no time left to wait it out; the budget check above ends the day
+      console.error(`Bot check: pausing ${BLOCK_PAUSE_MS / 60000} minutes and starting a new browser`);
+      await sleep(BLOCK_PAUSE_MS); await freshPage().catch(() => {}); continue;
+    }
     if (failedInARow === 4) { console.error('4 routes failed in a row: pausing 2 minutes and restarting the browser'); await sleep(120000); await freshPage().catch(() => {}); }
     if (failedInARow >= 8) { gaveUp = 'skipped: 8 routes in a row failed'; console.error(`${gaveUp}: stopping this day`); continue; }
     await sleep(ROUTE_GAP_MS);
@@ -166,7 +185,8 @@ await pass(routes);
 
 // Second pass: routes that failed or came back empty get another go after a pause, in a new browser.
 const again = gaveUp ? [] : routes.filter(([a, b]) => { const r = result.routes[`${a}>${b}`]; return r.failed || (r.empty && !r.header); });
-if (again.length) {
+if (again.length && outOfTime(BLOCK_PAUSE_MS + 60000)) console.log(`Not retrying ${again.length} route(s): not enough of the time budget left`);
+else if (again.length) {
   console.log(`Retrying ${again.length} route(s) after a 5 minute pause`);
   await sleep(BLOCK_PAUSE_MS);
   await freshPage().catch((e) => console.error(`browser restart failed: ${shortError(e)}`));

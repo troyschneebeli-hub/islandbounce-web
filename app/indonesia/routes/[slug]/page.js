@@ -91,7 +91,7 @@ export default function RoutePage({ params }) {
   // isn't listed every day). The page stays up with live times instead of a table; the weekly report lists it.
   const lead = hasData
     ? route.lead(ctx)
-    : `No boat on ${route.name} matched the operators' timetables on all seven days when we ${SAILINGS_CHECKED_TEXT}. Choose your date below to see live times and fares on the booking page.`;
+    : `No boat on ${route.name} was on the booking page on at least six of the seven days when we ${SAILINGS_CHECKED_TEXT}. Choose your date below to see live times and fares on the booking page.`;
   const faqs = hasData ? route.faqs(ctx) : [];
 
   const url = `${SITE_URL}/indonesia/routes/${route.slug}`;
@@ -118,7 +118,7 @@ export default function RoutePage({ params }) {
     ? {
         "@context": "https://schema.org",
         "@type": "ItemList",
-        name: `${route.name} confirmed fast boat departures`,
+        name: `${route.name} daily fast boat departures`,
         itemListElement: confirmedActive.map((s, i) => ({
           "@type": "ListItem",
           position: i + 1,
@@ -243,8 +243,8 @@ export default function RoutePage({ params }) {
             <section style={{ marginBottom: 32 }}>
               <h2 style={h2}>Check live times</h2>
               <p style={para}>
-                We couldn&apos;t confirm a daily departure for {route.name} against the operators&apos; own timetables in our latest
-                check. Boats may still be running: pick a date to see the boats, times and fares on the booking page.
+                We didn&apos;t find a boat on {route.name} that runs every day in our latest check. Boats may still be running on
+                your date: pick a date to see the boats, times and fares on the booking page.
               </p>
               <BookingBox />
             </section>
@@ -295,9 +295,10 @@ export default function RoutePage({ params }) {
               </div>
             )}
             <p style={{ ...para, fontSize: 13, opacity: 0.7 }}>
-              Daily departures confirmed against each operator&apos;s own timetable and the booking page. Prices are the lowest fare for 1 adult
-              when {SAILINGS_CHECKED_TEXT}. Fares and times change, and this list may not include every boat on the route, so confirm on the
-              booking page when you book. Check in at the time on your ticket.
+              Daily departures you can book: each was on the booking page on at least 6 of the 7 days we checked (a boat that sells out
+              disappears for that day). Departures tagged Confirmed also match the operator&apos;s own timetable. Prices are the lowest fare
+              for 1 adult when {SAILINGS_CHECKED_TEXT}. Fares and times change, and this list may not include every boat on the route, so
+              confirm on the booking page when you book. Check in at the time on your ticket.
             </p>
             {stale && (
               <p style={{ ...para, fontSize: 13, background: "#FFF2CC", color: "#8A5A00", borderRadius: 8, padding: "8px 12px" }}>
@@ -411,8 +412,9 @@ export default function RoutePage({ params }) {
           </section>
 
           <p style={{ fontSize: 12, color: COLORS.ink, opacity: 0.6, lineHeight: 1.6 }}>
-            How we compile this: We check seven days of departures on the booking page against each operator&apos;s own timetable. Only
-            sailings that match on every one of those days are listed here.
+            How we compile this: We check seven days of departures on the booking page. Boats listed on at least six of those days are
+            shown here (the booking page hides a boat on a day it&apos;s sold out). Ones that also match the operator&apos;s own timetable are
+            tagged Confirmed.
           </p>        </div>
       </div>
     </div>
