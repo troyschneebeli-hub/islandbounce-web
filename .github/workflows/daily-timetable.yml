@@ -8,8 +8,11 @@ name: Daily timetable refresh
 # The window and the weekly reference live in the "scan-window" artifact of the previous run (kept 30 days); git only
 # changes when the published data does, so Vercel only redeploys then.
 on:
-  schedule:
-    - cron: '0 17 * * *'
+  # PAUSED 25 Oct 2026: 12Go serves automated browsers a "0 trips" page on every route, so nightly scans only collect
+  # refusals. The scanner doesn't disguise itself, so this stays paused until 12Go allows the scanner (or offers a
+  # feed). To resume, put this back:
+  # schedule:
+  #   - cron: '0 17 * * *'
   workflow_dispatch:
     inputs:
       date:

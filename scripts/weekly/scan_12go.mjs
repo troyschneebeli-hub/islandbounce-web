@@ -94,10 +94,16 @@ async function isBotCheck(resp) {
 // An empty result only means "no boats" when the page is 12Go's real timetable saying so ("0 trips" in the header).
 // Anything else (a challenge in another form, a half-loaded or error page) is an unknown, i.e. a failed load:
 // 27, 30 and 31 Oct 2026 produced dozens of empty pages that weren't the "Human Verification" one.
+// A genuine "0 trips" page has no fare in its title ("Bangsal to Serangan Travel Options"). 12Go also serves automated
+// browsers a "0 trips" page whose title still advertises a fare ("Bangsal to Nusa Lembongan by ferry from IDR 373,750"),
+// every route, every night (24 Oct 2026): that's a refusal, not a route without boats.
 async function showsNoTrips() {
-  try { return await page.evaluate(() => /(^|\s)0 trips\b/.test(document.body.innerText)); } catch { return false; }
+  try {
+    const zero = await page.evaluate(() => /(^|\s)0 trips\b/.test(document.body.innerText));
+    return zero && !/\bfrom (IDR|A\$|US\$|\$)\s?[\d,.]+/i.test(await page.title());
+  } catch { return false; }
 }
-const NO_TIMETABLE = 'page showed no timetable (not 12Go\'s "0 trips" page)';
+const NO_TIMETABLE = 'page showed no timetable (12Go\'s "0 trips" page while its title advertises fares, or no timetable at all)';
 
 async function scanRoute(a, b) {
   // curr=AUD: without it GitHub's (US) runner gets US$ prices. 12Go keeps it in a cookie and drops it from the URL.
