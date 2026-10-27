@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { COLORS } from "@/lib/theme";
-import { BALI_PORTS } from "@/data/ports";
+import { BALI_PORTS, ISLAND_PORTS } from "@/data/ports";
 import { SAILINGS } from "@/data/sailings";
+import { selectSailings } from "@/lib/timetable";
 import IslandRequest from "@/components/IslandRequest";
 import WaveDivider from "@/components/WaveDivider";
 import PoppyCard from "@/components/PoppyCard";
@@ -17,9 +18,16 @@ export const metadata = {
   alternates: { canonical: "/indonesia" },
 };
 
-// Real counts from the 12Go sailings we list.
-const LISTED_OPERATORS = new Set(SAILINGS.map((s) => s.operator)).size;
-const LISTED_ROUTES = new Set(SAILINGS.map((s) => `${s.from}|${s.to}`)).size;
+// Real counts from the daily sailings on the route pages (the same set the home page counts).
+const ALL_PORTS_TRACKED = BALI_PORTS.length + ISLAND_PORTS.length;
+const DAILY_OPERATORS = new Set(SAILINGS.map((s) => s.operator)).size;
+const DAILY_CONNECTIONS = new Set(SAILINGS.map((s) => `${s.from}|${s.to}`)).size;
+// The ten route pages with the most daily boats; the full list is on /indonesia/routes.
+const POPULAR_SLUGS = ROUTE_SLUGS.map((slug) => ({ slug, n: selectSailings(SAILINGS, ROUTE_PAGES[slug], new Date().toISOString().slice(0, 10)).active.length }))
+  .filter((r) => r.n > 0)
+  .sort((a, b) => b.n - a.n)
+  .slice(0, 10)
+  .map((r) => r.slug);
 
 const FAQS = [
   {
@@ -89,9 +97,10 @@ export default function IndonesiaHub() {
           {/* Quick stats — real counts from the site's own data, not invented numbers. */}
           <div className="flex flex-wrap justify-center gap-x-10 gap-y-3" style={{ marginTop: 30 }}>
             {[
-              { n: BALI_PORTS.length, label: "Bali ports tracked" },
-              { n: LISTED_OPERATORS, label: "operators compared" },
-              { n: LISTED_ROUTES, label: "routes with times" },
+              { n: ALL_PORTS_TRACKED, label: "ports tracked" },
+              { n: SAILINGS.length, label: "daily departures" },
+              { n: DAILY_OPERATORS, label: "operators with daily boats" },
+              { n: DAILY_CONNECTIONS, label: "port-to-port connections" },
             ].map((s) => (
               <div key={s.label} style={{ textAlign: "center" }}>
                 <div style={{ fontFamily: "'Big Shoulders Display', sans-serif", fontWeight: 800, fontSize: 26, color: COLORS.seaDeep }}>{s.n}</div>
@@ -117,7 +126,7 @@ export default function IndonesiaHub() {
             Popular routes
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3" style={{ maxWidth: 640, margin: "0 auto" }}>
-            {ROUTE_SLUGS.map((slug) => (
+            {POPULAR_SLUGS.map((slug) => (
               <Link
                 key={slug}
                 href={`/indonesia/routes/${slug}`}
@@ -129,7 +138,7 @@ export default function IndonesiaHub() {
           </div>
           <div style={{ marginTop: 14 }}>
             <Link href="/indonesia/routes" style={{ fontSize: 13, fontWeight: 700, color: COLORS.sea, textDecoration: "none", borderBottom: `1px solid ${COLORS.sea}55` }}>
-              See all routes
+              See all {ROUTE_SLUGS.length} route guides
             </Link>
           </div>
         </div>

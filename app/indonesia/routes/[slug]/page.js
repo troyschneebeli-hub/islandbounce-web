@@ -3,8 +3,9 @@ import { notFound } from "next/navigation";
 import { COLORS } from "@/lib/theme";
 import { SITE_URL, CONTACT_EMAIL } from "@/lib/site";
 import { SAILINGS, SAILINGS_CHECKED_TEXT } from "@/data/sailings";
-import { ROUTE_PAGES, ROUTE_SLUGS } from "@/data/routePages";
+import { ROUTE_PAGES, ROUTE_SLUGS, specificPagesIn } from "@/data/routePages";
 import { BALI_PORTS, ISLAND_PORTS } from "@/data/ports";
+import { PORT_PHOTOS } from "@/data/portPhotos";
 import { bookingLink } from "@/lib/bookingLink";
 import { selectSailings, groupByPair, summarize, routeContext, lastChecked, isStale, fmtDuration, shortPort, durationMins, joinList, rangeText } from "@/lib/timetable";
 import PlacePhoto from "@/components/PlacePhoto";
@@ -44,6 +45,9 @@ const ROUTE_PHOTOS = {
   "gili-meno-to-bali": { src: "/images/indonesia/meno.jpg", alt: "Aerial view of Gili Meno, its white beach and its inland salt lake" },
 };
 
+// Pages without their own photo (the one-port-to-one-port pages) use the destination port's photo.
+const photoFor = (route) => ROUTE_PHOTOS[route.slug] || PORT_PHOTOS[route.toPorts[0]] || null;
+
 const ALL_PORTS = [...BALI_PORTS, ...ISLAND_PORTS];
 
 export function generateStaticParams() {
@@ -54,7 +58,7 @@ export function generateMetadata({ params }) {
   const route = ROUTE_PAGES[params.slug];
   if (!route) return {};
   const path = `/indonesia/routes/${route.slug}`;
-  const photo = ROUTE_PHOTOS[route.slug];
+  const photo = photoFor(route);
   return {
     title: { absolute: route.metaTitle },
     description: route.metaDescription,
@@ -194,7 +198,10 @@ export default function RoutePage({ params }) {
     });
   }
 
-  const related = route.related.map((slug) => ROUTE_PAGES[slug]).filter(Boolean);
+  // On a group page ("Bali to the Gili Islands"), links down to each port-to-port page it covers.
+  const byPort = specificPagesIn(route);
+  const related = route.related.map((slug) => ROUTE_PAGES[slug]).filter((r) => r && !byPort.includes(r));
+  const photo = photoFor(route);
 
   return (
     <div>
@@ -212,9 +219,9 @@ export default function RoutePage({ params }) {
           </h1>
           <p style={{ color: COLORS.seaDeep, opacity: 0.85, maxWidth: 640, margin: "14px auto 0", fontSize: 15.5, lineHeight: 1.6 }}>{lead}</p>
         </div>
-        {ROUTE_PHOTOS[route.slug] && (
+        {photo && (
           <div style={{ maxWidth: 760, margin: "0 auto 8px" }}>
-            <PlacePhoto src={ROUTE_PHOTOS[route.slug].src} alt={ROUTE_PHOTOS[route.slug].alt} aspect="21 / 9" radius={16} priority />
+            <PlacePhoto src={photo.src} alt={photo.alt} aspect="21 / 9" radius={16} priority />
           </div>
         )}
         <WaveDivider into="white" height={64} bleed={20} />
@@ -295,10 +302,8 @@ export default function RoutePage({ params }) {
               </div>
             )}
             <p style={{ ...para, fontSize: 13, opacity: 0.7 }}>
-              Daily departures you can book: each was on the booking page on at least 6 of the 7 days we checked (a boat that sells out
-              disappears for that day). Departures tagged Confirmed also match the operator&apos;s own timetable. Prices are the lowest fare
-              for 1 adult when {SAILINGS_CHECKED_TEXT}. Fares and times change, and this list may not include every boat on the route, so
-              confirm on the booking page when you book. Check in at the time on your ticket.
+              Boats on the booking page at least 6 days a week. Confirmed ones also match the operator&apos;s own timetable. Lowest adult
+              fares, {SAILINGS_CHECKED_TEXT}. Times change, so confirm when you book.
             </p>
             {stale && (
               <p style={{ ...para, fontSize: 13, background: "#FFF2CC", color: "#8A5A00", borderRadius: 8, padding: "8px 12px" }}>
@@ -393,6 +398,24 @@ export default function RoutePage({ params }) {
             </section>
           )}
 
+          {byPort.length > 0 && (
+            <section style={{ marginBottom: 36 }}>
+              <h2 style={h2}>{route.name} by port</h2>
+              <p style={para}>Each trip on its own page, with just its boats, crossing times and fares.</p>
+              <div className="flex flex-wrap gap-3" style={{ marginTop: 10 }}>
+                {byPort.map((r) => (
+                  <Link
+                    key={r.slug}
+                    href={`/indonesia/routes/${r.slug}`}
+                    style={{ border: `1.5px solid ${COLORS.sea}`, color: COLORS.sea, fontWeight: 700, fontSize: 13.5, padding: "8px 16px", borderRadius: 999, textDecoration: "none" }}
+                  >
+                    {r.name} →
+                  </Link>
+                ))}
+              </div>
+            </section>
+          )}
+
           <section style={{ marginBottom: 32 }}>
             <h2 style={h2}>Related routes</h2>
             <div className="flex flex-wrap gap-3" style={{ marginTop: 10 }}>
@@ -410,12 +433,7 @@ export default function RoutePage({ params }) {
               </Link>
             </div>
           </section>
-
-          <p style={{ fontSize: 12, color: COLORS.ink, opacity: 0.6, lineHeight: 1.6 }}>
-            How we compile this: We check seven days of departures on the booking page. Boats listed on at least six of those days are
-            shown here (the booking page hides a boat on a day it&apos;s sold out). Ones that also match the operator&apos;s own timetable are
-            tagged Confirmed.
-          </p>        </div>
+        </div>
       </div>
     </div>
   );

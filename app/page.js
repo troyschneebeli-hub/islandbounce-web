@@ -75,7 +75,7 @@ export default function HomePage() {
         >
           <span><strong>{SAILINGS.length}</strong> daily departures</span>
           <span><strong>{operators}</strong> operators</span>
-          <span><strong>{routesWithBoats}</strong> routes</span>
+          <span><strong>{routesWithBoats}</strong> route guides</span>
           <span style={{ opacity: 0.75 }}>Times {SAILINGS_CHECKED_TEXT}</span>
         </div>
         <WaveDivider into="white" height={64} bleed={16} />
