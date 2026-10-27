@@ -22,9 +22,16 @@ const prev = prevFile && fs.existsSync(prevFile) ? JSON.parse(fs.readFileSync(pr
 const visible = (html) => html.replace(/<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>|<noscript[\s\S]*?<\/noscript>/gi, " ")
   .replace(/<[^>]+>/g, " ").replace(/&nbsp;|&#160;/g, " ").replace(/\s+/g, " ");
 // "8.30", "08:30", "1:30 PM" -> "HH:MM". Boats don't leave between 00:00 and 05:59, so 1:00-5:59 without am/pm is
-// read as afternoon (pages often write 1.30 for 13:30).
+// read as afternoon (pages often write 1.30 for 13:30). A 24-hour time with a stray am/pm ("13:00 AM" on Scoot's page)
+// keeps its hour.
 export function timesOn(text) {
-  const norm = (h, m, ap) => { h = +h; if (ap) h = (h % 12) + (/p/i.test(ap) ? 12 : 0); else if (h >= 1 && h <= 5) h += 12; return `${String(h).padStart(2, "0")}:${m}`; };
+  const norm = (h, m, ap) => {
+    h = +h;
+    if (h >= 13) {} // already 24-hour
+    else if (ap) h = (h % 12) + (/p/i.test(ap) ? 12 : 0);
+    else if (h >= 1 && h <= 5) h += 12;
+    return `${String(h).padStart(2, "0")}:${m}`;
+  };
   return [...new Set([...text.matchAll(/\b([01]?\d|2[0-3])[:.]([0-5]\d)\s*([ap]\.?m\.?)?/gi)].map((m) => norm(m[1], m[2], m[3])))].sort();
 }
 // Only the "*" group matters for us. Rules match from the start of path+query; "*" is any characters and a trailing
@@ -41,8 +48,16 @@ export function robotsAllows(robots, pathAndQuery) {
   return best.allow;
 }
 
+// One retry: a site can be slow, or turn away requests from cloud servers like GitHub's (Angkal, El Rey and Caspla did on
+// 27 Oct 2026 while answering a normal connection). We don't try to get round that; those pages are listed to check
+// by hand, and only a site that starts failing this week counts as news.
+async function get(url) {
+  try { return await fetch(url, { headers: { "user-agent": UA }, redirect: "follow", signal: AbortSignal.timeout(25000) }); }
+  catch { await new Promise((r) => setTimeout(r, 10000)); return fetch(url, { headers: { "user-agent": UA }, redirect: "follow", signal: AbortSignal.timeout(40000) }); }
+}
+
 const now = new Date().toISOString();
-const snapshot = { checkedAt: now, pages: {} };
+const snapshot = { checkedAt: now, pages: {}, unreadable: {} };
 const changed = [], newlyMissing = [], failed = [], quiet = [];
 for (const page of config.pages) {
   const key = page.operators[0];
@@ -52,7 +67,7 @@ for (const page of config.pages) {
     let robots = "";
     try { const r = await fetch(`${u.origin}/robots.txt`, { headers: { "user-agent": UA }, signal: AbortSignal.timeout(15000) }); if (r.ok) robots = await r.text(); } catch {}
     if (!robotsAllows(robots, u.pathname + u.search)) throw new Error("robots.txt asks automated readers not to fetch this page");
-    const res = await fetch(page.url, { headers: { "user-agent": UA }, redirect: "follow", signal: AbortSignal.timeout(25000) });
+    const res = await get(page.url);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const times = timesOn(visible(await res.text()));
     if (!times.length) throw new Error("no times found on the page (layout change, or the timetable moved)");
@@ -67,8 +82,13 @@ for (const page of config.pages) {
     const fresh = missing.filter((t) => !(before && (before.missing || []).includes(t)));
     if (fresh.length) newlyMissing.push({ key, url: page.url, times: fresh });
   } catch (e) {
-    failed.push({ key, url: page.url, error: String(e.message || e).slice(0, 160) });
-    if (before) snapshot.pages[key] = before; // keep last week's reading so next week compares against something real
+    const error = String(e.message || e).slice(0, 160);
+    // New = it read fine last time. Snapshots from before 27 Oct 2026 have no `unreadable` list: there, a page missing
+    // from last week's readings was already failing.
+    const known = prev.unreadable ? key in prev.unreadable : Object.keys(prev.pages).length > 0 && !prev.pages[key];
+    failed.push({ key, url: page.url, error, isNew: !known });
+    snapshot.unreadable[key] = error;
+    if (before) snapshot.pages[key] = before; // keep the last reading so a later week compares against something real
   }
   await new Promise((r) => setTimeout(r, 2000)); // a pause between sites
 }
@@ -88,13 +108,15 @@ const lines = [
   "Check the page: the sailing may have moved or stopped. Update data/operator-sailings.json (or ask Claude to).",
   ...(newlyMissing.length ? newlyMissing.map((m) => `- **${m.key}** (${m.url}): ${m.times.join(", ")}`) : ["- none"]),
   "",
-  `### Pages that couldn't be read (${failed.length})`,
-  ...(failed.length ? failed.map((f) => `- ${f.key} (${f.url}): ${f.error}`) : ["- none"]),
+  `### Pages that couldn't be read (${failed.length}${failed.length ? `, ${failed.filter((f) => f.isNew).length} new this week` : ""})`,
+  "Some operator sites turn away requests from cloud servers like GitHub's. Open these yourself now and then.",
+  ...(failed.length ? failed.map((f) => `- ${f.key} (${f.url}): ${f.error}${f.isNew ? " (new this week)" : ""}`) : ["- none"]),
   "",
   "### Not checked automatically",
-  ...config.manual.map((m) => `- ${m.operators.join(", ")}: ${m.why}. The daily 12Go scan still shows whether their boats are bookable.`),
+  ...config.manual.map((m) => `- ${m.operators.join(", ")}: ${m.why}. Check these by hand now and then.`),
   "",
 ].join("\n");
 if (args.report) fs.writeFileSync(args.report, lines);
-if (args.flags) fs.writeFileSync(args.flags, JSON.stringify({ changed: changed.length, newlyMissing: newlyMissing.length, failed: failed.length, firstRun, notable: changed.length + newlyMissing.length + failed.length > 0 }));
+const newlyFailed = failed.filter((f) => f.isNew).length;
+if (args.flags) fs.writeFileSync(args.flags, JSON.stringify({ changed: changed.length, newlyMissing: newlyMissing.length, failed: failed.length, newlyFailed, firstRun, notable: changed.length + newlyMissing.length + newlyFailed > 0 }));
 console.log(lines);

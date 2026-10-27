@@ -1,3 +1,4 @@
+import "./fonts.css";
 import "./globals.css";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
@@ -56,10 +57,10 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <head>
-        {/* Fonts via <link> rather than a CSS @import: same fonts, but the browser can fetch them in parallel instead of after the CSS. */}
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700;800&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" />
+        {/* Fonts are self-hosted (app/fonts.css, public/fonts): no wait on fonts.googleapis.com before text can show.
+            The two used above the fold are preloaded. */}
+        <link rel="preload" href="/fonts/big-shoulders-display-variable.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
+        <link rel="preload" href="/fonts/inter-variable.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
       </head>
       <body>
         <a href="#main" className="skip-link">Skip to content</a>

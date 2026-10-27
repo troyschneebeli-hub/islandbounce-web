@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { COLORS } from "@/lib/theme";
+import { optimized, srcSetFor } from "@/lib/img";
 import { COUNTRY_ART, COUNTRY_BG } from "@/components/CountryArt";
 
 export default function RegionCard({ region }) {
@@ -36,7 +37,9 @@ export default function RegionCard({ region }) {
         // eslint-disable-next-line @next/next/no-img-element
         <img
           ref={imgRef}
-          src={region.photo}
+          src={optimized(region.photo, 828)}
+          srcSet={srcSetFor(region.photo)}
+          sizes="360px"
           alt=""
           onError={() => setImgFailed(true)}
           style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
