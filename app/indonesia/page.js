@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { COLORS } from "@/lib/theme";
-import { BALI_PORTS } from "@/data/ports";
+import { BALI_PORTS, ISLAND_PORTS } from "@/data/ports";
 import { SAILINGS } from "@/data/sailings";
 import IslandRequest from "@/components/IslandRequest";
 import WaveDivider from "@/components/WaveDivider";
@@ -17,9 +17,10 @@ export const metadata = {
   alternates: { canonical: "/indonesia" },
 };
 
-// Real counts from the 12Go sailings we list.
-const LISTED_OPERATORS = new Set(SAILINGS.map((s) => s.operator)).size;
-const LISTED_ROUTES = new Set(SAILINGS.map((s) => `${s.from}|${s.to}`)).size;
+// Real counts from the daily sailings on the route pages (the same set the home page counts).
+const ALL_PORTS_TRACKED = BALI_PORTS.length + ISLAND_PORTS.length;
+const DAILY_OPERATORS = new Set(SAILINGS.map((s) => s.operator)).size;
+const DAILY_CONNECTIONS = new Set(SAILINGS.map((s) => `${s.from}|${s.to}`)).size;
 
 const FAQS = [
   {
@@ -89,9 +90,10 @@ export default function IndonesiaHub() {
           {/* Quick stats — real counts from the site's own data, not invented numbers. */}
           <div className="flex flex-wrap justify-center gap-x-10 gap-y-3" style={{ marginTop: 30 }}>
             {[
-              { n: BALI_PORTS.length, label: "Bali ports tracked" },
-              { n: LISTED_OPERATORS, label: "operators compared" },
-              { n: LISTED_ROUTES, label: "routes with times" },
+              { n: ALL_PORTS_TRACKED, label: "ports tracked" },
+              { n: SAILINGS.length, label: "daily departures" },
+              { n: DAILY_OPERATORS, label: "operators with daily boats" },
+              { n: DAILY_CONNECTIONS, label: "port-to-port connections" },
             ].map((s) => (
               <div key={s.label} style={{ textAlign: "center" }}>
                 <div style={{ fontFamily: "'Big Shoulders Display', sans-serif", fontWeight: 800, fontSize: 26, color: COLORS.seaDeep }}>{s.n}</div>
