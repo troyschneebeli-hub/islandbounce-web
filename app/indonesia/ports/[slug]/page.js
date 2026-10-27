@@ -11,6 +11,7 @@ import PlacePhoto from "@/components/PlacePhoto";
 import WaveDivider from "@/components/WaveDivider";
 import TwelveGoBookingWidget from "@/components/TwelveGoBookingWidget";
 import SeaConditionsBadge from "@/components/SeaConditionsBadge";
+import WhereToStay from "@/components/WhereToStay";
 
 export const dynamicParams = false;
 
@@ -187,6 +188,8 @@ export default function PortPage({ params }) {
             <h2 style={h2}>Sea conditions at {name} right now</h2>
             <SeaConditionsBadge lat={port.lat} lng={port.lng} />
           </section>
+
+          <WhereToStay places={[port.name]} />
 
           <section style={{ marginBottom: 32 }}>
             <h2 style={h2}>Other ports</h2>

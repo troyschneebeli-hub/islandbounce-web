@@ -38,6 +38,9 @@ Next.js 14 (app router) ferry-comparison affiliate site on Vercel. Owner: Troy (
 - Photos go through Next's optimiser via `lib/img.js` (`optimized`, `srcSetFor`) on the plain `<img>` tags (PlacePhoto, HeroBand, RegionCard, PhotoStrip, PortsExplorer): ~75-80% smaller WebP on phones. Pass `sizes` for small slots.
 - Fonts are self-hosted: `app/fonts.css` + `public/fonts/*.woff2` (Latin subset, same family names as the old Google Fonts link, Big Shoulders and Inter are variable files). No request to fonts.googleapis.com.
 
+## Where to stay (28 Oct 2026)
+- `data/stays.js` (STAYS: area tips per island + Sanur/Padang Bai, `links` for Agoda/Hostelworld, `picks`) rendered by `components/WhereToStay.js` on port pages and on route pages that end on an island (`staysForRoute`). Booking.com search links come from `buildStayLink` (`lib/affiliateLinks.js`); set `NEXT_PUBLIC_BOOKING_AID` in Vercel once approved. Agoda/Hostelworld: paste the full link from the program's own link tool into `links` (we never guess their URL formats). `picks` only for places we've actually stayed. Affiliate links are rel="sponsored"; the commission note shows only when one is live.
+
 ## Planner UI
 - `components/FindPortMap.js`: port cards with `DepartureList` (Confirmed groups first, then "Typical, check live times"; chips link to booking page). `lib/portDepartures.js` groups sailings per operator and kind.
 - `components/RouteTimetable.js`: route page table (Departs, Operator, From (1 adult), Arrives (duration), Book; rows carry `data-sailing-id`).
