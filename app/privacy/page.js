@@ -17,7 +17,7 @@ export default function PrivacyPage() {
       <h1 style={{ fontFamily: "'Big Shoulders Display', sans-serif", fontWeight: 800, fontSize: 32, color: COLORS.sea, marginBottom: 4 }}>
         Privacy Policy
       </h1>
-      <p style={{ ...p, opacity: 0.6, fontSize: 13 }}>Last updated 7 October 2026</p>
+      <p style={{ ...p, opacity: 0.6, fontSize: 13 }}>Last updated 28 October 2026</p>
 
       <p style={p}>
         IslandBounce is operated by ClankINC, an Australian partnership. This page explains what information the site
@@ -49,10 +49,11 @@ export default function PrivacyPage() {
 
       <h2 style={h2}>Cookies and third parties</h2>
       <p style={p}>
-        IslandBounce doesn&apos;t set advertising cookies. Some third-party services we use or link to may set their own: Google
-        Maps (maps and address suggestions) and the booking platforms you click through to, such as 12Go. They have their
-        own privacy policies, and we don&apos;t control them. Booking links may carry a tracking code so the platform knows the
-        visit came from us.
+        IslandBounce doesn&apos;t set advertising cookies itself. Some third-party services we use or link to may set their own:
+        Google Maps (maps and address suggestions), the booking platforms you click through to, such as 12Go, and
+        Travelpayouts, an affiliate network whose script on our pages turns links to some travel brands (tours, eSIMs,
+        insurance) into affiliate links and records when you click one. They have their own privacy policies, and we
+        don&apos;t control them. Booking links may carry a tracking code so the platform knows the visit came from us.
       </p>
 
       <h2 style={h2}>Bookings and affiliate links</h2>
@@ -65,7 +66,7 @@ export default function PrivacyPage() {
       <h2 style={h2}>Who we share information with</h2>
       <p style={p}>
         We don&apos;t sell personal information. We use service providers to run the site: Vercel (hosting and analytics), Google
-        (maps and our email), and Open-Meteo (sea conditions, which only receives port locations, not visitor information).
+        (maps and our email), Travelpayouts (affiliate links), and Open-Meteo (sea conditions, which only receives port locations, not visitor information).
       </p>
 
       <h2 style={h2}>How long we keep it</h2>
