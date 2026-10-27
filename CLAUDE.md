@@ -46,4 +46,5 @@ Next.js 14 (app router) ferry-comparison affiliate site on Vercel. Owner: Troy (
 - A scraper mis-click once added a trip to a cart on the booking site. Never click trip cards or Book now when capturing.
 - The repo lives in OneDrive, which breaks `next dev` (EINVAL readlink on `.next`). Use `npm run build` then `npm start` locally.
 - The in-app browser can't load Google Maps on localhost, so check the planner's port cards on a Vercel preview.
+- 27 Oct 2026: Troy asked 12Go (partner team) for written approval of the nightly scan, and about the Timetable Service (operator names, an HTTP endpoint), a partner data feed, and trip-level links. Waiting on their reply; when it comes, set the scanner to their conditions, uncomment the cron and re-seed the window.
 - Troy-side: resubmit sitemap with full URL, follow-up email to 12Go about deep links and slugs, add `www` to Google Maps key referrers, Vercel Pro.
