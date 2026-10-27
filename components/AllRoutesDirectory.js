@@ -75,7 +75,10 @@ export default function AllRoutesDirectory() {
                     )}
                     <span style={{ display: "flex", gap: 8, flexShrink: 0 }}>
                       {page && (
-                        <Link href={`/indonesia/routes/${page.slug}`} style={{ color: COLORS.sea, fontWeight: 600, fontSize: 13 }}>
+                        <Link
+                          href={`/indonesia/routes/${page.slug}`}
+                          style={{ border: `1.5px solid ${COLORS.sea}`, color: COLORS.sea, background: "white", fontWeight: 700, fontSize: 12.5, padding: "4px 11px", borderRadius: 999, textDecoration: "none" }}
+                        >
                           Times
                         </Link>
                       )}
