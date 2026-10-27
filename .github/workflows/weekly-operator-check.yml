@@ -1,0 +1,62 @@
+name: Weekly operator timetable check
+
+# Monday 10:00 Bali (02:00 UTC). Reads each operator's own timetable page once (scripts/weekly/operator-pages.json,
+# read-only, honest user agent, robots.txt respected) and compares it with last week's reading and with
+# data/operator-sailings.json. Emails (an issue that @mentions the owner) only when a timetable changed, one of our
+# listed times disappeared from an operator's page, or a page couldn't be read. It never edits the operator list:
+# the report says what to update.
+on:
+  schedule:
+    - cron: '0 2 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+  actions: read   # to download last week's snapshot artifact
+
+concurrency: operator-check
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      GH_TOKEN: ${{ github.token }}
+      REPO: ${{ github.repository }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Get last week's snapshot
+        run: |
+          mkdir -p prev
+          ID=$(gh api "repos/$REPO/actions/artifacts?name=operator-snapshot&per_page=20" --jq '[.artifacts[] | select(.expired | not)][0].id // empty')
+          if [ -n "$ID" ]; then
+            curl -sSL -H "Authorization: Bearer $GH_TOKEN" "https://api.github.com/repos/$REPO/actions/artifacts/$ID/zip" -o prev.zip
+            unzip -o -q prev.zip -d prev
+          else
+            echo "No earlier snapshot: this run is the starting point"
+          fi
+
+      - name: Read the operators' timetable pages (read-only)
+        run: node scripts/weekly/operator_watch.mjs --prev prev --out snapshot --report "$RUNNER_TEMP/report.md" --flags "$RUNNER_TEMP/flags.json" | tee -a "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: operator-snapshot
+          path: snapshot/operator-snapshot.json
+          retention-days: 90
+
+      - name: Email if something changed
+        run: |
+          if [ "$(jq -r .notable "$RUNNER_TEMP/flags.json")" != true ]; then echo "Nothing changed on the operator pages this week: no email"; exit 0; fi
+          C=$(jq -r .changed "$RUNNER_TEMP/flags.json"); M=$(jq -r .newlyMissing "$RUNNER_TEMP/flags.json"); F=$(jq -r .failed "$RUNNER_TEMP/flags.json")
+          { echo "@${{ github.repository_owner }} this week's check of the operators' own timetable pages."; echo; cat "$RUNNER_TEMP/report.md"; echo; echo "Run: ${{ github.server_url }}/$REPO/actions/runs/${{ github.run_id }}"; } > "$RUNNER_TEMP/issue.md"
+          gh issue create --repo "$REPO" --title "Operator timetables $(date -u +%d\ %b): $C changed, $M to check, $F unreadable" --body-file "$RUNNER_TEMP/issue.md"
