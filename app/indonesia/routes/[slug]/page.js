@@ -14,6 +14,8 @@ import WaveDivider from "@/components/WaveDivider";
 import RouteTimetable from "@/components/RouteTimetable";
 import { RouteBookingProvider, BookingBox } from "@/components/RouteBooking";
 import SeaConditionsBadge from "@/components/SeaConditionsBadge";
+import WhereToStay from "@/components/WhereToStay";
+import { staysForRoute } from "@/data/stays";
 
 // Re-render every 6 hours so "which season is running today" stays correct
 // without a redeploy.
@@ -385,6 +387,9 @@ export default function RoutePage({ params }) {
               )}
             </section>
           ))}
+
+          {/* Islands this route ends on; routes back to Bali show nothing. */}
+          <WhereToStay places={staysForRoute(route)} title={staysForRoute(route).length > 1 ? "Where to stay when you arrive" : undefined} />
 
           {faqs.length > 0 && (
             <section style={{ marginBottom: 44 }}>
