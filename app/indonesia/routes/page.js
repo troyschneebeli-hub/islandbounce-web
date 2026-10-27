@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { COLORS } from "@/lib/theme";
 import WaveDivider from "@/components/WaveDivider";
 import AllRoutesDirectory from "@/components/AllRoutesDirectory";
@@ -29,6 +30,12 @@ export default function RoutesIndex() {
       <div style={{ background: "white" }}>
         <div style={{ maxWidth: 900, margin: "0 auto", padding: "0 20px 56px" }}>
           <AllRoutesDirectory />
+          <p style={{ marginTop: 28, fontSize: 14, color: COLORS.ink }}>
+            Comparing companies?{" "}
+            <Link href="/indonesia/operators" style={{ color: COLORS.sea, fontWeight: 700 }}>See every operator&apos;s schedule</Link>.
+            {" "}Not sure which port?{" "}
+            <Link href="/indonesia/guides" style={{ color: COLORS.sea, fontWeight: 700 }}>Read the planning guides</Link>.
+          </p>
         </div>
       </div>
     </div>

@@ -69,9 +69,9 @@ export const ROUTE_PAGES = {
     region: "Gili Islands",
     name: "Gili Trawangan to Bali",
     h1: "Gili Trawangan to Bali by fast boat",
-    metaTitle: "Gili Trawangan to Bali Fast Boat: Times & Sea Conditions",
+    metaTitle: "Gili Trawangan (Gili T) to Bali Fast Boat: Times & Fares",
     metaDescription:
-      "Gili Trawangan to Bali fast boat departures, crossing times and operators, plus live sea conditions. Compare boats side by side and book on 12Go.",
+      "Gili Trawangan (Gili T) to Bali fast boat departures, crossing times and operators, plus live sea conditions. Compare boats side by side and book on 12Go.",
     blurb: "Departures back to Bali from Gili Trawangan, with crossing times and live sea conditions.",
     fromLabel: "Gili Trawangan",
     toLabel: "Bali",
@@ -126,7 +126,7 @@ export const ROUTE_PAGES = {
     region: "Gili Islands",
     name: "Bali to the Gili Islands",
     h1: "Bali to the Gili Islands by fast boat",
-    metaTitle: "Bali to Gili Islands Fast Boat: Times & Sea Conditions",
+    metaTitle: "Bali to Gili Islands Fast Boat & Ferry: Times & Fares",
     metaDescription:
       "Bali to Gili Trawangan, Gili Air and Gili Meno fast boat times and operators from Padang Bai, Sanur and Serangan, with sea conditions. Compare and book.",
     blurb: "Every fast boat from Bali to the Gilis in one table, with operators, crossing times and live sea conditions.",
@@ -189,14 +189,84 @@ export const ROUTE_PAGES = {
     ],
   },
 
+  "gili-islands-to-bali": {
+    slug: "gili-islands-to-bali",
+    region: "Gili Islands",
+    name: "Gili Islands to Bali",
+    h1: "Gili Islands to Bali by fast boat",
+    metaTitle: "Gili Islands to Bali Fast Boat & Ferry: Times & Fares",
+    metaDescription:
+      "Every fast boat from Gili Trawangan (Gili T), Gili Air and Gili Meno back to Bali: Padang Bai, Sanur and the other ports, with times, crossing times and fares. Compare and book.",
+    blurb: "Every boat back to Bali from all three Gilis in one table, with crossing times and fares.",
+    fromLabel: "Gili Islands",
+    toLabel: "Bali",
+    fromPorts: ["Gili Trawangan", "Gili Air", "Gili Meno"],
+    toPorts: BALI_MAINLAND,
+    conditionPorts: ["Gili Trawangan", "Padang Bai", "Sanur"],
+    bookFrom: "Gili Trawangan",
+    bookTo: "Padang Bai",
+    related: ["bali-to-gili-islands", "gili-islands-to-nusa-penida", "lombok-to-bali"],
+    ourPick: "",
+    lead: (c) =>
+      `Fast boats run from ${joinList(c.fromNames)} back to ${joinList(c.toNames)}. We list ${plural(c.count, "daily departure")} with ${joinOps(c.operators)}, ` +
+      `leaving between ${c.earliest} and ${c.latest}.` +
+      CONFIRMED_LINE(c),
+    sections: [
+      {
+        heading: "Padang Bai or Sanur?",
+        paragraphs: [
+          "Padang Bai, on Bali's east coast, usually has the shortest crossing from the Gilis, and it's the natural landing point if you're heading to Ubud or east Bali. The drive from there to Kuta, Seminyak or the airport is about 1 to 1.5 hours, and longer to Canggu or Uluwatu.",
+          "Sanur is in south Bali, about 25 minutes from Kuta and close to the airport. The crossing is longer, and some boats call at other islands on the way, but you save most of the drive.",
+          "Put where you're going in Bali into the Trip Planner to weigh the drive against the boat time.",
+        ],
+        cta: PLANNER_CTA(),
+      },
+      {
+        heading: "Which island do you leave from?",
+        paragraphs: [
+          "Gili Trawangan has the most boats back to Bali, Gili Air is close behind, and Gili Meno has the fewest. The Gilis are a short hop apart, so if nothing suits your day from your island, check the others too.",
+          "None of the Gilis has cars or motorbikes, so allow time to reach the harbour on foot, by bicycle or by horse cart (cidomo).",
+        ],
+      },
+      {
+        heading: "Flying out the same day?",
+        paragraphs: [
+          "Rough seas can delay or cancel boats, and the drive from the Bali harbour to the airport takes time. Leave a generous buffer, or stay your last night in Bali, rather than booking a tight same-day flight.",
+          CHECKIN_TEXT,
+        ],
+      },
+    ],
+    faqs: (c) => [
+      {
+        q: "How long is the fast boat from the Gili Islands to Bali?",
+        a: `Crossing times are: ${c.durations}. Boats that call at other islands on the way take longer, so compare the Arrives column.`,
+      },
+      {
+        q: "What time is the last boat from the Gilis to Bali?",
+        a: `The latest daily departure we list is ${c.latest}, and the earliest is ${c.earliest}. Timetables change, so confirm on the booking page for your date.`,
+      },
+      {
+        q: "Which operators run boats from the Gilis to Bali?",
+        a: `We list ${joinOps(c.operators, 9)}.`,
+      },
+      CONFIRMED_FAQ("Gili Islands", "Bali", c),
+      {
+        q: "Is there a ferry from the Gilis to Bali?",
+        a: "Yes, but most travellers take a fast boat straight from the Gilis, which is what this page lists. The slow public ferry runs between Lombok's Lembar harbour and Padang Bai, so from the Gilis you'd first have to cross to Lombok and travel to Lembar.",
+      },
+      CANCEL_FAQ("the Gili Islands", "Bali"),
+      BOOK_FAQ,
+    ],
+  },
+
   "bali-to-lombok-ferry": {
     slug: "bali-to-lombok-ferry",
     region: "Lombok",
     name: "Bali to Lombok",
     h1: "Bali to Lombok by fast boat",
-    metaTitle: "Bali to Lombok Fast Boat to Bangsal: Operators & Times",
+    metaTitle: "Bali to Lombok Ferry & Fast Boat to Bangsal: Times & Fares",
     metaDescription:
-      "Bali to Lombok by fast boat to Bangsal: which operators run it, crossing times and how to book. Compare options on 12Go before you travel.",
+      "Bali to Lombok by fast boat or ferry to Bangsal: which operators run it, crossing times and how to book. Compare options on 12Go before you travel.",
     blurb: "Fast boats from Bali to Bangsal on Lombok, with operators compared.",
     fromLabel: "Bali",
     toLabel: "Lombok",
@@ -245,7 +315,7 @@ export const ROUTE_PAGES = {
     region: "Gili Islands",
     name: "Gili Air to Bali",
     h1: "Gili Air to Bali by fast boat",
-    metaTitle: "Gili Air to Bali Fast Boat: Times & Sea Conditions",
+    metaTitle: "Gili Air to Bali Fast Boat & Ferry: Times & Fares",
     metaDescription:
       "Gili Air to Bali fast boat departures, crossing times and operators, with sea conditions for the crossing. Compare boats and book on 12Go.",
     blurb: "Departures from Gili Air back to Bali, with crossing times and live sea conditions.",
@@ -305,7 +375,7 @@ export const ROUTE_PAGES = {
     region: "Nusa Islands",
     name: "Nusa Penida to the Gili Islands",
     h1: "Nusa Penida to the Gili Islands by fast boat",
-    metaTitle: "Nusa Penida to Gili Islands Fast Boat: Times & Operators",
+    metaTitle: "Nusa Penida to Gili Islands Fast Boat: Gili T, Air & Meno",
     metaDescription:
       "Nusa Penida to Gili Trawangan, Gili Air and Gili Meno by fast boat: departures, crossing times and operators. Compare and book on 12Go.",
     blurb: "Fast boats from Nusa Penida to the Gilis, with operators, crossing times and sea conditions.",
@@ -427,9 +497,9 @@ export const ROUTE_PAGES = {
     region: "Gili Islands",
     name: "Padang Bai to Gili Trawangan",
     h1: "Padang Bai to Gili Trawangan by fast boat",
-    metaTitle: "Padang Bai to Gili Trawangan Fast Boat: Times & Operators",
+    metaTitle: "Padang Bai to Gili Trawangan (Gili T) Fast Boat Times",
     metaDescription:
-      "Padang Bai to Gili Trawangan fast boat times, crossing time and operators, with sea conditions for the crossing. Compare boats and book on 12Go.",
+      "Padang Bai to Gili Trawangan (Gili T) fast boat times, crossing time and operators, with sea conditions for the crossing. Compare boats and book on 12Go.",
     blurb: "The busiest route to the Gilis, with the most operators, departures and sea conditions.",
     fromLabel: "Padang Bai",
     toLabel: "Gili Trawangan",
@@ -448,7 +518,7 @@ export const ROUTE_PAGES = {
         heading: "Why most people choose Padang Bai",
         paragraphs: [
           "Padang Bai is the busiest departure port for the Gilis, with more operators and more departures than anywhere else in Bali, and Gili Trawangan is the most-served island on the other side. That means more choice of time, boat and price.",
-          "The boat crossing from Padang Bai is shorter than from the southern ports, but the drive to the harbour is not. It is about 45 minutes from Kuta or Denpasar and 1.5 to 2 hours from Canggu or Uluwatu.",
+          "The boat crossing from Padang Bai is shorter than from the southern ports, but the drive to the harbour is not. It is about 1 to 1.5 hours from Kuta or Denpasar and 1.5 to 2 hours from Canggu or Uluwatu.",
         ],
       },
       {
@@ -524,7 +594,7 @@ export const ROUTE_PAGES = {
       {
         heading: "Getting to Padang Bai",
         paragraphs: [
-          "Padang Bai is about 45 minutes from Kuta or Denpasar and 1.5 to 2 hours from Canggu or Uluwatu. It has the most operators of any Bali port, which gives you a good spread of departure times.",
+          "Padang Bai is about 1 to 1.5 hours from Kuta or Denpasar and 1.5 to 2 hours from Canggu or Uluwatu. It has the most operators of any Bali port, which gives you a good spread of departure times.",
           CHECKIN_TEXT,
         ],
         cta: PLANNER_CTA("Gili Air"),
@@ -556,9 +626,9 @@ export const ROUTE_PAGES = {
     region: "Gili Islands",
     name: "Sanur to Gili Trawangan",
     h1: "Sanur to Gili Trawangan by fast boat",
-    metaTitle: "Sanur to Gili Trawangan Fast Boat: Times & Operators",
+    metaTitle: "Sanur to Gili Trawangan (Gili T) Fast Boat: Times & Fares",
     metaDescription:
-      "Sanur to Gili Trawangan fast boat times, crossing time and operators, with sea conditions. Compare direct boats and stops on the way, then book on 12Go.",
+      "Sanur to Gili Trawangan (Gili T) fast boat times, crossing time and operators, with sea conditions. Compare direct boats and stops on the way, then book on 12Go.",
     blurb: "A shorter drive than Padang Bai: fast boats from Sanur to Gili Trawangan.",
     fromLabel: "Sanur",
     toLabel: "Gili Trawangan",
@@ -675,7 +745,7 @@ export const ROUTE_PAGES = {
     region: "Nusa Islands",
     name: "Sanur to Nusa Penida",
     h1: "Sanur to Nusa Penida by fast boat",
-    metaTitle: "Sanur to Nusa Penida Fast Boat: Times & Operators",
+    metaTitle: "Sanur to Nusa Penida Fast Boat & Ferry: Times & Fares",
     metaDescription:
       "Sanur to Nusa Penida fast boat times, crossing time and operators, with confirmed departures and live sea conditions. Compare boats and book on 12Go.",
     blurb: "The main crossing from south Bali to Nusa Penida, with confirmed departures and crossing times.",
@@ -792,7 +862,7 @@ export const ROUTE_PAGES = {
     region: "Nusa Islands",
     name: "Bali to Nusa Penida",
     h1: "Bali to Nusa Penida by fast boat",
-    metaTitle: "Bali to Nusa Penida Fast Boat: Times From Every Port",
+    metaTitle: "Nusa Penida Fast Boat from Bali: Times & Fares, Every Port",
     metaDescription:
       "Fast boats from Bali to Nusa Penida from Sanur, Padang Bai, Serangan and Benoa: departures, crossing times and operators, with sea conditions. Compare and book.",
     blurb: "Every Bali port with boats to Nusa Penida in one table, with confirmed departures.",
@@ -1110,7 +1180,7 @@ export const ROUTE_PAGES = {
     region: "Lombok",
     name: "Lombok to Bali",
     h1: "Lombok to Bali by fast boat",
-    metaTitle: "Lombok to Bali Fast Boat From Bangsal: Times & Operators",
+    metaTitle: "Lombok to Bali Ferry & Fast Boat from Bangsal: Times",
     metaDescription:
       "Lombok to Bali by fast boat from Bangsal: departures, crossing times and operators, with confirmed departures and sea conditions. Compare and book on 12Go.",
     blurb: "Fast boats from Bangsal on Lombok back to Bali, with confirmed departures.",
@@ -1321,9 +1391,9 @@ const NO_VEHICLES = "has no cars or motorbikes, so you get around on foot, by bi
 const PORT_NOTES = {
   "Padang Bai": {
     leaving:
-      "Padang Bai is on Bali's east coast, about 45 minutes from Kuta or Denpasar and 1.5 to 2 hours from Canggu or Uluwatu. It's a working ferry port as well as a fast boat harbour, so give yourself time to find the right pier.",
+      "Padang Bai is on Bali's east coast, about 1 to 1.5 hours from Kuta or Denpasar and 1.5 to 2 hours from Canggu or Uluwatu. It's a working ferry port as well as a fast boat harbour, so give yourself time to find the right pier.",
     arriving:
-      "Padang Bai is on Bali's east coast: about 45 minutes by road to Kuta or Denpasar and 1.5 to 2 hours to Canggu or Uluwatu. If you have a flight the same day, leave a generous buffer for the drive.",
+      "Padang Bai is on Bali's east coast: about 1 to 1.5 hours by road to Kuta or Denpasar and 1.5 to 2 hours to Canggu or Uluwatu. If you have a flight the same day, leave a generous buffer for the drive.",
   },
   Sanur: {
     leaving: "Sanur harbour is about 25 minutes from Kuta, 40 to 50 minutes from Canggu and 45 minutes to an hour from Ubud. Allow extra time in busy traffic.",
@@ -1358,7 +1428,7 @@ const SPECIFIC = [
     slug: "gili-trawangan-to-padang-bai", from: "Gili Trawangan", to: "Padang Bai",
     about: [
       "Padang Bai is the classic crossing back to Bali from Gili Trawangan, and usually the shortest one by sea.",
-      "The catch is the drive on the Bali side: from Padang Bai it's about 45 minutes to Kuta or Denpasar and up to 2 hours to Canggu or Uluwatu. Good for Ubud and the east, less so for a same-day flight.",
+      "The catch is the drive on the Bali side: from Padang Bai it's about 1 to 1.5 hours to Kuta or Denpasar and up to 2 hours to Canggu or Uluwatu. Good for Ubud and the east, less so for a same-day flight.",
     ],
   },
   {
@@ -1460,9 +1530,9 @@ function specificRoute({ slug, from, to, name, about }) {
     region: [from, to].some((p) => p.startsWith("Bangsal")) ? "Lombok" : [from, to].some((p) => p.startsWith("Nusa")) ? "Nusa Islands" : "Gili Islands",
     name: title,
     h1: `${to === "Bangsal (Lombok)" ? `${f} to Bangsal, Lombok` : from === "Bangsal (Lombok)" ? `Bangsal, Lombok to ${t}` : title} by fast boat`,
-    metaTitle: `${title} Fast Boat: Times & Operators`,
+    metaTitle: `${title} Fast Boat: Times & Fares`,
     metaDescription:
-      `${title} fast boat times${from.startsWith("Bangsal") || to.startsWith("Bangsal") ? " (Bangsal harbour)" : ""}, crossing times and operators, ` +
+      `${title.replace("Gili Trawangan", "Gili Trawangan (Gili T)")} fast boat times${from.startsWith("Bangsal") || to.startsWith("Bangsal") ? " (Bangsal harbour)" : ""}, crossing times and operators, ` +
       "with sea conditions for the crossing. Compare daily departures side by side and book on 12Go.",
     blurb: about[0],
     fromLabel: f,
@@ -1512,11 +1582,12 @@ export function groupPagesFor(from, to) {
     .sort((a, b) => a.fromPorts.length * a.toPorts.length - b.fromPorts.length * b.toPorts.length);
 }
 
-// One-pair pages inside a group page, e.g. "Bali to the Gili Islands" -> "Padang Bai to Gili Air", ...
+// Narrower pages inside a group page, e.g. "Gili Islands to Bali" -> "Gili Air to Bali", "Gili Air to Padang Bai", ...
+const size = (r) => r.fromPorts.length * r.toPorts.length;
 export function specificPagesIn(route) {
-  return Object.values(ROUTE_PAGES).filter(
-    (r) => r !== route && r.fromPorts.length === 1 && r.toPorts.length === 1 && route.fromPorts.includes(r.fromPorts[0]) && route.toPorts.includes(r.toPorts[0])
-  );
+  return Object.values(ROUTE_PAGES)
+    .filter((r) => r !== route && size(r) < size(route) && r.fromPorts.every((p) => route.fromPorts.includes(p)) && r.toPorts.every((p) => route.toPorts.includes(p)))
+    .sort((a, b) => size(b) - size(a));
 }
 
 for (const p of SPECIFIC) {
