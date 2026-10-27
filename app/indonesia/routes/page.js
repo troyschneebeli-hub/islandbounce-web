@@ -1,6 +1,4 @@
-import Link from "next/link";
 import { COLORS } from "@/lib/theme";
-import { ROUTE_PAGES, ROUTE_SLUGS } from "@/data/routePages";
 import WaveDivider from "@/components/WaveDivider";
 import AllRoutesDirectory from "@/components/AllRoutesDirectory";
 
@@ -12,8 +10,6 @@ export const metadata = {
 };
 
 export default function RoutesIndex() {
-  const routes = ROUTE_SLUGS.map((s) => ROUTE_PAGES[s]);
-
   return (
     <div>
       <section style={{ background: `linear-gradient(180deg, ${COLORS.skyLight} 0%, ${COLORS.sky} 100%)`, padding: "44px 20px 0" }}>
@@ -33,22 +29,6 @@ export default function RoutesIndex() {
       <div style={{ background: "white" }}>
         <div style={{ maxWidth: 900, margin: "0 auto", padding: "0 20px 56px" }}>
           <AllRoutesDirectory />
-
-          {/* Plain links to every route guide, including the ones that cover several ports at once (e.g. "Bali to the
-              Gili Islands"), which no single row above links to. */}
-          <section style={{ marginTop: 36 }}>
-            <h2 style={{ fontFamily: "'Big Shoulders Display', sans-serif", fontWeight: 700, fontSize: 20, color: COLORS.sea, marginBottom: 8 }}>Route guides</h2>
-            <p style={{ fontSize: 14, lineHeight: 1.9, color: COLORS.ink }}>
-              {routes.map((r, i) => (
-                <span key={r.slug}>
-                  <Link href={`/indonesia/routes/${r.slug}`} style={{ color: COLORS.sea, fontWeight: 600, textDecoration: "none", borderBottom: `1px solid ${COLORS.sea}44` }}>
-                    {r.name}
-                  </Link>
-                  {i < routes.length - 1 ? " · " : ""}
-                </span>
-              ))}
-            </p>
-          </section>
         </div>
       </div>
     </div>
