@@ -1,11 +1,13 @@
 // Weekly check of the live site's pages and booking links.
-// Usage: node scripts/weekly/check_links.mjs [out.md]      (SITE_URL overrides https://islandbouncetravel.com)
-// 1. Every page in the sitemap loads, and route pages still show their timetable rows.
-// 2. Every booking link on those pages carries our affiliate ID (z) and sub_id.
-// 3. Each distinct booking route opens a real 12Go route page with the affiliate ID kept (in the URL or a cookie).
-// Read-only: it only opens pages and reads them. It NEVER clicks a trip, "Book now" or anything that adds to a cart.
-import { chromium } from "playwright";
+// Usage: node scripts/weekly/check_links.mjs [out.md]      (SITE_URL overrides https://www.islandbouncetravel.com)
+// 1. Every page in the sitemap loads, and route pages still show their timetable rows (or the "Check live times" box).
+// 2. Every booking link on those pages carries our affiliate ID (z) and sub_id, and has the shape the booking site
+//    expects: our booking host, /en/travel/<from>/<to> with known port slugs, and sane date / travellers values.
+// It only reads OUR site. It doesn't open the booking site (12Go): their terms (12go.asia/en/terms §9.3c) don't
+// allow automated access without written approval (decided 27 Oct 2026).
 import fs from "node:fs";
+import path from "node:path";
+import { pathToFileURL } from "node:url";
 
 const SITE = (process.env.SITE_URL || "https://www.islandbouncetravel.com").replace(/\/$/, "");
 const Z = "17069158", SUB_ID = "islandbounce-web";
@@ -40,63 +42,40 @@ for (const [link, page] of links) {
   else if (q.get("sub_id") !== SUB_ID) warnings.push(`Booking link without sub_id=${SUB_ID}: ${link} on ${page}`);
 }
 
-// 3: open one link per booking route in a real browser (12Go builds its pages with JavaScript).
-const byRoute = new Map();
+// 3: link shape, checked on our side only. The port slugs come from data/ports.js through the same slug() the site uses.
+const root = path.join(path.dirname(new URL(import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, "$1")), "..", "..");
+const { BALI_PORTS, ISLAND_PORTS } = await import(pathToFileURL(path.join(root, "data", "ports.js")).href);
+const { slug } = await import(pathToFileURL(path.join(root, "lib", "affiliateLinks.js")).href);
+const SLUGS = new Set([...BALI_PORTS, ...ISLAND_PORTS].map((p) => slug(p.name)));
+const routes = new Set();
 for (const [link, page] of links) {
   const u = new URL(link);
-  if (!/^\/en\/travel\/[^/]+\/[^/]+/.test(u.pathname)) continue; // home page / search links: checked for z above only
-  const k = u.host + u.pathname;
-  if (!byRoute.has(k) || u.searchParams.has("people")) byRoute.set(k, { link, page }); // prefer a link with travellers
-}
-const browser = await chromium.launch();
-let opened = 0;
-const toOpen = [...byRoute.values()].slice(0, process.env.LINK_LIMIT ? +process.env.LINK_LIMIT : undefined); // LINK_LIMIT=3 for a quick try
-for (const { link, page } of toOpen) {
-  const ctx = await browser.newContext({ viewport: { width: 1400, height: 900 } }); // fresh cookies per link
-  const tab = await ctx.newPage();
-  try {
-    const res = await tab.goto(link, { waitUntil: "domcontentloaded", timeout: 60000 });
-    const status = res ? res.status() : 0;
-    // 12Go loads the page a second time (it strips z / sub_id from the address), so wait for that to settle.
-    await tab.waitForLoadState("load", { timeout: 45000 }).catch(() => {});
-    await tab.waitForSelector(".trip-cta, .trips-container", { timeout: 25000 }).catch(() => {});
-    await tab.waitForTimeout(1500);
-    const final = new URL(tab.url());
-    // 12Go keeps the affiliate ID in cookies named z and sub_id (seen 22 Oct 2026). Other cookies (referer,
-    // landing) hold the whole link, so only those two names count.
-    const cookie = Object.fromEntries((await ctx.cookies()).map((c) => [c.name, decodeURIComponent(c.value)]));
-    const zKept = final.searchParams.get("z") === Z || cookie.z === Z;
-    const subKept = final.searchParams.get("sub_id") === SUB_ID || cookie.sub_id === SUB_ID;
-    const route = final.pathname.match(/^\/en\/travel\/([^/]+)\/([^/]+)/);
-    const asked = new URL(link);
-    const trips = await tab.locator(".trip-card").count().catch(() => 0);
-    opened++;
-    if (status >= 400) problems.push(`Booking page returns HTTP ${status}: ${link} (from ${page})`);
-    else if (!route) problems.push(`Booking link doesn't open a route page (lands on ${final.href}): ${link} (from ${page})`);
-    else {
-      if (!zKept) problems.push(`Affiliate ID lost after opening ${link}: no z=${Z} in the address or the z cookie (cookie: ${cookie.z || "none"})`);
-      else if (!subKept) warnings.push(`sub_id lost after opening ${link} (cookie: ${cookie.sub_id || "none"})`);
-      if (final.pathname !== asked.pathname) {
-        const lost = ["people", "adults", "date", "date2"].filter((p) => asked.searchParams.has(p) && !final.searchParams.has(p));
-        notes.push(`${asked.pathname} redirects to ${final.pathname}${lost.length ? ` and drops ${lost.join(", ")}` : ""}`);
-      }
-      if (!trips) warnings.push(`Booking page shows no trips: ${link} (from ${page})`);
-    }
-  } catch (e) {
-    problems.push(`Booking page didn't load: ${link} (${shortError(e)})`);
+  if (u.host !== "booking.islandbouncetravel.com") warnings.push(`Booking link goes to ${u.host}, not our booking site: ${link} on ${page}`);
+  const m = u.pathname.match(/^\/en\/travel\/([^/]+)\/([^/]+)\/?$/);
+  if (!m) { if (u.pathname !== "/" && u.pathname !== "") warnings.push(`Booking link isn't a route link (/en/travel/<from>/<to>): ${link} on ${page}`); continue; }
+  routes.add(`${m[1]}>${m[2]}`);
+  for (const s of [m[1], m[2]]) if (!SLUGS.has(s)) problems.push(`Booking link uses an unknown port "${s}": ${link} on ${page}`);
+  if (m[1] === m[2]) problems.push(`Booking link goes from a port to itself: ${link} on ${page}`);
+  const q = u.searchParams;
+  for (const d of ["date", "date2"]) if (q.has(d) && !/^\d{4}-\d\d-\d\d$/.test(q.get(d))) problems.push(`Booking link has a bad ${d} "${q.get(d)}": ${link} on ${page}`);
+  if (q.has("date2") && q.has("date") && q.get("date2") < q.get("date")) problems.push(`Booking link returns before it departs: ${link} on ${page}`);
+  if (q.has("people") || q.has("adults")) {
+    const p = +q.get("people"), a = +q.get("adults");
+    if (!(p >= 1 && p <= 20) || p !== a) problems.push(`Booking link has travellers people=${q.get("people")} adults=${q.get("adults")}: ${link} on ${page}`);
   }
-  await ctx.close();
 }
-await browser.close();
+// Known redirect on the booking site (checked by hand 22 Oct 2026): benoa-nusa-dua -> tanjung-benoa-nusa-dua, which
+// keeps z and the date but drops the travellers.
+if ([...routes].some((r) => r.includes("benoa-nusa-dua"))) notes.push("Links to benoa-nusa-dua redirect to 12Go's tanjung-benoa-nusa-dua, which drops the travellers (known, checked by hand 22 Oct 2026)");
 
 const section = (title, rows) => (rows.length ? ["", `### ${title} (${rows.length})`, ...rows.map((r) => `- ${r}`)] : []);
 const report = [
   `## Booking link check: ${problems.length ? `${problems.length} problem(s)` : "all good"}`,
   "",
-  `Checked ${pages.length} pages on ${SITE}, ${links.size} booking links, and opened ${opened} of ${byRoute.size} booking routes.`,
+  `Checked ${pages.length} pages on ${SITE} and ${links.size} booking links (${routes.size} routes). The booking site itself isn't opened.`,
   ...section("Problems (fix these: they cost bookings or commission)", problems),
   ...section("Warnings", warnings),
-  ...section("Notes (redirects that work but could point straight at the final address; route pages on live times)", notes),
+  ...section("Notes", notes),
   "",
 ].join("\n");
 console.log(report);
