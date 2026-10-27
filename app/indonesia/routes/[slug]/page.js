@@ -302,10 +302,8 @@ export default function RoutePage({ params }) {
               </div>
             )}
             <p style={{ ...para, fontSize: 13, opacity: 0.7 }}>
-              Daily departures you can book: each was on the booking page on at least 6 of the 7 days we checked (a boat that sells out
-              disappears for that day). Departures tagged Confirmed also match the operator&apos;s own timetable. Prices are the lowest fare
-              for 1 adult when {SAILINGS_CHECKED_TEXT}. Fares and times change, and this list may not include every boat on the route, so
-              confirm on the booking page when you book. Check in at the time on your ticket.
+              Boats on the booking page at least 6 days a week. Confirmed ones also match the operator&apos;s own timetable. Lowest adult
+              fares, {SAILINGS_CHECKED_TEXT}. Times change, so confirm when you book.
             </p>
             {stale && (
               <p style={{ ...para, fontSize: 13, background: "#FFF2CC", color: "#8A5A00", borderRadius: 8, padding: "8px 12px" }}>
