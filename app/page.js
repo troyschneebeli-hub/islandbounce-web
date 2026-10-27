@@ -3,7 +3,7 @@ import { COLORS } from "@/lib/theme";
 import { SAILINGS, SAILINGS_CHECKED_TEXT } from "@/data/sailings";
 import { ROUTE_PAGES, ROUTE_SLUGS } from "@/data/routePages";
 import { PORT_PHOTOS } from "@/data/portPhotos";
-import { selectSailings, summarize, fmtDuration, knownDurations } from "@/lib/timetable";
+import { selectSailings, summarize, fmtDuration, knownDurations, countDepartures } from "@/lib/timetable";
 import { ALL_PORTS, PORT_PAGE_SLUGS, portShortName, portSlug } from "@/lib/portPages";
 import WaveDivider from "@/components/WaveDivider";
 import HeroBand from "@/components/HeroBand";
@@ -74,7 +74,7 @@ export default function HomePage() {
           className="flex flex-wrap justify-center gap-x-8 gap-y-2"
           style={{ maxWidth: 760, margin: "18px auto 0", paddingBottom: 26, fontSize: 13.5, color: COLORS.seaDeep }}
         >
-          <span><strong>{SAILINGS.length}</strong> daily departures</span>
+          <span><strong>{countDepartures(SAILINGS)}</strong> daily departures</span>
           <span><strong>{operators}</strong> operators</span>
           <span><strong>{routesWithBoats}</strong> route guides</span>
           <span style={{ opacity: 0.75 }}>Times {SAILINGS_CHECKED_TEXT}</span>

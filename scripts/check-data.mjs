@@ -27,7 +27,7 @@ const { SAILINGS, PLANNER_SAILINGS, SAILINGS_UPDATED } = await import("@/data/sa
 const { CONFIRMED_SCAN } = await import("@/data/confirmed");
 const { BALI_PORTS, ISLAND_PORTS } = await import("@/data/ports");
 const { ROUTE_PAGES, ROUTE_SLUGS } = await import("@/data/routePages");
-const { selectSailings, routeContext } = await import("@/lib/timetable");
+const { selectSailings, routeContext, countDepartures } = await import("@/lib/timetable");
 // daily-sailings.json (every bookable daily boat, from 24 Oct 2026); older data only has the confirmed daily file.
 const dailyFile = existsSync(join(ROOT, "data", "generated", "daily-sailings.json")) ? "daily-sailings.json" : "confirmed-daily-sailings.json";
 const daily = JSON.parse(readFileSync(join(ROOT, "data", "generated", dailyFile), "utf8"));
@@ -99,8 +99,10 @@ for (const slug of ROUTE_SLUGS) {
     check(rows.length === active.length, `route page ${slug}: renders ${rows.length} rows, expected ${active.length}`);
     for (const id of rows) check(listedIds.has(id), `route page ${slug}: renders ${id}, which is not a confirmed daily sailing`);
     if (active.length) {
-      check(new RegExp(`>${active.length}<!-- --> ?</div><div[^>]*>daily departures?<`).test(html) || html.includes(`>${active.length}</div><div`),
-        `route page ${slug}: summary count doesn't show ${active.length}`);
+      // The summary counts real departures (a boat calling at several destinations once), not table rows.
+      const n = countDepartures(active);
+      check(new RegExp(`>${n}<!-- --> ?</div><div[^>]*>daily departures?<`).test(html) || html.includes(`>${n}</div><div`),
+        `route page ${slug}: summary count doesn't show ${n}`);
     } else {
       check(html.includes(">Check live times<"), `route page ${slug}: has no daily sailings but no "Check live times" box`);
     }

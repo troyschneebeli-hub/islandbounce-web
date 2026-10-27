@@ -3,7 +3,7 @@
 // can never disagree with the route pages. Drive times are rough ranges in the same words the port and route pages use;
 // the Trip Planner gives the real figure for a hotel.
 import { SAILINGS } from "@/data/sailings";
-import { durationMins, fmtDuration, joinList, plural } from "@/lib/timetable";
+import { countDepartures, durationMins, fmtDuration, joinList, plural } from "@/lib/timetable";
 
 export const GILIS = ["Gili Trawangan", "Gili Air", "Gili Meno"];
 
@@ -15,7 +15,7 @@ export function boatStats(fromPorts, toPorts, sailings = SAILINGS) {
     const durs = list.map((s) => durationMins(s.departs, s.arrives)).filter((d) => d != null);
     const fares = list.map((s) => s.fareAUD ?? s.price).filter((p) => p != null);
     return {
-      count: list.length,
+      count: countDepartures(list),
       earliest: times[0] || null,
       latest: times[times.length - 1] || null,
       minDur: durs.length ? Math.min(...durs) : null,

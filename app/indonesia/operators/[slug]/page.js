@@ -154,7 +154,8 @@ export default function OperatorPage({ params }) {
               <h2 style={h2}>Every daily {name} departure</h2>
               <p style={{ ...para, fontSize: 13, opacity: 0.7 }}>
                 Boats on the booking page at least 6 days a week. Confirmed ones also match {name}&apos;s own timetable. Lowest adult fares,{" "}
-                {SAILINGS_CHECKED_TEXT}. Times change, so confirm when you book. Tap a route to compare every operator on it.
+                {SAILINGS_CHECKED_TEXT}. Times change, so confirm when you book. A boat that calls at several ports appears under each
+                destination. Tap a route to compare every operator on it.
               </p>
               <RouteTimetable groups={d.groups} hrefFor={routeHref} />
             </section>

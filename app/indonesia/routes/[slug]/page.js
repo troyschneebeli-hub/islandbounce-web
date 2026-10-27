@@ -314,6 +314,7 @@ export default function RoutePage({ params }) {
             <p style={{ ...para, fontSize: 13, opacity: 0.7 }}>
               Boats on the booking page at least 6 days a week. Confirmed ones also match the operator&apos;s own timetable. Lowest adult
               fares, {SAILINGS_CHECKED_TEXT}. Times change, so confirm when you book.
+              {summary.rows > summary.count && " Some boats call at more than one port, so they appear under each destination."}
             </p>
             {stale && (
               <p style={{ ...para, fontSize: 13, background: "#FFF2CC", color: "#8A5A00", borderRadius: 8, padding: "8px 12px" }}>
