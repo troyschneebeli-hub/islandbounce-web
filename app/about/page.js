@@ -1,4 +1,6 @@
+import Link from "next/link";
 import { COLORS } from "@/lib/theme";
+import { GIVING_LINE } from "@/data/giving";
 
 export const metadata = {
   title: "Why IslandBounce",
@@ -27,7 +29,8 @@ export default function AboutPage() {
       </p>
       <p style={{ fontSize: 15, lineHeight: 1.7, marginBottom: 16 }}>
         Our booking links go to our booking site, run with our partner 12Go. If you book through them we earn a
-        commission, at no extra cost to you. That&apos;s how the site stays free and independent.
+        commission, at no extra cost to you. That&apos;s how the site stays free and independent, and{" "}
+        <Link href="/giving" style={{ color: COLORS.sea, fontWeight: 700 }}>{GIVING_LINE}</Link>.
       </p>
       <div style={{ background: COLORS.foam, borderRadius: 10, padding: 18, fontSize: 13, opacity: 0.85 }}>
         <strong>Disclosure:</strong> IslandBounce participates in the 12Go affiliate program, and may join other travel
