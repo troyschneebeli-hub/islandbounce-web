@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { COLORS } from "@/lib/theme";
+import { optimized, srcSetFor } from "@/lib/img";
 
 // Full-width photo band behind a page heading. White text sits on a dark teal
 // overlay, and the bottom edge fades into the sky-blue below. If the photo file
@@ -20,7 +21,9 @@ export default function HeroBand({ src, alt, position = "center 40%", children }
         // eslint-disable-next-line @next/next/no-img-element
         <img
           ref={ref}
-          src={src}
+          src={optimized(src)}
+          srcSet={srcSetFor(src)}
+          sizes="(max-width: 1100px) 100vw, 1100px"
           alt={alt}
           decoding="async"
           fetchPriority="high"

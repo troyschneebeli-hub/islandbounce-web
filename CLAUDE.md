@@ -36,6 +36,12 @@ Next.js 14 (app router) ferry-comparison affiliate site on Vercel. Owner: Troy (
 - `.github/workflows/pr-check.yml`: on every PR, `npm ci`, data checks, parser tests, `npm run build`, rendered-page checks.
 - The safety gate blocks the publish if a route loses >30% of its daily sailings, so a big operator disappearing from 12Go (seen 22 Oct: Wijaya Buyuk, Tanis not listed) will block every run until someone reviews and runs it with the drop accepted.
 
+## Site pages and assets (27 Oct 2026)
+- Home (`app/page.js`): search-first. Hero photo (HeroBand), booking box, stats and "Popular routes" (top 6 route pages by daily boats) all computed from SAILINGS; harbour guides; trip planner link.
+- Port guides `/indonesia/ports/<slug>` (`app/indonesia/ports/[slug]/page.js`, logic in `lib/portPages.js`): one per port with at least one daily sailing in or out (`PORT_PAGE_SLUGS`, currently 9; Serangan/Kusamba appear once they have daily boats). Daily boats from/to the port per destination (count, first-last, fastest crossing, lowest fare) linking to route pages, booking box starting from that port, getting there + Google Maps, sea conditions, BoatTerminal JSON-LD. In the sitemap.
+- Photos go through Next's optimiser via `lib/img.js` (`optimized`, `srcSetFor`) on the plain `<img>` tags (PlacePhoto, HeroBand, RegionCard, PhotoStrip, PortsExplorer): ~75-80% smaller WebP on phones. Pass `sizes` for small slots.
+- Fonts are self-hosted: `app/fonts.css` + `public/fonts/*.woff2` (Latin subset, same family names as the old Google Fonts link, Big Shoulders and Inter are variable files). No request to fonts.googleapis.com.
+
 ## Planner UI
 - `components/FindPortMap.js`: port cards with `DepartureList` (Confirmed groups first, then "Typical, check live times"; chips link to booking page). `lib/portDepartures.js` groups sailings per operator and kind.
 - `components/RouteTimetable.js`: route page table (Departs, Operator, From (1 adult), Arrives (duration), Book; rows carry `data-sailing-id`).

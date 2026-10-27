@@ -20,10 +20,15 @@ const ISLANDS = ISLAND_PORTS.map((p) => p.name);
 // Boats don't run between two Bali ports, so a Bali start only offers the islands.
 const destinationsFor = (from) => (BALI.includes(from) ? ISLANDS : [...BALI, ...ISLANDS.filter((p) => p !== from)]);
 
-/** @param {{ initialTo?: string }} [props] */
-export default function TwelveGoBookingWidget({ initialTo } = {}) {
-  const [from, setFrom] = useState(BALI[0]);
-  const [to, setTo] = useState(PLANNER_DESTINATIONS.includes(initialTo) ? initialTo : PLANNER_DESTINATIONS[0]);
+/** @param {{ initialFrom?: string, initialTo?: string }} [props] */
+export default function TwelveGoBookingWidget({ initialFrom, initialTo } = {}) {
+  const startFrom = [...BALI, ...ISLANDS].includes(initialFrom) ? initialFrom : BALI[0];
+  const [from, setFrom] = useState(startFrom);
+  const [to, setTo] = useState(() => {
+    const opts = destinationsFor(startFrom);
+    if (opts.includes(initialTo)) return initialTo;
+    return opts.includes(PLANNER_DESTINATIONS[0]) ? PLANNER_DESTINATIONS[0] : opts[0];
+  });
   const [date, setDate] = useState("");
   const [returnTrip, setReturnTrip] = useState(false);
   const [returnDate, setReturnDate] = useState("");

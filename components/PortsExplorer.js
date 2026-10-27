@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { COLORS } from "@/lib/theme";
+import { optimized, srcSetFor } from "@/lib/img";
 import { BALI_PORTS, ISLAND_PORTS } from "@/data/ports";
 import { PORT_PHOTOS } from "@/data/portPhotos";
 import { loadGoogleMaps } from "@/components/AddressAutocomplete";
@@ -139,7 +140,9 @@ function Photo({ port, className, style }) {
         // eslint-disable-next-line @next/next/no-img-element
         <img
           ref={ref}
-          src={info.src}
+          src={optimized(info.src, 640)}
+          srcSet={srcSetFor(info.src)}
+          sizes="240px"
           alt={info.alt}
           loading="lazy"
           decoding="async"

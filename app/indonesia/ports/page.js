@@ -1,6 +1,8 @@
 import { COLORS } from "@/lib/theme";
 import PortsExplorer from "@/components/PortsExplorer";
+import Link from "next/link";
 import { BALI_PORTS, ISLAND_PORTS } from "@/data/ports";
+import { ALL_PORTS, PORT_PAGE_SLUGS, portShortName, portSlug, portTraffic } from "@/lib/portPages";
 
 export const metadata = {
   title: "Bali, Gili & Nusa Ferry Ports Map: Padang Bai, Sanur & More",
@@ -20,6 +22,28 @@ export default function PortsPage() {
       </p>
 
       <PortsExplorer />
+
+      {/* A guide page per harbour with daily boats: departures, arrivals and how to get there. */}
+      <section style={{ marginTop: 32 }}>
+        <h2 style={{ fontFamily: "'Big Shoulders Display', sans-serif", fontWeight: 700, fontSize: 22, color: COLORS.sea, marginBottom: 10 }}>Port guides</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+          {ALL_PORTS.filter((p) => PORT_PAGE_SLUGS.includes(portSlug(p.name))).map((p) => {
+            const t = portTraffic(p.name);
+            return (
+              <Link
+                key={p.name}
+                href={`/indonesia/ports/${portSlug(p.name)}`}
+                style={{ display: "block", background: "white", border: `1px solid ${COLORS.foamLine}`, borderRadius: 12, padding: "12px 14px", textDecoration: "none", color: COLORS.ink }}
+              >
+                <div style={{ fontWeight: 700, color: COLORS.sea, fontSize: 15 }}>{portShortName(p.name)} harbour →</div>
+                <div style={{ fontSize: 12.5, opacity: 0.7, marginTop: 2 }}>
+                  {t.departuresCount} daily boats out · {t.arrivalsCount} in
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+      </section>
 
       {/* The same details as plain text: easy to skim, and readable without the map. */}
       <details style={{ marginTop: 28, background: "white", border: `1px solid ${COLORS.foamLine}`, borderRadius: 12, padding: "14px 18px" }}>

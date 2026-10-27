@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { COLORS } from "@/lib/theme";
+import { optimized, srcSetFor } from "@/lib/img";
 
 // Same real-photo-with-fallback pattern as components/RegionCard.js — drop
 // a real photo at the given path and it takes over automatically. Until
@@ -51,7 +52,9 @@ function PhotoTile({ slot }) {
       {showPhoto && (
         // eslint-disable-next-line @next/next/no-img-element
         <img
-          src={slot.path}
+          src={optimized(slot.path, 828)}
+          srcSet={srcSetFor(slot.path)}
+          sizes="(max-width: 640px) 50vw, 320px"
           alt={slot.alt || slot.label}
           onError={() => setFailed(true)}
           style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
