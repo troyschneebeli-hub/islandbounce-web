@@ -4,6 +4,11 @@ import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
 import { SITE_URL } from "@/lib/site";
 import { Analytics } from "@vercel/analytics/next";
+import Script from "next/script";
+
+// Travelpayouts Drive (account 592128): turns links to partner brands into affiliate links after the page loads.
+// Keep 12Go and booking.islandbouncetravel.com excluded in Drive's settings, or it could rewrite our own z=17069158 links.
+const TRAVELPAYOUTS_DRIVE = "https://tp-em.com/NTkyMTI4.js?t=592128";
 
 export const metadata = {
   metadataBase: new URL(SITE_URL),
@@ -71,6 +76,7 @@ export default function RootLayout({ children }) {
           <Footer />
         </div>
         <Analytics />
+        <Script src={TRAVELPAYOUTS_DRIVE} strategy="afterInteractive" data-cmp-ab="2" />
       </body>
     </html>
   );
