@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { COLORS } from "@/lib/theme";
 import { durationMins, fmtDuration, knownDurations, shortPort } from "@/lib/timetable";
 import { RowBookButton, TimeChip } from "@/components/RouteBooking";
@@ -26,17 +27,24 @@ const confirmedTag = {
 // One open table per from -> to pair: every daily sailing you can book, rendered on the server so
 // search engines see every row. Only the time chips and Book buttons are client components: they
 // read the date and travellers from the booking box, so this must sit inside RouteBookingProvider.
-export default function RouteTimetable({ groups }) {
+// `hrefFor(from, to)` (optional) turns each pair's heading into a link, e.g. to its route page from an operator page.
+export default function RouteTimetable({ groups, hrefFor }) {
   return (
     <div>
       {groups.map((g) => {
         const durs = knownDurations(g.sailings);
         const fastest = durs.length ? Math.min(...durs) : null;
         const highlight = new Set(durs).size > 1; // only call out "fastest" when there's a real difference
+        const href = hrefFor ? hrefFor(g.from, g.to) : null;
+        const title = `${shortPort(g.from)} → ${shortPort(g.to)}`;
         return (
           <div key={`${g.from}|${g.to}`} style={{ marginBottom: 28 }}>
             <h3 style={{ fontWeight: 700, fontSize: 16, color: COLORS.sea, marginBottom: 6 }}>
-              {shortPort(g.from)} → {shortPort(g.to)}
+              {href ? (
+                <Link href={href} style={{ color: "inherit", textDecoration: "none", borderBottom: `1px solid ${COLORS.sea}55` }}>{title}</Link>
+              ) : (
+                title
+              )}
             </h3>
             <div style={{ overflowX: "auto" }}>
               <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 520 }}>

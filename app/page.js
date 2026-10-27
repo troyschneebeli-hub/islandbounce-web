@@ -10,6 +10,7 @@ import HeroBand from "@/components/HeroBand";
 import PlacePhoto from "@/components/PlacePhoto";
 import TwelveGoBookingWidget from "@/components/TwelveGoBookingWidget";
 import IslandRequest from "@/components/IslandRequest";
+import { GUIDES, GUIDE_SLUGS } from "@/data/guides";
 
 export const metadata = {
   title: { absolute: "Bali to Gili, Nusa Penida & Lombok Fast Boats | IslandBounce" },
@@ -146,6 +147,18 @@ export default function HomePage() {
                 <div style={{ fontWeight: 700, fontSize: 14, color: COLORS.sea, marginTop: 6 }}>{portShortName(p.name)} →</div>
               </Link>
             ))}
+          </div>
+
+          <h2 style={{ ...h2, marginTop: 36 }}>Planning guides</h2>
+          <div className="flex flex-wrap gap-3" style={{ marginTop: 10 }}>
+            {GUIDE_SLUGS.map((s) => (
+              <Link key={s} href={`/indonesia/guides/${s}`} style={{ border: `1.5px solid ${COLORS.sea}`, color: COLORS.sea, fontWeight: 700, fontSize: 13.5, padding: "8px 16px", borderRadius: 999, textDecoration: "none", background: "white" }}>
+                {GUIDES[s].name} →
+              </Link>
+            ))}
+            <Link href="/indonesia/operators" style={{ border: `1.5px solid ${COLORS.sea}`, color: COLORS.sea, fontWeight: 700, fontSize: 13.5, padding: "8px 16px", borderRadius: 999, textDecoration: "none", background: "white" }}>
+              Compare boat operators →
+            </Link>
           </div>
 
           <div style={{ marginTop: 32, background: "white", border: `1px solid ${COLORS.foamLine}`, borderRadius: 14, padding: "18px 20px" }} className="flex flex-col sm:flex-row sm:items-center gap-3 sm:justify-between">

@@ -14,8 +14,10 @@ const COVER_ITEMS = [
 
 const regionItems = (slug) => [
   [`/${slug}/book`, "Book"],
+  [`/${slug}/routes`, "Routes"],
   [`/${slug}/destinations`, "Places"],
   [`/${slug}/ports`, "All Ports"],
+  [`/${slug}/guides`, "Guides"],
 ];
 
 export default function Nav() {

@@ -6,6 +6,7 @@ import { SAILINGS, SAILINGS_CHECKED_TEXT } from "@/data/sailings";
 import { ROUTE_PAGES, ROUTE_SLUGS, specificPagesIn } from "@/data/routePages";
 import { BALI_PORTS, ISLAND_PORTS } from "@/data/ports";
 import { PORT_PHOTOS } from "@/data/portPhotos";
+import { operatorPageHref } from "@/lib/operatorPages";
 import { bookingLink } from "@/lib/bookingLink";
 import { selectSailings, groupByPair, summarize, routeContext, lastChecked, isStale, fmtDuration, shortPort, durationMins, joinList, rangeText } from "@/lib/timetable";
 import PlacePhoto from "@/components/PlacePhoto";
@@ -21,6 +22,7 @@ export const dynamicParams = false;
 
 // One hero photo per route page, by where the route goes.
 const ROUTE_PHOTOS = {
+  "gili-islands-to-bali": { src: "/images/indonesia/gili-air.jpg", alt: "Aerial panorama of Gili Air and its turquoise shallows" },
   "gili-trawangan-to-bali": { src: "/images/indonesia/gilis.jpg", alt: "Aerial view of a Gili island ringed by turquoise water" },
   "bali-to-gili-islands": { src: "/images/indonesia/gilis.jpg", alt: "Aerial view of a Gili island ringed by turquoise water" },
   "gili-air-to-bali": { src: "/images/indonesia/harbor.jpg", alt: "Aerial view of Padang Bai harbour in Bali with ferries at the pier" },
@@ -200,7 +202,11 @@ export default function RoutePage({ params }) {
 
   // On a group page ("Bali to the Gili Islands"), links down to each port-to-port page it covers.
   const byPort = specificPagesIn(route);
-  const related = route.related.map((slug) => ROUTE_PAGES[slug]).filter((r) => r && !byPort.includes(r));
+  // ...and up to the broader pages that cover this one ("Gili Air to Bali" -> "Gili Islands to Bali"), smallest first.
+  const covers = (big, small) => small.fromPorts.every((p) => big.fromPorts.includes(p)) && small.toPorts.every((p) => big.toPorts.includes(p));
+  const area = (r) => r.fromPorts.length * r.toPorts.length;
+  const parents = Object.values(ROUTE_PAGES).filter((r) => r !== route && area(r) > area(route) && covers(r, route)).sort((a, b) => area(a) - area(b)).slice(0, 2);
+  const related = [...new Set([...parents, ...route.related.map((slug) => ROUTE_PAGES[slug])])].filter((r) => r && !byPort.includes(r)).slice(0, 5);
   const photo = photoFor(route);
 
   return (
@@ -295,7 +301,11 @@ export default function RoutePage({ params }) {
                 <ul className="flex flex-wrap gap-2" style={{ listStyle: "none", padding: 0, margin: "14px 0 0", justifyContent: "center" }} aria-label="Operators">
                   {summary.operators.map((op) => (
                     <li key={op} style={{ fontSize: 12, fontWeight: 600, color: COLORS.sea, background: COLORS.foam, border: `1px solid ${COLORS.foamLine}`, borderRadius: 999, padding: "3px 10px" }}>
-                      {op}
+                      {operatorPageHref(op) ? (
+                        <Link href={operatorPageHref(op)} style={{ color: "inherit", textDecoration: "none" }}>{op}</Link>
+                      ) : (
+                        op
+                      )}
                     </li>
                   ))}
                 </ul>
