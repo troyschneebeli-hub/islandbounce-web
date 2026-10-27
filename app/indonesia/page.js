@@ -2,6 +2,7 @@ import Link from "next/link";
 import { COLORS } from "@/lib/theme";
 import { BALI_PORTS, ISLAND_PORTS } from "@/data/ports";
 import { SAILINGS } from "@/data/sailings";
+import { selectSailings } from "@/lib/timetable";
 import IslandRequest from "@/components/IslandRequest";
 import WaveDivider from "@/components/WaveDivider";
 import PoppyCard from "@/components/PoppyCard";
@@ -21,6 +22,12 @@ export const metadata = {
 const ALL_PORTS_TRACKED = BALI_PORTS.length + ISLAND_PORTS.length;
 const DAILY_OPERATORS = new Set(SAILINGS.map((s) => s.operator)).size;
 const DAILY_CONNECTIONS = new Set(SAILINGS.map((s) => `${s.from}|${s.to}`)).size;
+// The ten route pages with the most daily boats; the full list is on /indonesia/routes.
+const POPULAR_SLUGS = ROUTE_SLUGS.map((slug) => ({ slug, n: selectSailings(SAILINGS, ROUTE_PAGES[slug], new Date().toISOString().slice(0, 10)).active.length }))
+  .filter((r) => r.n > 0)
+  .sort((a, b) => b.n - a.n)
+  .slice(0, 10)
+  .map((r) => r.slug);
 
 const FAQS = [
   {
@@ -119,7 +126,7 @@ export default function IndonesiaHub() {
             Popular routes
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3" style={{ maxWidth: 640, margin: "0 auto" }}>
-            {ROUTE_SLUGS.map((slug) => (
+            {POPULAR_SLUGS.map((slug) => (
               <Link
                 key={slug}
                 href={`/indonesia/routes/${slug}`}
@@ -131,7 +138,7 @@ export default function IndonesiaHub() {
           </div>
           <div style={{ marginTop: 14 }}>
             <Link href="/indonesia/routes" style={{ fontSize: 13, fontWeight: 700, color: COLORS.sea, textDecoration: "none", borderBottom: `1px solid ${COLORS.sea}55` }}>
-              See all routes
+              See all {ROUTE_SLUGS.length} route guides
             </Link>
           </div>
         </div>

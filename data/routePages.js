@@ -39,7 +39,7 @@ const PLANNER_CTA = (to) => ({
 // Three names keep the intro short on a phone; the full list is in the operator chips and the table.
 function joinOps(list, max = 3) {
   if (list.length <= max) return joinList(list);
-  return `${list.slice(0, max).join(", ")} and ${list.length - max} more operators`;
+  return `${list.slice(0, max).join(", ")} and ${plural(list.length - max, "more operator")}`;
 }
 
 // "12 of them are confirmed ..." sentence for the intro, from the confirmed sailings (data/confirmed.js).
@@ -1312,6 +1312,219 @@ export const ROUTE_PAGES = {
     ],
   },
 };
+
+// One-port-to-one-port pages (e.g. Nusa Penida to Gili Trawangan) for pairs that otherwise only appear inside a group
+// page such as "Nusa Penida to the Gili Islands". Only pairs with several daily boats get one (4+ in the 22-28 Oct
+// check): a page with one or two boats is thin, and empties out whenever one operator drops off the booking site.
+// Leaving/arriving copy comes from PORT_NOTES; `about` is written per page so no two pages read the same.
+const NO_VEHICLES = "has no cars or motorbikes, so you get around on foot, by bicycle or by horse cart (cidomo). Allow extra time with luggage.";
+const PORT_NOTES = {
+  "Padang Bai": {
+    leaving:
+      "Padang Bai is on Bali's east coast, about 45 minutes from Kuta or Denpasar and 1.5 to 2 hours from Canggu or Uluwatu. It's a working ferry port as well as a fast boat harbour, so give yourself time to find the right pier.",
+    arriving:
+      "Padang Bai is on Bali's east coast: about 45 minutes by road to Kuta or Denpasar and 1.5 to 2 hours to Canggu or Uluwatu. If you have a flight the same day, leave a generous buffer for the drive.",
+  },
+  Sanur: {
+    leaving: "Sanur harbour is about 25 minutes from Kuta, 40 to 50 minutes from Canggu and 45 minutes to an hour from Ubud. Allow extra time in busy traffic.",
+    arriving:
+      "Sanur is in south Bali, about 25 minutes from Kuta and close to the airport. If you have a flight the same day, leave plenty of time for traffic on the Bali side.",
+  },
+  "Gili Trawangan": { leaving: `Gili Trawangan ${NO_VEHICLES}`, arriving: `Gili Trawangan ${NO_VEHICLES}` },
+  "Gili Air": { leaving: `Gili Air ${NO_VEHICLES}`, arriving: `Gili Air ${NO_VEHICLES}` },
+  "Nusa Penida": {
+    leaving: `${PENIDA_HARBOURS} Penida's roads are slow and rough in places, so allow plenty of time to reach the harbour.`,
+    arriving: `${PENIDA_HARBOURS} Penida's roads are steep and slow, so plan your onward ride before you arrive.`,
+  },
+  "Nusa Lembongan": {
+    leaving: `Lembongan is small, so the harbour is usually a short ride from where you're staying. ${LEMBONGAN_LANDING}`,
+    arriving: LEMBONGAN_LANDING,
+  },
+  "Bangsal (Lombok)": {
+    leaving: "Bangsal, on Lombok's north-west coast, is the main harbour for fast boats to Bali, the Nusa Islands and the Gili Islands.",
+    arriving: "Bangsal, on Lombok's north-west coast, is the gateway to north-west Lombok, and the short boats to the Gili Islands leave from here too.",
+  },
+};
+
+const SPECIFIC = [
+  {
+    slug: "gili-air-to-padang-bai", from: "Gili Air", to: "Padang Bai",
+    about: [
+      "Padang Bai usually has the shortest crossing from the Gilis to Bali, which makes it the quickest way back to the mainland from Gili Air.",
+      "It suits you best if you're heading on to Ubud or east Bali. If you're flying out or staying in the south, compare Gili Air to Sanur too: a longer crossing, but a much shorter drive.",
+    ],
+  },
+  {
+    slug: "gili-trawangan-to-padang-bai", from: "Gili Trawangan", to: "Padang Bai",
+    about: [
+      "Padang Bai is the classic crossing back to Bali from Gili Trawangan, and usually the shortest one by sea.",
+      "The catch is the drive on the Bali side: from Padang Bai it's about 45 minutes to Kuta or Denpasar and up to 2 hours to Canggu or Uluwatu. Good for Ubud and the east, less so for a same-day flight.",
+    ],
+  },
+  {
+    slug: "gili-air-to-sanur", from: "Gili Air", to: "Sanur",
+    about: [
+      "Sanur lands you in south Bali, close to the airport, Kuta and Canggu, so it's the easier choice if you're flying out or staying in the south.",
+      "The crossing is longer than to Padang Bai, and some boats call at other islands such as Gili Trawangan or Nusa Penida on the way. Compare the Arrives column to find the quickest boat.",
+    ],
+  },
+  {
+    slug: "gili-trawangan-to-sanur", from: "Gili Trawangan", to: "Sanur",
+    about: [
+      "Going to Sanur instead of Padang Bai trades a longer boat ride for a much shorter drive: Sanur is about 25 minutes from Kuta and close to the airport.",
+      "Some boats stop at other islands on the way, which adds to the crossing, so check the arrival times before you pick one.",
+    ],
+  },
+  {
+    slug: "nusa-penida-to-gili-trawangan", from: "Nusa Penida", to: "Gili Trawangan",
+    about: [
+      "You can go straight from Nusa Penida to Gili Trawangan without a night back on mainland Bali, which saves a day of transfers.",
+      "Some of these boats run a circuit and call at other islands before Gili Trawangan. The crossing times in the table show which boats are quickest.",
+    ],
+  },
+  {
+    slug: "gili-trawangan-to-nusa-penida", from: "Gili Trawangan", to: "Nusa Penida",
+    about: [
+      "Heading from the Gilis to Nusa Penida? There's no need to go back through Bali: these boats sail from Gili Trawangan straight to Penida.",
+      "Some call at other islands or ports on the way, so compare the arrival times and pick the boat that fits your day.",
+    ],
+  },
+  {
+    slug: "nusa-penida-to-gili-air", from: "Nusa Penida", to: "Gili Air",
+    about: [
+      "Gili Air is the calm middle Gili, closest to Lombok, and you can reach it straight from Nusa Penida without a stop in mainland Bali.",
+      "Gili Air is often one of the last stops on a circuit, so some boats call at Gili Trawangan or Gili Meno first. Check the Arrives column for the quickest crossing.",
+    ],
+  },
+  {
+    slug: "gili-air-to-nusa-penida", from: "Gili Air", to: "Nusa Penida",
+    about: [
+      "These boats take you from Gili Air straight to Nusa Penida, so you can swap the beaches for Penida's cliffs without a night in Bali.",
+      "Some boats call at other islands on the way, which adds to the crossing time, so compare the arrival times before you book.",
+    ],
+  },
+  {
+    slug: "nusa-lembongan-to-gili-trawangan", from: "Nusa Lembongan", to: "Gili Trawangan",
+    about: [
+      "Nusa Lembongan to Gili Trawangan takes you from the Nusa Islands to the liveliest Gili in one boat, with no stop in mainland Bali.",
+      "Some boats call at Nusa Penida or other islands on the way. The crossing times in the table show the difference.",
+    ],
+  },
+  {
+    slug: "nusa-lembongan-to-gili-air", from: "Nusa Lembongan", to: "Gili Air",
+    about: [
+      "Nusa Lembongan to Gili Air links two of the quieter islands, with no stop in mainland Bali.",
+      "Gili Air is usually one of the last stops on a circuit, so some boats call at Gili Trawangan or Gili Meno first. Compare the Arrives column before you choose.",
+    ],
+  },
+  {
+    slug: "lombok-to-nusa-penida", from: "Bangsal (Lombok)", to: "Nusa Penida", name: "Lombok to Nusa Penida",
+    about: [
+      "Boats from Bangsal, on Lombok's north-west coast, sail to Nusa Penida without going through mainland Bali.",
+      "Many of them call at the Gili Islands on the way, which adds to the crossing time, so check the arrival times in the table.",
+    ],
+  },
+  {
+    slug: "nusa-penida-to-lombok", from: "Nusa Penida", to: "Bangsal (Lombok)", name: "Nusa Penida to Lombok",
+    about: [
+      "You can sail from Nusa Penida to Bangsal on Lombok without going back to mainland Bali.",
+      "Many of these boats stop at the Gili Islands before Lombok, so the crossing is longer than it looks on a map. Compare the Arrives column.",
+    ],
+  },
+  {
+    slug: "lombok-to-padang-bai", from: "Bangsal (Lombok)", to: "Padang Bai", name: "Lombok to Padang Bai",
+    about: [
+      "Padang Bai, on Bali's east coast, usually has the shortest crossing from Bangsal to Bali.",
+      "Some of these boats call at the Gili Islands on the way. If you're flying out of Bali, remember the drive from Padang Bai to the airport and the south coast is a long one, so leave a buffer.",
+    ],
+  },
+  {
+    slug: "padang-bai-to-lombok", from: "Padang Bai", to: "Bangsal (Lombok)", name: "Padang Bai to Lombok",
+    about: [
+      "Fast boats from Padang Bai cross to Bangsal, the harbour on Lombok's north-west coast and the gateway to the Gili Islands.",
+      "Some boats call at the Gilis before reaching Bangsal, so compare the arrival times in the table. Short flights between Bali and Lombok also exist; this page covers the crossing by sea.",
+    ],
+  },
+];
+
+const short = (p) => p.replace(" (Lombok)", "");
+
+function specificRoute({ slug, from, to, name, about }) {
+  const f = short(from);
+  const t = to === "Bangsal (Lombok)" ? "Lombok" : to;
+  const title = name || `${f} to ${t}`;
+  const toArrive = to === "Bangsal (Lombok)" ? "Bangsal" : to;
+  const arriveIn = ["Padang Bai", "Sanur", "Bangsal (Lombok)"].includes(to) ? "in" : "on";
+  return {
+    slug,
+    region: [from, to].some((p) => p.startsWith("Bangsal")) ? "Lombok" : [from, to].some((p) => p.startsWith("Nusa")) ? "Nusa Islands" : "Gili Islands",
+    name: title,
+    h1: `${to === "Bangsal (Lombok)" ? `${f} to Bangsal, Lombok` : from === "Bangsal (Lombok)" ? `Bangsal, Lombok to ${t}` : title} by fast boat`,
+    metaTitle: `${title} Fast Boat: Times & Operators`,
+    metaDescription:
+      `${title} fast boat times${from.startsWith("Bangsal") || to.startsWith("Bangsal") ? " (Bangsal harbour)" : ""}, crossing times and operators, ` +
+      "with sea conditions for the crossing. Compare daily departures side by side and book on 12Go.",
+    blurb: about[0],
+    fromLabel: f,
+    toLabel: t,
+    fromPorts: [from],
+    toPorts: [to],
+    conditionPorts: [from, to],
+    bookFrom: from,
+    bookTo: to,
+    related: [], // filled in below: the reverse trip, the group page it belongs to, and pages from the same port
+    ourPick: "",
+    lead: (c) =>
+      `We list ${plural(c.count, "daily fast boat departure")} from ${f} to ${short(to)} with ${joinOps(c.operators)}, ` +
+      `leaving between ${c.earliest} and ${c.latest}. The crossing takes ${rangeText(c.pairs[0].min, c.pairs[0].max)}, depending on the boat.` +
+      CONFIRMED_LINE(c),
+    sections: [
+      { heading: `About ${title}`, paragraphs: about },
+      { heading: `Leaving from ${short(from)}`, paragraphs: [PORT_NOTES[from].leaving, CHECKIN_TEXT] },
+      { heading: `Arriving ${arriveIn} ${toArrive}`, paragraphs: [PORT_NOTES[to].arriving], cta: PLANNER_CTA(BALI_MAINLAND.includes(to) ? undefined : to) },
+    ],
+    faqs: (c) => [
+      {
+        q: `How long is the fast boat from ${f} to ${short(to)}?`,
+        a: `Crossing times are ${c.durations}. Boats that call at other islands on the way take longer, so compare the Arrives column before you book.`,
+      },
+      {
+        q: `What time is the first boat from ${f} to ${short(to)}?`,
+        a: `The earliest daily departure we list is ${c.earliest} and the latest is ${c.latest}. Timetables change with the season, so confirm on the booking page for your date.`,
+      },
+      {
+        q: `Which operators run ${f} to ${short(to)}?`,
+        a: `We list ${joinOps(c.operators, 9)}. Boats, comfort and prices differ, so compare departure times and reviews as well as the fare.`,
+      },
+      CONFIRMED_FAQ(f, short(to), c),
+      CANCEL_FAQ(f, short(to)),
+      BOOK_FAQ,
+    ],
+  };
+}
+
+for (const p of SPECIFIC) ROUTE_PAGES[p.slug] = specificRoute(p);
+
+// Group pages (several ports on one side) that cover a pair, smallest first.
+export function groupPagesFor(from, to) {
+  return Object.values(ROUTE_PAGES)
+    .filter((r) => r.fromPorts.length * r.toPorts.length > 1 && r.fromPorts.includes(from) && r.toPorts.includes(to))
+    .sort((a, b) => a.fromPorts.length * a.toPorts.length - b.fromPorts.length * b.toPorts.length);
+}
+
+// One-pair pages inside a group page, e.g. "Bali to the Gili Islands" -> "Padang Bai to Gili Air", ...
+export function specificPagesIn(route) {
+  return Object.values(ROUTE_PAGES).filter(
+    (r) => r !== route && r.fromPorts.length === 1 && r.toPorts.length === 1 && route.fromPorts.includes(r.fromPorts[0]) && route.toPorts.includes(r.toPorts[0])
+  );
+}
+
+for (const p of SPECIFIC) {
+  const page = ROUTE_PAGES[p.slug];
+  const reverse = Object.values(ROUTE_PAGES).find((r) => r.fromPorts.length === 1 && r.toPorts.length === 1 && r.fromPorts[0] === p.to && r.toPorts[0] === p.from);
+  const sameFrom = Object.values(ROUTE_PAGES).filter((r) => r !== page && r.fromPorts.length === 1 && r.toPorts.length === 1 && r.fromPorts[0] === p.from);
+  page.related = [...new Set([reverse, groupPagesFor(p.from, p.to)[0], ...sameFrom].filter(Boolean).map((r) => r.slug))].slice(0, 4);
+}
 
 // The most specific route page covering one from -> to pair (fewest port pairs), or null.
 export function routePageFor(from, to) {

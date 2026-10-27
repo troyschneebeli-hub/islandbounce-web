@@ -110,7 +110,8 @@ for (const slug of ROUTE_SLUGS) {
 }
 if (!haveHtml) console.log("(no .next build found: rendered pages not checked; run npm run build, then this again)");
 // One or two quiet routes is a normal week; many empty pages means the data went wrong, so don't publish it.
-const MAX_EMPTY_PAGES = 5;
+// (15% of route pages, at least 5: more one-port-to-one-port pages means one missing operator can empty several.)
+const MAX_EMPTY_PAGES = Math.max(5, Math.ceil(ROUTE_SLUGS.length * 0.15));
 const emptyPages = ROUTE_SLUGS.filter((slug) => !selectSailings(SAILINGS, ROUTE_PAGES[slug], today).active.length);
 check(emptyPages.length <= MAX_EMPTY_PAGES, `${emptyPages.length} route pages have no confirmed daily sailings (more than ${MAX_EMPTY_PAGES}): ${emptyPages.join(", ")}`);
 
