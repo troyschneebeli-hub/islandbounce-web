@@ -3,7 +3,7 @@ import { COLORS } from "@/lib/theme";
 import { SAILINGS, SAILINGS_CHECKED_TEXT } from "@/data/sailings";
 import { ROUTE_PAGES, ROUTE_SLUGS } from "@/data/routePages";
 import { PORT_PHOTOS } from "@/data/portPhotos";
-import { selectSailings, summarize, fmtDuration, knownDurations } from "@/lib/timetable";
+import { selectSailings, summarize, fmtDuration, knownDurations, countDepartures } from "@/lib/timetable";
 import { ALL_PORTS, PORT_PAGE_SLUGS, portShortName, portSlug } from "@/lib/portPages";
 import WaveDivider from "@/components/WaveDivider";
 import HeroBand from "@/components/HeroBand";
@@ -15,7 +15,7 @@ import { GUIDES, GUIDE_SLUGS } from "@/data/guides";
 export const metadata = {
   title: { absolute: "Bali to Gili, Nusa Penida & Lombok Fast Boats | IslandBounce" },
   description:
-    "Compare daily fast boats from Bali to the Gili Islands, Nusa Penida, Nusa Lembongan and Lombok: departure times, crossing times and fares from every port, then book with our partner 12Go.",
+    "Compare daily fast boats from Bali to the Gili Islands, Nusa Penida, Nusa Lembongan and Lombok: departure and crossing times from every port, then see live fares and book with our partner 12Go.",
   alternates: { canonical: "/" },
 };
 
@@ -24,15 +24,14 @@ export const revalidate = 21600;
 
 const h2 = { fontFamily: "'Big Shoulders Display', sans-serif", fontWeight: 700, fontSize: 26, color: COLORS.sea, marginBottom: 6 };
 
-// The six route pages with the most daily boats, with their counts, lowest fare and fastest crossing.
+// The six route pages with the most daily boats, with their counts and fastest crossing.
 function popularRoutes(today) {
   return ROUTE_SLUGS.map((slug) => {
     const route = ROUTE_PAGES[slug];
     const { active } = selectSailings(SAILINGS, route, today);
     const s = summarize(active);
-    const fares = active.map((x) => x.fareAUD ?? x.price).filter((p) => p != null);
     const durs = knownDurations(active);
-    return { route, count: s.count, minFare: fares.length ? Math.min(...fares) : null, fastest: durs.length ? Math.min(...durs) : null };
+    return { route, count: s.count, fastest: durs.length ? Math.min(...durs) : null };
   })
     .filter((r) => r.count > 0)
     .sort((a, b) => b.count - a.count)
@@ -59,8 +58,8 @@ export default function HomePage() {
                 Bali to Gili, Nusa Penida &amp; Lombok fast boats
               </h1>
               <p style={{ fontSize: 16, lineHeight: 1.55, maxWidth: 560, margin: "0 auto", opacity: 0.95 }}>
-                Every daily departure, crossing time and fare from each port, side by side. Pick your boat, then book with our partner 12Go
-                at the same price.
+                Every daily departure and crossing time from each port, side by side, from the operators&apos; own timetables. Pick your
+                boat, then book with our partner 12Go at the same price.
               </p>
             </div>
           </HeroBand>
@@ -74,7 +73,7 @@ export default function HomePage() {
           className="flex flex-wrap justify-center gap-x-8 gap-y-2"
           style={{ maxWidth: 760, margin: "18px auto 0", paddingBottom: 26, fontSize: 13.5, color: COLORS.seaDeep }}
         >
-          <span><strong>{SAILINGS.length}</strong> daily departures</span>
+          <span><strong>{countDepartures(SAILINGS)}</strong> daily departures</span>
           <span><strong>{operators}</strong> operators</span>
           <span><strong>{routesWithBoats}</strong> route guides</span>
           <span style={{ opacity: 0.75 }}>Times {SAILINGS_CHECKED_TEXT}</span>
@@ -86,10 +85,10 @@ export default function HomePage() {
         <div style={{ maxWidth: 1000, margin: "0 auto" }}>
           <h2 style={h2}>Popular routes</h2>
           <p style={{ fontSize: 14, opacity: 0.7, marginBottom: 18 }}>
-            Every daily boat on each route, with times, crossing times and fares. Ones tagged Confirmed also match the operator&apos;s own timetable.
+            Every daily boat on each route, with departure and crossing times from the operators&apos; own timetables.
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-            {routes.map(({ route, count, minFare, fastest }) => (
+            {routes.map(({ route, count, fastest }) => (
               <Link
                 key={route.slug}
                 href={`/indonesia/routes/${route.slug}`}
@@ -99,7 +98,6 @@ export default function HomePage() {
                 <div style={{ fontSize: 13.5, lineHeight: 1.6 }}>
                   <strong>{count}</strong> daily {count === 1 ? "boat" : "boats"}
                   {fastest != null && <> · from {fmtDuration(fastest)}</>}
-                  {minFare != null && <> · from <strong>A${minFare}</strong></>}
                 </div>
               </Link>
             ))}
@@ -116,8 +114,8 @@ export default function HomePage() {
         <div style={{ maxWidth: 1000, margin: "0 auto" }} className="grid grid-cols-1 sm:grid-cols-3 gap-6">
           {[
             { n: "01", title: "Pick your route", blurb: "Search from any Bali port or island, either way, one way or return." },
-            { n: "02", title: "Compare the boats", blurb: "Daily departures, crossing times and fares side by side, with Confirmed tags where the operator's own timetable agrees." },
-            { n: "03", title: "Book with 12Go", blurb: "Our booking partner, at the same price and no extra cost to you." },
+            { n: "02", title: "Compare the boats", blurb: "Daily departures and crossing times side by side, from each operator's own timetable." },
+            { n: "03", title: "Book with 12Go", blurb: "See live fares for your date, then book with our partner at the same price." },
           ].map((s) => (
             <div key={s.n}>
               <div style={{ fontFamily: "'Big Shoulders Display', sans-serif", fontWeight: 800, fontSize: 32, color: COLORS.brass, marginBottom: 2 }}>{s.n}</div>

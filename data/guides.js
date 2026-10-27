@@ -1,9 +1,9 @@
 // Planning guides (/indonesia/guides/<slug>): answer "how do I get from where I'm staying to the Gilis" and "which port"
-// searches. Anything about boats (counts, times, crossings, fares) is computed from SAILINGS by `boatStats`, so a guide
+// searches. Anything about boats (counts, times, crossings) is computed from SAILINGS by `boatStats`, so a guide
 // can never disagree with the route pages. Drive times are rough ranges in the same words the port and route pages use;
 // the Trip Planner gives the real figure for a hotel.
 import { SAILINGS } from "@/data/sailings";
-import { durationMins, fmtDuration, joinList, plural } from "@/lib/timetable";
+import { countDepartures, durationMins, fmtDuration, joinList, plural } from "@/lib/timetable";
 
 export const GILIS = ["Gili Trawangan", "Gili Air", "Gili Meno"];
 
@@ -13,13 +13,11 @@ export function boatStats(fromPorts, toPorts, sailings = SAILINGS) {
   const sum = (list) => {
     const times = list.map((s) => s.departs).sort();
     const durs = list.map((s) => durationMins(s.departs, s.arrives)).filter((d) => d != null);
-    const fares = list.map((s) => s.fareAUD ?? s.price).filter((p) => p != null);
     return {
-      count: list.length,
+      count: countDepartures(list),
       earliest: times[0] || null,
       latest: times[times.length - 1] || null,
       minDur: durs.length ? Math.min(...durs) : null,
-      minFare: fares.length ? Math.min(...fares) : null,
       operators: [...new Set(list.map((s) => s.operator))],
     };
   };
@@ -43,7 +41,7 @@ const pb = () => boatStats(["Padang Bai"], GILIS);
 const sanur = () => boatStats(["Sanur"], GILIS);
 const giliLine = (s, port) =>
   s.count
-    ? `${plural(s.count, "daily boat")} leave ${port} for the Gilis, between ${s.earliest} and ${s.latest}, with the fastest crossing ${fmtDuration(s.minDur)}${s.minFare != null ? ` and fares from A$${s.minFare}` : ""}.`
+    ? `${plural(s.count, "daily boat")} leave ${port} for the Gilis, between ${s.earliest} and ${s.latest}, with the fastest crossing ${fmtDuration(s.minDur)}.`
     : `We don't list a daily boat from ${port} to the Gilis this week, so check live times on the booking page.`;
 
 export const GUIDES = {
@@ -190,7 +188,7 @@ export const GUIDES = {
     h1: "Padang Bai or Sanur for the Gili Islands?",
     metaTitle: "Padang Bai or Sanur to Gili Islands? Boats, Crossing & Drive",
     metaDescription:
-      "Padang Bai vs Sanur for Gili Trawangan (Gili T), Gili Air and Gili Meno: daily boats, crossing times, fares and drive times compared side by side, from the latest timetable.",
+      "Padang Bai vs Sanur for Gili Trawangan (Gili T), Gili Air and Gili Meno: daily boats, crossing times and drive times compared side by side, from the operators' own timetables.",
     intro: "These are the two Bali ports most people use for the Gilis. The short answer: Padang Bai for the shorter crossing and more boats, Sanur for the shorter drive from the south.",
     compare: { fromPorts: ["Padang Bai", "Sanur"], toPorts: GILIS, title: "Padang Bai and Sanur to the Gilis, side by side" },
     planner: "Gili Trawangan",
@@ -201,8 +199,8 @@ export const GUIDES = {
         {
           heading: "The numbers",
           paragraphs: [
-            `Padang Bai: ${plural(p.count, "daily boat")} to the Gilis with ${plural(p.operators.length, "operator")}${p.minDur != null ? `, fastest crossing ${fmtDuration(p.minDur)}` : ""}${p.minFare != null ? `, fares from A$${p.minFare}` : ""}.`,
-            `Sanur: ${plural(s.count, "daily boat")} with ${plural(s.operators.length, "operator")}${s.minDur != null ? `, fastest crossing ${fmtDuration(s.minDur)}` : ""}${s.minFare != null ? `, fares from A$${s.minFare}` : ""}.`,
+            `Padang Bai: ${plural(p.count, "daily boat")} to the Gilis with ${plural(p.operators.length, "operator")}${p.minDur != null ? `, fastest crossing ${fmtDuration(p.minDur)}` : ""}.`,
+            `Sanur: ${plural(s.count, "daily boat")} with ${plural(s.operators.length, "operator")}${s.minDur != null ? `, fastest crossing ${fmtDuration(s.minDur)}` : ""}.`,
           ],
         },
         {

@@ -1,0 +1,4 @@
+{
+ "about": "The date someone last went through data/operator-sailings.json against the operators' own timetable pages (after reading the weekly operator check report). The site shows it as 'checked <date>' and warns visitors once it's more than 21 days old. Change it only after checking, then run node scripts/build-timetable.mjs.",
+ "checked": "2026-10-27"
+}

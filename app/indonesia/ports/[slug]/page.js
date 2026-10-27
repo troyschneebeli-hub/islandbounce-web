@@ -27,7 +27,7 @@ export function generateMetadata({ params }) {
   const t = portTraffic(port.name);
   const places = joinList(t.departures.slice(0, 3).map((d) => shortPort(d.port)));
   const title = `${name} Harbour Fast Boats: Times, Routes & Getting There`;
-  const description = `Fast boats from ${name}${places ? ` to ${places}` : ""}: ${plural(t.departuresCount, "daily departure")}, crossing times and fares, plus how to get to the harbour. Compare and book.`;
+  const description = `Fast boats from ${name}${places ? ` to ${places}` : ""}: ${plural(t.departuresCount, "daily departure")} and crossing times, plus how to get to the harbour. Compare and book.`;
   return {
     title: { absolute: title },
     description,
@@ -53,7 +53,6 @@ function TrafficTable({ rows, dir, portName, caption }) {
             <th style={th}>Daily boats</th>
             <th style={th}>First – last</th>
             <th style={th}>Fastest crossing</th>
-            <th style={th}>From (1 adult)</th>
           </tr>
         </thead>
         <tbody>
@@ -74,7 +73,6 @@ function TrafficTable({ rows, dir, portName, caption }) {
                 <td style={td}>{r.count}</td>
                 <td style={{ ...td, whiteSpace: "nowrap" }}>{r.first === r.last ? r.first : `${r.first} – ${r.last}`}</td>
                 <td style={{ ...td, whiteSpace: "nowrap" }}>{fmtDuration(r.minDur)}</td>
-                <td style={{ ...td, whiteSpace: "nowrap" }}>{r.minFare != null ? `A$${r.minFare}` : "—"}</td>
               </tr>
             );
           })}
@@ -97,8 +95,8 @@ export default function PortPage({ params }) {
   // The data sentence only; the port's own description sits under "Getting to" / "About" below.
   const lead =
     t.departuresCount > 0
-      ? `${plural(t.departuresCount, "daily fast boat")} leave ${name} for ${joinList(t.departures.map((d) => shortPort(d.port)))}, run by ${plural(t.operators.length, "operator")}${t.arrivalsCount ? `, and ${t.arrivalsCount} arrive each day` : ""}. Times, crossing times and fares are below.`
-      : `${plural(t.arrivalsCount, "daily fast boat")} arrive at ${name}, run by ${plural(t.operators.length, "operator")}. Times, crossing times and fares are below.`;
+      ? `${plural(t.departuresCount, "daily fast boat")} leave ${name} for ${joinList(t.departures.map((d) => shortPort(d.port)))}, run by ${plural(t.operators.length, "operator")}${t.arrivalsCount ? `, and ${t.arrivalsCount} arrive each day` : ""}. Times and crossing times are below.`
+      : `${plural(t.arrivalsCount, "daily fast boat")} arrive at ${name}, run by ${plural(t.operators.length, "operator")}. Times and crossing times are below.`;
 
   const jsonLd = [
     {
@@ -154,8 +152,8 @@ export default function PortPage({ params }) {
             <section style={{ marginBottom: 36 }}>
               <h2 style={h2}>Daily boats from {name}</h2>
               <p style={{ ...para, fontSize: 13, opacity: 0.7 }}>
-                Boats that were on the booking page on at least 6 of the 7 days we checked ({SAILINGS_CHECKED_TEXT}). Fares are the lowest we
-                saw for 1 adult. Tap a destination for every departure time.
+                Daily boats on the operators&apos; own timetables ({SAILINGS_CHECKED_TEXT}). The booking page shows live fares. Tap a
+                destination for every departure time.
               </p>
               <TrafficTable rows={t.departures} dir="from" portName={port.name} caption={`Daily fast boats from ${name}`} />
             </section>
@@ -209,8 +207,8 @@ export default function PortPage({ params }) {
           </section>
 
           <p style={{ fontSize: 11.5, color: COLORS.ink, opacity: 0.6, lineHeight: 1.6 }}>
-            We&apos;re a comparison site, not the operator. Times and fares come from the booking page and the operators&apos; own timetables
-            and can change, so confirm on the booking page when you book.
+            We&apos;re a comparison site, not the operator. Times come from the operators&apos; own timetables and can change, so confirm on
+            the booking page when you book.
           </p>
         </div>
       </div>

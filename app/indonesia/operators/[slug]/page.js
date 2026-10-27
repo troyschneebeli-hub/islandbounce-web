@@ -22,10 +22,10 @@ export function generateMetadata({ params }) {
   const name = operatorBySlug(params.slug);
   if (!name) return {};
   const d = operatorData(name);
-  const title = `${name} Schedule: Daily Times, Routes & Fares`;
+  const title = `${name} Schedule: Daily Times & Routes`;
   const description =
     `${name} fast boat schedule: ${plural(d.count, "daily departure")} between ${joinList(d.ports.map(shortPort).slice(0, 4))}${d.ports.length > 4 ? " and more" : ""}, ` +
-    "with crossing times and fares. An independent comparison: see every time, then book on 12Go.";
+    "with crossing times. An independent comparison: see every time, then book on 12Go.";
   const path = `/indonesia/operators/${params.slug}`;
   return { title: { absolute: title }, description, alternates: { canonical: path }, openGraph: { title, description, url: `${SITE_URL}${path}` } };
 }
@@ -46,7 +46,6 @@ export default function OperatorPage({ params }) {
   const d = operatorData(name);
   const url = `${SITE_URL}/indonesia/operators/${params.slug}`;
   const top = d.pairs[0];
-  const minOf = (nums) => (nums.length ? Math.min(...nums) : null);
 
   // Other operators with daily boats on at least one of the same from -> to pairs: the comparison people came for.
   const pairKeys = new Set(d.pairs.map((p) => `${p.from}|${p.to}`));
@@ -54,12 +53,7 @@ export default function OperatorPage({ params }) {
 
   const lead =
     `We list ${plural(d.count, "daily departure")} with ${name} on ${plural(d.pairs.length, "route")} between ${joinList(d.ports.map(shortPort))}, ` +
-    `leaving between ${d.earliest} and ${d.latest}.` +
-    (d.confirmedCount === d.count
-      ? ` All of them also match ${name}'s own timetable.`
-      : d.confirmedCount
-        ? ` ${d.confirmedCount} of them also match ${name}'s own timetable.`
-        : "");
+    `leaving between ${d.earliest} and ${d.latest}, from ${name}'s own timetable.`;
 
   const faqs = [
     {
@@ -70,14 +64,17 @@ export default function OperatorPage({ params }) {
       q: `Where does ${name} go?`,
       a: `We list daily ${name} boats on ${plural(d.pairs.length, "route")}: ${d.pairs.map((p) => `${shortPort(p.from)} to ${shortPort(p.to)}`).join(", ")}.`,
     },
-    {
-      q: `How long is the ${name} crossing?`,
-      a: `It depends on the route. ${d.pairs
-        .filter((p) => p.minDur != null)
-        .slice(0, 4)
-        .map((p) => `${shortPort(p.from)} to ${shortPort(p.to)} takes from ${fmtDuration(p.minDur)}`)
-        .join("; ")}. Boats that call at other islands on the way take longer.`,
-    },
+    // Only when the operator's timetable gives arrival times.
+    ...(d.minDur != null
+      ? [{
+          q: `How long is the ${name} crossing?`,
+          a: `It depends on the route. ${d.pairs
+            .filter((p) => p.minDur != null)
+            .slice(0, 4)
+            .map((p) => `${shortPort(p.from)} to ${shortPort(p.to)} takes from ${fmtDuration(p.minDur)}`)
+            .join("; ")}. Boats that call at other islands on the way take longer.`,
+        }]
+      : []),
     {
       q: `How do I book ${name}?`,
       a: `Pick a route and date in the booking box on this page. It opens the booking page run with our partner 12Go, which lists ${name} next to the other operators on that route. The price is the same as booking with 12Go directly.`,
@@ -105,12 +102,13 @@ export default function OperatorPage({ params }) {
     },
   ];
 
-  const bookingPairs = d.groups.map((g) => ({ from: g.from, to: g.to, minPrice: minOf(g.sailings.map((s) => s.fareAUD ?? s.price).filter((p) => p != null)) }));
+  const bookingPairs = d.groups.map((g) => ({ from: g.from, to: g.to, minPrice: null }));
   const stats = [
     { n: d.count, label: d.count === 1 ? "daily departure" : "daily departures" },
     { n: d.pairs.length, label: d.pairs.length === 1 ? "route" : "routes" },
-    { n: fmtDuration(d.minDur), label: "fastest crossing" },
-    ...(d.minFare != null ? [{ n: `A$${d.minFare}`, label: "from (adult)" }] : []),
+    // The operator may not publish arrival times (Scoot doesn't), so there's no crossing time to show.
+    ...(d.minDur != null ? [{ n: fmtDuration(d.minDur), label: "fastest crossing" }] : []),
+    { n: `${d.earliest}–${d.latest}`, label: "first to last" },
   ];
 
   return (
@@ -153,8 +151,9 @@ export default function OperatorPage({ params }) {
             <section style={{ margin: "32px 0 40px" }}>
               <h2 style={h2}>Every daily {name} departure</h2>
               <p style={{ ...para, fontSize: 13, opacity: 0.7 }}>
-                Boats on the booking page at least 6 days a week. Confirmed ones also match {name}&apos;s own timetable. Lowest adult fares,{" "}
-                {SAILINGS_CHECKED_TEXT}. Times change, so confirm when you book. Tap a route to compare every operator on it.
+                From {name}&apos;s own timetable, {SAILINGS_CHECKED_TEXT}. Times change, so confirm when you book; the booking page
+                shows live fares. A boat that calls at several ports appears under each destination. Tap a route to compare every
+                operator on it.
               </p>
               <RouteTimetable groups={d.groups} hrefFor={routeHref} />
             </section>

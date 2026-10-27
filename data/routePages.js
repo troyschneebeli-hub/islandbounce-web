@@ -2,8 +2,8 @@ import { joinList, plural, rangeText } from "@/lib/timetable";
 
 // Definitions + copy for the SEO route pages (/indonesia/routes/[slug]).
 // Anything numeric (departure counts, times, durations, operator names) is
-// computed from data/sailings.js (the 12Go listings, the only sailings the site
-// shows) at render time via `ctx`, so it can never disagree with the timetable
+// computed from data/sailings.js (the operators' own timetables, the only sailings
+// the site shows) at render time via `ctx`, so it can never disagree with the timetable
 // shown on the same page. Static copy below is limited to things that are
 // stable and true, and doesn't name operators.
 // `ourPick` is an optional hand-written editorial note shown under the computed
@@ -28,7 +28,7 @@ const BOOK_FAQ = {
 };
 
 const CHECKIN_TEXT =
-  "The times on this page are guides taken from the booking site. Check-in is usually an hour before departure, but go by the time on your ticket.";
+  "The times on this page are taken from the operators' own timetables. Check-in is usually an hour before departure, but go by the time on your ticket.";
 
 const PLANNER_CTA = (to) => ({
   href: to ? `/indonesia?to=${encodeURIComponent(to)}` : "/indonesia",
@@ -42,20 +42,12 @@ function joinOps(list, max = 3) {
   return `${list.slice(0, max).join(", ")} and ${plural(list.length - max, "more operator")}`;
 }
 
-// "12 of them are confirmed ..." sentence for the intro, from the confirmed sailings (data/confirmed.js).
-const CONFIRMED_LINE = (c) =>
-  c.confirmedCount === 0
-    ? ""
-    : c.confirmedCount === c.count
-      ? ` All of them appeared on the operator's own timetable as well as the booking site in our latest check.`
-      : ` ${c.confirmedCount} of them appeared on the operator's own timetable as well as the booking site in our latest check.`;
+// Where the times come from, for the intro and an FAQ (c.scanText = "checked 27 Oct 2026").
+const SOURCE_LINE = (c) => ` Times are from each operator's own timetable, ${c.scanText}.`;
 
-const CONFIRMED_FAQ = (from, to, c) => ({
-  q: `Which ${from} to ${to} boats are confirmed?`,
-  a:
-    c.confirmedCount
-      ? `${plural(c.confirmedCount, "departure")} with ${joinOps(c.confirmedOperators)} also match the operator's own timetable (${c.scanText}). They're tagged Confirmed in the table above. The others are on the booking page every day but aren't on an operator timetable we've checked.`
-      : "None yet. Every departure above is on the booking page every day, but we haven't matched it to the operator's own timetable, so confirm with the operator before you plan around one boat.",
+const SOURCE_FAQ = (from, to, c) => ({
+  q: `Where do these ${from} to ${to} times come from?`,
+  a: `From each operator's own published timetable, ${c.scanText}. We only list boats you can book on our booking site, and the booking page shows the live seats and fares for your date. Operators change times with the season, so go by the time on your ticket.`,
 });
 
 const LEMBONGAN_LANDING =
@@ -210,7 +202,7 @@ export const ROUTE_PAGES = {
     lead: (c) =>
       `Fast boats run from ${joinList(c.fromNames)} back to ${joinList(c.toNames)}. We list ${plural(c.count, "daily departure")} with ${joinOps(c.operators)}, ` +
       `leaving between ${c.earliest} and ${c.latest}.` +
-      CONFIRMED_LINE(c),
+      SOURCE_LINE(c),
     sections: [
       {
         heading: "Padang Bai or Sanur?",
@@ -249,7 +241,7 @@ export const ROUTE_PAGES = {
         q: "Which operators run boats from the Gilis to Bali?",
         a: `We list ${joinOps(c.operators, 9)}.`,
       },
-      CONFIRMED_FAQ("Gili Islands", "Bali", c),
+      SOURCE_FAQ("Gili Islands", "Bali", c),
       {
         q: "Is there a ferry from the Gilis to Bali?",
         a: "Yes, but most travellers take a fast boat straight from the Gilis, which is what this page lists. The slow public ferry runs between Lombok's Lembar harbour and Padang Bai, so from the Gilis you'd first have to cross to Lombok and travel to Lembar.",
@@ -747,8 +739,8 @@ export const ROUTE_PAGES = {
     h1: "Sanur to Nusa Penida by fast boat",
     metaTitle: "Sanur to Nusa Penida Fast Boat & Ferry: Times & Fares",
     metaDescription:
-      "Sanur to Nusa Penida fast boat times, crossing time and operators, with confirmed departures and live sea conditions. Compare boats and book on 12Go.",
-    blurb: "The main crossing from south Bali to Nusa Penida, with confirmed departures and crossing times.",
+      "Sanur to Nusa Penida fast boat times, crossing time and operators, with each operator's own timetable and live sea conditions. Compare boats and book on 12Go.",
+    blurb: "The main crossing from south Bali to Nusa Penida, with each operator's own timetable and crossing times.",
     fromLabel: "Sanur",
     toLabel: "Nusa Penida",
     fromPorts: ["Sanur"],
@@ -761,7 +753,7 @@ export const ROUTE_PAGES = {
     lead: (c) =>
       `We list ${plural(c.count, "fast boat departure")} from Sanur to Nusa Penida with ${joinOps(c.operators)}, ` +
       `leaving between ${c.earliest} and ${c.latest}. The crossing takes ${rangeText(c.pairs[0].min, c.pairs[0].max)}, depending on the boat.` +
-      CONFIRMED_LINE(c),
+      SOURCE_LINE(c),
     sections: [
       {
         heading: "Why most people leave from Sanur",
@@ -792,7 +784,7 @@ export const ROUTE_PAGES = {
         q: "Which operators run Sanur to Nusa Penida?",
         a: `We list ${joinOps(c.operators, 9)}. Boats and comfort differ, so compare times and reviews as well as the fare.`,
       },
-      CONFIRMED_FAQ("Sanur", "Nusa Penida", c),
+      SOURCE_FAQ("Sanur", "Nusa Penida", c),
       {
         q: "Can I do Nusa Penida as a day trip from Sanur?",
         a: `Yes, many people do. With departures from ${c.earliest}, an early boat out and an afternoon boat back gives you most of a day on the island. Book the return before you go in busy months.`,
@@ -809,8 +801,8 @@ export const ROUTE_PAGES = {
     h1: "Sanur to Nusa Lembongan by fast boat",
     metaTitle: "Sanur to Nusa Lembongan Fast Boat: Times & Operators",
     metaDescription:
-      "Sanur to Nusa Lembongan fast boat times, crossing time and operators, with confirmed departures and live sea conditions. Compare boats and book on 12Go.",
-    blurb: "The short hop from Sanur to Nusa Lembongan, with confirmed departures and crossing times.",
+      "Sanur to Nusa Lembongan fast boat times, crossing time and operators, with each operator's own timetable and live sea conditions. Compare boats and book on 12Go.",
+    blurb: "The short hop from Sanur to Nusa Lembongan, with each operator's own timetable and crossing times.",
     fromLabel: "Sanur",
     toLabel: "Nusa Lembongan",
     fromPorts: ["Sanur"],
@@ -823,7 +815,7 @@ export const ROUTE_PAGES = {
     lead: (c) =>
       `We list ${plural(c.count, "fast boat departure")} from Sanur to Nusa Lembongan with ${joinOps(c.operators)}, ` +
       `leaving between ${c.earliest} and ${c.latest}. The crossing takes ${rangeText(c.pairs[0].min, c.pairs[0].max)}, depending on the boat.` +
-      CONFIRMED_LINE(c),
+      SOURCE_LINE(c),
     sections: [
       {
         heading: "Sanur to Lembongan",
@@ -847,7 +839,7 @@ export const ROUTE_PAGES = {
         q: "Which operators run Sanur to Nusa Lembongan?",
         a: `We list ${joinOps(c.operators, 9)}. Boats and comfort differ, so compare times and reviews as well as the fare.`,
       },
-      CONFIRMED_FAQ("Sanur", "Nusa Lembongan", c),
+      SOURCE_FAQ("Sanur", "Nusa Lembongan", c),
       {
         q: "Will I get wet getting off the boat?",
         a: "Possibly. Many boats land on Lembongan's beach rather than at a pier, so you may step off into shallow water. Wear sandals and keep valuables in a bag you can lift.",
@@ -865,7 +857,7 @@ export const ROUTE_PAGES = {
     metaTitle: "Nusa Penida Fast Boat from Bali: Times & Fares, Every Port",
     metaDescription:
       "Fast boats from Bali to Nusa Penida from Sanur, Padang Bai, Serangan and Benoa: departures, crossing times and operators, with sea conditions. Compare and book.",
-    blurb: "Every Bali port with boats to Nusa Penida in one table, with confirmed departures.",
+    blurb: "Every Bali port with boats to Nusa Penida in one table, with each operator's own timetable.",
     fromLabel: "Bali",
     toLabel: "Nusa Penida",
     fromPorts: BALI_MAINLAND,
@@ -878,7 +870,7 @@ export const ROUTE_PAGES = {
     lead: (c) =>
       `Fast boats run to Nusa Penida from ${joinList(c.fromNames)}. We list ${plural(c.count, "departure")} with ${joinOps(c.operators)}, ` +
       `leaving between ${c.earliest} and ${c.latest}. Crossing times: ${c.durations}.` +
-      CONFIRMED_LINE(c),
+      SOURCE_LINE(c),
     sections: [
       {
         heading: "Which Bali port for Nusa Penida?",
@@ -903,7 +895,7 @@ export const ROUTE_PAGES = {
         q: "Which operators go from Bali to Nusa Penida?",
         a: `We list ${joinOps(c.operators, 9)}. These are the operators listed on the booking site when we last checked.`,
       },
-      CONFIRMED_FAQ("Bali", "Nusa Penida", c),
+      SOURCE_FAQ("Bali", "Nusa Penida", c),
       CANCEL_FAQ("Bali", "Nusa Penida"),
       BOOK_FAQ,
     ],
@@ -917,7 +909,7 @@ export const ROUTE_PAGES = {
     metaTitle: "Bali to Nusa Lembongan Fast Boat: Times From Every Port",
     metaDescription:
       "Fast boats from Bali to Nusa Lembongan from Sanur, Padang Bai and Benoa: departures, crossing times and operators, with sea conditions. Compare and book.",
-    blurb: "Every Bali port with boats to Nusa Lembongan, with confirmed departures.",
+    blurb: "Every Bali port with boats to Nusa Lembongan, with each operator's own timetable.",
     fromLabel: "Bali",
     toLabel: "Nusa Lembongan",
     fromPorts: BALI_MAINLAND,
@@ -930,7 +922,7 @@ export const ROUTE_PAGES = {
     lead: (c) =>
       `Fast boats run to Nusa Lembongan from ${joinList(c.fromNames)}. We list ${plural(c.count, "departure")} with ${joinOps(c.operators)}, ` +
       `leaving between ${c.earliest} and ${c.latest}. Crossing times: ${c.durations}.` +
-      CONFIRMED_LINE(c),
+      SOURCE_LINE(c),
     sections: [
       {
         heading: "Which Bali port for Lembongan?",
@@ -955,7 +947,7 @@ export const ROUTE_PAGES = {
         q: "Which operators go from Bali to Nusa Lembongan?",
         a: `We list ${joinOps(c.operators, 9)}. These are the operators listed on the booking site when we last checked.`,
       },
-      CONFIRMED_FAQ("Bali", "Nusa Lembongan", c),
+      SOURCE_FAQ("Bali", "Nusa Lembongan", c),
       CANCEL_FAQ("Bali", "Nusa Lembongan"),
       BOOK_FAQ,
     ],
@@ -968,8 +960,8 @@ export const ROUTE_PAGES = {
     h1: "Nusa Lembongan to Bali by fast boat",
     metaTitle: "Nusa Lembongan to Bali Fast Boat: Times & Operators",
     metaDescription:
-      "Nusa Lembongan to Bali fast boat departures to Sanur and other ports, with crossing times, operators and confirmed departures. Compare boats and book on 12Go.",
-    blurb: "Boats back to Bali from Nusa Lembongan, with confirmed departures and crossing times.",
+      "Nusa Lembongan to Bali fast boat departures to Sanur and other ports, with crossing times and operators from each operator's own timetable. Compare boats and book on 12Go.",
+    blurb: "Boats back to Bali from Nusa Lembongan, with each operator's own timetable and crossing times.",
     fromLabel: "Nusa Lembongan",
     toLabel: "Bali",
     fromPorts: ["Nusa Lembongan"],
@@ -982,7 +974,7 @@ export const ROUTE_PAGES = {
     lead: (c) =>
       `Fast boats run from Nusa Lembongan to ${joinList(c.toNames)}. We list ${plural(c.count, "departure")} with ${joinOps(c.operators)}, ` +
       `leaving between ${c.earliest} and ${c.latest}. Crossing times: ${c.durations}.` +
-      CONFIRMED_LINE(c),
+      SOURCE_LINE(c),
     sections: [
       {
         heading: "Getting back to Bali",
@@ -1007,7 +999,7 @@ export const ROUTE_PAGES = {
         q: "Which operators run Nusa Lembongan to Bali?",
         a: `We list ${joinOps(c.operators, 9)}.`,
       },
-      CONFIRMED_FAQ("Nusa Lembongan", "Bali", c),
+      SOURCE_FAQ("Nusa Lembongan", "Bali", c),
       CANCEL_FAQ("Nusa Lembongan", "Bali"),
       BOOK_FAQ,
     ],
@@ -1020,7 +1012,7 @@ export const ROUTE_PAGES = {
     h1: "Nusa Penida to Bali by fast boat",
     metaTitle: "Nusa Penida to Bali Fast Boat: Times & Operators",
     metaDescription:
-      "Nusa Penida to Bali fast boat departures, crossing times and operators, with confirmed departures and sea conditions. Compare boats and book on 12Go.",
+      "Nusa Penida to Bali fast boat departures, crossing times and operators, with each operator's own timetable and sea conditions. Compare boats and book on 12Go.",
     blurb: "Boats back to Bali from Nusa Penida, with crossing times and sea conditions.",
     fromLabel: "Nusa Penida",
     toLabel: "Bali",
@@ -1034,7 +1026,7 @@ export const ROUTE_PAGES = {
     lead: (c) =>
       `Fast boats run from Nusa Penida to ${joinList(c.toNames)}. We list ${plural(c.count, "departure")} with ${joinOps(c.operators)}, ` +
       `leaving between ${c.earliest} and ${c.latest}. Crossing times: ${c.durations}.` +
-      CONFIRMED_LINE(c),
+      SOURCE_LINE(c),
     sections: [
       {
         heading: "Getting back to Bali",
@@ -1059,7 +1051,7 @@ export const ROUTE_PAGES = {
         q: "Which operators run Nusa Penida to Bali?",
         a: `We list ${joinOps(c.operators, 9)}.`,
       },
-      CONFIRMED_FAQ("Nusa Penida", "Bali", c),
+      SOURCE_FAQ("Nusa Penida", "Bali", c),
       CANCEL_FAQ("Nusa Penida", "Bali"),
       BOOK_FAQ,
     ],
@@ -1072,8 +1064,8 @@ export const ROUTE_PAGES = {
     h1: "Gili Islands to Nusa Penida by fast boat",
     metaTitle: "Gili Islands to Nusa Penida Fast Boat: Times & Operators",
     metaDescription:
-      "Gili Trawangan, Gili Air and Gili Meno to Nusa Penida by fast boat: departures, crossing times and operators, with confirmed departures. Compare and book.",
-    blurb: "Straight from the Gilis to Nusa Penida without a night in Bali, with confirmed departures.",
+      "Gili Trawangan, Gili Air and Gili Meno to Nusa Penida by fast boat: departures, crossing times and operators, with each operator's own timetable. Compare and book.",
+    blurb: "Straight from the Gilis to Nusa Penida without a night in Bali, with each operator's own timetable.",
     fromLabel: "Gili Islands",
     toLabel: "Nusa Penida",
     fromPorts: ["Gili Trawangan", "Gili Air", "Gili Meno"],
@@ -1086,7 +1078,7 @@ export const ROUTE_PAGES = {
     lead: (c) =>
       `Fast boats run from ${joinList(c.fromNames)} to Nusa Penida. We list ${plural(c.count, "departure")} with ${joinOps(c.operators)}, ` +
       `leaving between ${c.earliest} and ${c.latest}. Crossing times: ${c.durations}.` +
-      CONFIRMED_LINE(c),
+      SOURCE_LINE(c),
     sections: [
       {
         heading: "Skipping the mainland",
@@ -1114,7 +1106,7 @@ export const ROUTE_PAGES = {
         q: "What time do boats leave the Gilis for Nusa Penida?",
         a: `The earliest departure we list is ${c.earliest} and the latest is ${c.latest}. Timetables change, so confirm on the booking page for your date.`,
       },
-      CONFIRMED_FAQ("Gili Islands", "Nusa Penida", c),
+      SOURCE_FAQ("Gili Islands", "Nusa Penida", c),
       CANCEL_FAQ("the Gili Islands", "Nusa Penida"),
       BOOK_FAQ,
     ],
@@ -1127,8 +1119,8 @@ export const ROUTE_PAGES = {
     h1: "Gili Islands to Nusa Lembongan by fast boat",
     metaTitle: "Gili Islands to Nusa Lembongan Fast Boat: Times & Operators",
     metaDescription:
-      "Gili Trawangan, Gili Air and Gili Meno to Nusa Lembongan by fast boat: departures, crossing times and operators, with confirmed departures. Compare and book.",
-    blurb: "Straight from the Gilis to Nusa Lembongan, with confirmed departures and crossing times.",
+      "Gili Trawangan, Gili Air and Gili Meno to Nusa Lembongan by fast boat: departures, crossing times and operators, with each operator's own timetable. Compare and book.",
+    blurb: "Straight from the Gilis to Nusa Lembongan, with each operator's own timetable and crossing times.",
     fromLabel: "Gili Islands",
     toLabel: "Nusa Lembongan",
     fromPorts: ["Gili Trawangan", "Gili Air", "Gili Meno"],
@@ -1141,7 +1133,7 @@ export const ROUTE_PAGES = {
     lead: (c) =>
       `Fast boats run from ${joinList(c.fromNames)} to Nusa Lembongan. We list ${plural(c.count, "departure")} with ${joinOps(c.operators)}, ` +
       `leaving between ${c.earliest} and ${c.latest}. Crossing times: ${c.durations}.` +
-      CONFIRMED_LINE(c),
+      SOURCE_LINE(c),
     sections: [
       {
         heading: "Skipping the mainland",
@@ -1169,7 +1161,7 @@ export const ROUTE_PAGES = {
         q: "What time do boats leave the Gilis for Nusa Lembongan?",
         a: `The earliest departure we list is ${c.earliest} and the latest is ${c.latest}. Timetables change, so confirm on the booking page for your date.`,
       },
-      CONFIRMED_FAQ("Gili Islands", "Nusa Lembongan", c),
+      SOURCE_FAQ("Gili Islands", "Nusa Lembongan", c),
       CANCEL_FAQ("the Gili Islands", "Nusa Lembongan"),
       BOOK_FAQ,
     ],
@@ -1182,8 +1174,8 @@ export const ROUTE_PAGES = {
     h1: "Lombok to Bali by fast boat",
     metaTitle: "Lombok to Bali Ferry & Fast Boat from Bangsal: Times",
     metaDescription:
-      "Lombok to Bali by fast boat from Bangsal: departures, crossing times and operators, with confirmed departures and sea conditions. Compare and book on 12Go.",
-    blurb: "Fast boats from Bangsal on Lombok back to Bali, with confirmed departures.",
+      "Lombok to Bali by fast boat from Bangsal: departures, crossing times and operators, with each operator's own timetable and sea conditions. Compare and book on 12Go.",
+    blurb: "Fast boats from Bangsal on Lombok back to Bali, with each operator's own timetable.",
     fromLabel: "Lombok",
     toLabel: "Bali",
     fromPorts: LOMBOK_PORTS,
@@ -1196,7 +1188,7 @@ export const ROUTE_PAGES = {
     lead: (c) =>
       `Fast boats run from Bangsal on Lombok to ${joinList(c.toNames)}. We list ${plural(c.count, "departure")} with ${joinOps(c.operators)}, ` +
       `leaving between ${c.earliest} and ${c.latest}. Crossing times: ${c.durations}.` +
-      CONFIRMED_LINE(c),
+      SOURCE_LINE(c),
     sections: [
       {
         heading: "Leaving from Bangsal",
@@ -1222,7 +1214,7 @@ export const ROUTE_PAGES = {
         q: "Which operators run Lombok to Bali?",
         a: `We list ${joinOps(c.operators, 9)}.`,
       },
-      CONFIRMED_FAQ("Lombok", "Bali", c),
+      SOURCE_FAQ("Lombok", "Bali", c),
       CANCEL_FAQ("Lombok", "Bali"),
       BOOK_FAQ,
     ],
@@ -1235,8 +1227,8 @@ export const ROUTE_PAGES = {
     h1: "Lombok to Nusa Penida and Lembongan by fast boat",
     metaTitle: "Lombok to Nusa Penida & Lembongan Fast Boat: Times",
     metaDescription:
-      "Fast boats from Bangsal on Lombok to Nusa Penida and Nusa Lembongan: departures, crossing times and operators, with confirmed departures. Compare and book.",
-    blurb: "Fast boats from Bangsal to Nusa Penida and Nusa Lembongan, with confirmed departures.",
+      "Fast boats from Bangsal on Lombok to Nusa Penida and Nusa Lembongan: departures, crossing times and operators, with each operator's own timetable. Compare and book.",
+    blurb: "Fast boats from Bangsal to Nusa Penida and Nusa Lembongan, with each operator's own timetable.",
     fromLabel: "Lombok",
     toLabel: "Nusa Islands",
     fromPorts: LOMBOK_PORTS,
@@ -1249,7 +1241,7 @@ export const ROUTE_PAGES = {
     lead: (c) =>
       `Fast boats run from Bangsal on Lombok to ${joinList(c.toNames)}. We list ${plural(c.count, "departure")} with ${joinOps(c.operators)}, ` +
       `leaving between ${c.earliest} and ${c.latest}. Crossing times: ${c.durations}.` +
-      CONFIRMED_LINE(c),
+      SOURCE_LINE(c),
     sections: [
       {
         heading: "Straight to the Nusa Islands",
@@ -1273,7 +1265,7 @@ export const ROUTE_PAGES = {
         q: "Which operators run Lombok to the Nusa Islands?",
         a: `We list ${joinOps(c.operators, 9)}.`,
       },
-      CONFIRMED_FAQ("Lombok", "Nusa Islands", c),
+      SOURCE_FAQ("Lombok", "Nusa Islands", c),
       CANCEL_FAQ("Lombok", "the Nusa Islands"),
       BOOK_FAQ,
     ],
@@ -1286,8 +1278,8 @@ export const ROUTE_PAGES = {
     h1: "Nusa Penida and Lembongan to Lombok by fast boat",
     metaTitle: "Nusa Penida & Lembongan to Lombok Fast Boat: Times",
     metaDescription:
-      "Fast boats from Nusa Penida and Nusa Lembongan to Bangsal on Lombok: departures, crossing times and operators, with confirmed departures. Compare and book.",
-    blurb: "Fast boats from Nusa Penida and Lembongan to Bangsal on Lombok, with confirmed departures.",
+      "Fast boats from Nusa Penida and Nusa Lembongan to Bangsal on Lombok: departures, crossing times and operators, with each operator's own timetable. Compare and book.",
+    blurb: "Fast boats from Nusa Penida and Lembongan to Bangsal on Lombok, with each operator's own timetable.",
     fromLabel: "Nusa Islands",
     toLabel: "Lombok",
     fromPorts: ["Nusa Penida", "Nusa Lembongan"],
@@ -1300,7 +1292,7 @@ export const ROUTE_PAGES = {
     lead: (c) =>
       `Fast boats run from ${joinList(c.fromNames)} to Bangsal on Lombok. We list ${plural(c.count, "departure")} with ${joinOps(c.operators)}, ` +
       `leaving between ${c.earliest} and ${c.latest}. Crossing times: ${c.durations}.` +
-      CONFIRMED_LINE(c),
+      SOURCE_LINE(c),
     sections: [
       {
         heading: "Straight to Lombok",
@@ -1324,7 +1316,7 @@ export const ROUTE_PAGES = {
         q: "Which operators run the Nusa Islands to Lombok?",
         a: `We list ${joinOps(c.operators, 9)}.`,
       },
-      CONFIRMED_FAQ("Nusa Islands", "Lombok", c),
+      SOURCE_FAQ("Nusa Islands", "Lombok", c),
       CANCEL_FAQ("the Nusa Islands", "Lombok"),
       BOOK_FAQ,
     ],
@@ -1337,7 +1329,7 @@ export const ROUTE_PAGES = {
     h1: "Gili Meno to Bali by fast boat",
     metaTitle: "Gili Meno to Bali Fast Boat: Times & Operators",
     metaDescription:
-      "Gili Meno to Bali fast boat departures, crossing times and operators, with confirmed departures and sea conditions. Compare boats and book on 12Go.",
+      "Gili Meno to Bali fast boat departures, crossing times and operators, with each operator's own timetable and sea conditions. Compare boats and book on 12Go.",
     blurb: "Departures from Gili Meno, the quietest Gili, back to Bali.",
     fromLabel: "Gili Meno",
     toLabel: "Bali",
@@ -1351,7 +1343,7 @@ export const ROUTE_PAGES = {
     lead: (c) =>
       `Fast boats run from Gili Meno to ${joinList(c.toNames)}. We list ${plural(c.count, "departure")} with ${joinOps(c.operators)}, ` +
       `leaving between ${c.earliest} and ${c.latest}. Crossing times: ${c.durations}.` +
-      CONFIRMED_LINE(c),
+      SOURCE_LINE(c),
     sections: [
       {
         heading: "Fewer boats from Meno",
@@ -1376,7 +1368,7 @@ export const ROUTE_PAGES = {
         q: "Which operators run Gili Meno to Bali?",
         a: `We list ${joinOps(c.operators, 9)}.`,
       },
-      CONFIRMED_FAQ("Gili Meno", "Bali", c),
+      SOURCE_FAQ("Gili Meno", "Bali", c),
       CANCEL_FAQ("Gili Meno", "Bali"),
       BOOK_FAQ,
     ],
@@ -1547,7 +1539,7 @@ function specificRoute({ slug, from, to, name, about }) {
     lead: (c) =>
       `We list ${plural(c.count, "daily fast boat departure")} from ${f} to ${short(to)} with ${joinOps(c.operators)}, ` +
       `leaving between ${c.earliest} and ${c.latest}. The crossing takes ${rangeText(c.pairs[0].min, c.pairs[0].max)}, depending on the boat.` +
-      CONFIRMED_LINE(c),
+      SOURCE_LINE(c),
     sections: [
       { heading: `About ${title}`, paragraphs: about },
       { heading: `Leaving from ${short(from)}`, paragraphs: [PORT_NOTES[from].leaving, CHECKIN_TEXT] },
@@ -1566,7 +1558,7 @@ function specificRoute({ slug, from, to, name, about }) {
         q: `Which operators run ${f} to ${short(to)}?`,
         a: `We list ${joinOps(c.operators, 9)}. Boats, comfort and prices differ, so compare departure times and reviews as well as the fare.`,
       },
-      CONFIRMED_FAQ(f, short(to), c),
+      SOURCE_FAQ(f, short(to), c),
       CANCEL_FAQ(f, short(to)),
       BOOK_FAQ,
     ],

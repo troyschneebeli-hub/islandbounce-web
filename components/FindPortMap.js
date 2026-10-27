@@ -138,7 +138,7 @@ function withBoatInfo(r, date) {
 
 
 // Times and operators for one port card, from lib/portDepartures. Every time shown is
-// a departure; check-in is 1 hour before. Prices are the lowest adult fare 12Go listed.
+// a departure; check-in is 1 hour before. No fares: the booking page shows live ones.
 function DepartureList({ departures, from, to, date, returnDate, travellers }) {
   const [open, setOpen] = useState(false);
   if (!departures?.hasReal) {
@@ -162,11 +162,7 @@ function DepartureList({ departures, from, to, date, returnDate, travellers }) {
             <div key={`${g.operator}|${g.kind}`} style={{ marginBottom: 8 }}>
               <div style={{ fontWeight: 700 }}>
                 {g.operator}{" "}
-                {g.kind === "confirmed" ? (
-                  <span style={{ fontWeight: 700, fontSize: 9.5, letterSpacing: 0.5, textTransform: "uppercase", background: COLORS.sea, color: "white", borderRadius: 999, padding: "1px 6px", marginLeft: 4 }}>
-                    Confirmed
-                  </span>
-                ) : g.kind === "daily" ? (
+                {g.kind === "daily" ? (
                   <span style={{ fontWeight: 700, fontSize: 9.5, letterSpacing: 0.5, textTransform: "uppercase", border: `1px solid ${COLORS.sea}`, color: COLORS.sea, borderRadius: 999, padding: "0 6px", marginLeft: 4 }}>
                     Daily
                   </span>
@@ -184,7 +180,7 @@ function DepartureList({ departures, from, to, date, returnDate, travellers }) {
                     title={`Opens ${from} to ${to} on the booking page${date ? ` for ${formatDate(date)}` : ""}. Look for the ${d.time} ${g.operator} sailing. Check in ${d.checkIn || "1 hour before"}${d.arrives ? ` · arrives ${d.arrives}` : ""}`}
                     style={{ background: COLORS.foam, border: `1px solid ${COLORS.foamLine}`, borderRadius: 6, padding: "2px 6px", color: COLORS.ink, textDecoration: "none" }}
                   >
-                    {d.time} · {d.price ? `A$${d.price}` : "price on site"}
+                    {d.time}
                   </a>
                 ))}
               </div>
@@ -192,9 +188,9 @@ function DepartureList({ departures, from, to, date, returnDate, travellers }) {
           ))}
         </div>
           <div style={{ opacity: 0.65, marginTop: 6, lineHeight: 1.45 }}>
-            Daily times were on the booking page on at least 6 of the 7 days we checked; Confirmed ones also match the operator&apos;s own
-            timetable. Typical times aren&apos;t on every day, so check live times. Tap a time to open that route on the booking page, then pick
-            the same operator and time. Fares are the lowest for 1 adult. Checked {formatDate(departures.checked)}.
+            Times are from each operator&apos;s own timetable. Daily ones run every day; typical times may not, so check live times.
+            Tap a time to open that route on the booking page, with live fares, then pick the same operator and time. Checked{" "}
+            {formatDate(departures.checked)}.
           </div>
         </div>
       )}
