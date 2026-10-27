@@ -435,12 +435,7 @@ export default function RoutePage({ params }) {
               </Link>
             </div>
           </section>
-
-          <p style={{ fontSize: 12, color: COLORS.ink, opacity: 0.6, lineHeight: 1.6 }}>
-            How we compile this: We check seven days of departures on the booking page. Boats listed on at least six of those days are
-            shown here (the booking page hides a boat on a day it&apos;s sold out). Ones that also match the operator&apos;s own timetable are
-            tagged Confirmed.
-          </p>        </div>
+        </div>
       </div>
     </div>
   );
