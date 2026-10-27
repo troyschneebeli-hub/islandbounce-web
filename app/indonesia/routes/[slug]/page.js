@@ -84,7 +84,7 @@ export default function RoutePage({ params }) {
   if (!route) notFound();
 
   const today = new Date().toISOString().slice(0, 10);
-  // SAILINGS = confirmed daily sailings only, so every row, count and pick below comes from the same table.
+  // SAILINGS = daily sailings on the operators' timetables only, so every row, count and pick below comes from the same table.
   const { active } = selectSailings(SAILINGS, route, today);
   const summary = summarize(active);
   const hasData = summary.count > 0;
@@ -93,11 +93,11 @@ export default function RoutePage({ params }) {
   const stale = isStale(checked, new Date().toISOString().slice(0, 10));
   const confirmedActive = active;
   const ctx = routeContext(route, active, SAILINGS_CHECKED_TEXT);
-  // A page can have no confirmed daily sailings in a given week (an operator drops off the booking site, or a boat
-  // isn't listed every day). The page stays up with live times instead of a table; the weekly report lists it.
+  // A page can have no daily sailings (an operator stops a route or changes its timetable). The page stays up with live
+  // times instead of a table; check-data.mjs warns about it.
   const lead = hasData
     ? route.lead(ctx)
-    : `No boat on ${route.name} was on the booking page on at least six of the seven days when we ${SAILINGS_CHECKED_TEXT}. Choose your date below to see live times and fares on the booking page.`;
+    : `None of the operators' timetables (${SAILINGS_CHECKED_TEXT}) list a daily boat on ${route.name}. Choose your date below to see live times and fares on the booking page.`;
   const faqs = hasData ? route.faqs(ctx) : [];
 
   const url = `${SITE_URL}/indonesia/routes/${route.slug}`;
@@ -117,8 +117,7 @@ export default function RoutePage({ params }) {
         mainEntity: faqs.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })),
       }
     : null;
-  // Trip data for confirmed sailings only; the 12Go-only listings aren't checked enough to mark up.
-  // Times are Bali/Lombok local time (WITA, UTC+8).
+  // Trip data for the daily sailings in the table. Times are Bali/Lombok local time (WITA, UTC+8).
   const wita = (t) => `${t}:00+08:00`;
   const tripsLd = confirmedActive.length
     ? {
@@ -142,25 +141,22 @@ export default function RoutePage({ params }) {
     : null;
   const jsonLd = [breadcrumbLd, faqLd, tripsLd].filter(Boolean);
 
-  // Summary strip and booking box: cheapest fare and fastest crossing across
-  // every port pair on the page, plus each pair's own lowest fare for the picker.
-  const minOf = (nums) => (nums.length ? Math.min(...nums) : null);
-  const priced = (list) => list.map((s) => s.price).filter((p) => p != null);
-  const lowestPrice = minOf(priced(active));
+  // Summary strip: fastest crossing and first boat across every port pair on the page. No fares: the booking page
+  // has the live ones.
   const pairMins = summary.pairs.map((p) => p.min).filter((m) => m != null);
   const pairMaxes = summary.pairs.map((p) => p.max).filter((m) => m != null);
   const fastestMin = pairMins.length ? Math.min(...pairMins) : null;
   const stats = hasData
     ? [
-        ...(lowestPrice != null ? [{ n: `A$${lowestPrice}`, label: "from (adult)" }] : []),
         { n: fmtDuration(fastestMin), label: "fastest crossing" },
+        { n: summary.earliest, label: "first boat" },
         { n: summary.count, label: summary.count === 1 ? "departure" : "departures" },
         { n: summary.operators.length, label: summary.operators.length === 1 ? "operator" : "operators" },
       ]
     : [];
   // With no confirmed sailings the booking box still works, for the page's main pair.
   const bookingPairs = hasData
-    ? groups.map((g) => ({ from: g.from, to: g.to, minPrice: minOf(priced(g.sailings)) }))
+    ? groups.map((g) => ({ from: g.from, to: g.to, minPrice: null }))
     : [{ from: route.bookFrom, to: route.bookTo, minPrice: null }];
 
   // Summary card above the table, from the same confirmed daily rows.
@@ -171,7 +167,6 @@ export default function RoutePage({ params }) {
         { n: `${summary.earliest}–${summary.latest}`, label: "earliest to latest" },
         { n: summary.operators.length, label: summary.operators.length === 1 ? "operator" : "operators" },
         { n: rangeText(fastestMin, slowestMin), label: "crossing time" },
-        ...(lowestPrice != null ? [{ n: `From A$${lowestPrice}`, label: "lowest adult fare" }] : []),
       ]
     : [];
 
@@ -187,10 +182,6 @@ export default function RoutePage({ params }) {
     const fastestPick = basisDurs.length ? Math.min(...basisDurs) : null;
     const fastest = basis.filter((s) => durationMins(s.departs, s.arrives) === fastestPick);
     if (fastest.length) pickRows.push({ label: "Fastest", value: `${opsFor(fastest)}, ${fmtDuration(fastestPick)}`, note: where(fastest[0]) });
-    if (lowestPrice != null) {
-      const cheapest = active.filter((s) => s.price === lowestPrice);
-      pickRows.push({ label: "Cheapest", value: `${opsFor(cheapest)}, from A$${lowestPrice}`, note: where(cheapest[0]) });
-    }
     const first = active.filter((s) => s.departs === summary.earliest);
     const last = active.filter((s) => s.departs === summary.latest);
     pickRows.push({
@@ -256,7 +247,7 @@ export default function RoutePage({ params }) {
             <section style={{ marginBottom: 32 }}>
               <h2 style={h2}>Check live times</h2>
               <p style={para}>
-                We didn&apos;t find a boat on {route.name} that runs every day in our latest check. Boats may still be running on
+                The operators&apos; timetables we checked don&apos;t list a daily boat on {route.name}. Boats may still be running on
                 your date: pick a date to see the boats, times and fares on the booking page.
               </p>
               <BookingBox />
@@ -312,8 +303,8 @@ export default function RoutePage({ params }) {
               </div>
             )}
             <p style={{ ...para, fontSize: 13, opacity: 0.7 }}>
-              Boats on the booking page at least 6 days a week. Confirmed ones also match the operator&apos;s own timetable. Lowest adult
-              fares, {SAILINGS_CHECKED_TEXT}. Times change, so confirm when you book.
+              Daily boats on the operators&apos; own timetables, {SAILINGS_CHECKED_TEXT}. Times change, so confirm when you book; the
+              booking page shows live fares.
               {summary.rows > summary.count && " Some boats call at more than one port, so they appear under each destination."}
             </p>
             {stale && (
@@ -412,7 +403,7 @@ export default function RoutePage({ params }) {
           {byPort.length > 0 && (
             <section style={{ marginBottom: 36 }}>
               <h2 style={h2}>{route.name} by port</h2>
-              <p style={para}>Each trip on its own page, with just its boats, crossing times and fares.</p>
+              <p style={para}>Each trip on its own page, with just its boats and crossing times.</p>
               <div className="flex flex-wrap gap-3" style={{ marginTop: 10 }}>
                 {byPort.map((r) => (
                   <Link

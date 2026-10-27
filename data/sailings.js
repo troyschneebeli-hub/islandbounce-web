@@ -1,18 +1,16 @@
-// The sailings the site shows. Import from here, not from the generated files.
+// The sailings the site shows. Import from here, not from the generated file.
 //
-//   SAILINGS          every DAILY sailing you can book: listed on the 12Go booking page on at least 6 of the 7
-//                     nights checked. confidence "confirmed" = also on the operator's own timetable (tagged
-//                     Confirmed); "listed" = 12Go only. The route pages, hub counts and sitemap use these.
-//   PLANNER_SAILINGS  SAILINGS first, then sailings labelled typical: confirmed but not daily, and 12Go-only
-//                     listings that aren't daily. The Trip Planner, port cards and ports map use these.
-// Operator-only sailings (not on 12Go) are never shown. data/twelvego.js, data/timetables.js and the
-// spreadsheets are research files: nothing in app/ or components/ may import them.
-// All of it is generated from data/generated/ by the daily timetable run (see TIMETABLE_AUTOMATION.md and CLAUDE.md).
-import { CONFIRMED_DAILY, LISTED_DAILY, CONFIRMED_NOT_DAILY, CONFIRMED_SCAN } from "@/data/confirmed";
-import { TYPICAL_SAILINGS } from "@/data/typical";
+//   SAILINGS          daily boats on the operators' own published timetables, on routes you can book on our booking
+//                     site. The route pages, port and operator pages, hub counts and sitemap use these.
+//   PLANNER_SAILINGS  SAILINGS first, then the other timetable rows on those routes, labelled typical. The Trip
+//                     Planner, port cards and ports map use these.
+// Built by scripts/build-timetable.mjs from data/operator-sailings.json (see CLAUDE.md). No 12Go times or fares are
+// shown: 12Go's terms don't allow reusing them. data/confirmed.js, data/typical.js, data/twelvego.js,
+// data/timetables.js and the spreadsheets are old research files: nothing in app/ or components/ may import them.
+import { DAILY_SAILINGS, OTHER_SAILINGS, TIMETABLE_CHECK } from "@/data/timetable";
 
-export const SAILINGS = [...CONFIRMED_DAILY, ...LISTED_DAILY];
-export const PLANNER_SAILINGS = [...SAILINGS, ...CONFIRMED_NOT_DAILY, ...TYPICAL_SAILINGS];
-// The real check date (never a scanned day), and the wording for it.
-export const SAILINGS_UPDATED = CONFIRMED_SCAN.checked;
-export const SAILINGS_CHECKED_TEXT = CONFIRMED_SCAN.checkedText;
+export const SAILINGS = DAILY_SAILINGS;
+export const PLANNER_SAILINGS = [...SAILINGS, ...OTHER_SAILINGS];
+// The date the operator timetables were last checked, and the wording for it ("checked 27 Oct 2026").
+export const SAILINGS_UPDATED = TIMETABLE_CHECK.checked;
+export const SAILINGS_CHECKED_TEXT = TIMETABLE_CHECK.checkedText;

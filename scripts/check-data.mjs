@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-// Sanity checks on the sailings the site shows. Run after scripts/build-confirmed.mjs (the weekly Action
-// runs it before publishing), and again after `npm run build` to check the rendered route pages too:
+// Sanity checks on the sailings the site shows. Run after scripts/build-timetable.mjs, and again after
+// `npm run build` to check the rendered route pages too:
 //
 //     node scripts/check-data.mjs
 //
@@ -23,25 +23,34 @@ registerHooks({
   },
 });
 
-const { SAILINGS, PLANNER_SAILINGS, SAILINGS_UPDATED } = await import("@/data/sailings");
-const { CONFIRMED_SCAN } = await import("@/data/confirmed");
+const { SAILINGS, PLANNER_SAILINGS, SAILINGS_UPDATED, SAILINGS_CHECKED_TEXT } = await import("@/data/sailings");
 const { BALI_PORTS, ISLAND_PORTS } = await import("@/data/ports");
 const { ROUTE_PAGES, ROUTE_SLUGS } = await import("@/data/routePages");
 const { selectSailings, routeContext, countDepartures } = await import("@/lib/timetable");
-// daily-sailings.json (every bookable daily boat, from 24 Oct 2026); older data only has the confirmed daily file.
-const dailyFile = existsSync(join(ROOT, "data", "generated", "daily-sailings.json")) ? "daily-sailings.json" : "confirmed-daily-sailings.json";
-const daily = JSON.parse(readFileSync(join(ROOT, "data", "generated", dailyFile), "utf8"));
+const readJson = (name) => JSON.parse(readFileSync(join(ROOT, "data", name), "utf8"));
+const operatorRows = readJson("operator-sailings.json");
+const { checked } = readJson("operator-sailings-checked.json");
+const bookable = new Set(readJson("bookable-pairs.json").pairs);
+// Site port name -> the slug data/operator-sailings.json uses.
+const PORT_SLUG = {
+  Sanur: "sanur", "Padang Bai": "padang-bai", Serangan: "serangan", Kusamba: "kusamba", "Benoa / Nusa Dua": "benoa-nusa-dua",
+  "Gili Trawangan": "gili-trawangan", "Gili Air": "gili-air", "Gili Meno": "gili-meno", "Nusa Penida": "nusa-penida",
+  "Nusa Lembongan": "nusa-lembongan", "Bangsal (Lombok)": "bangsal",
+};
 
 const failures = [], warnings = [];
 const check = (ok, message) => { if (!ok) failures.push(message); };
 const warn = (ok, message) => { if (!ok) warnings.push(message); };
 
-// 1. Every listed row is in the daily file (same operator, route and departure).
-const dailyKeys = new Set(daily.sailings.map((s) => `${s.operator}|${s.fromName}|${s.toName}|${s.departs}`));
-for (const s of SAILINGS) {
-  check(dailyKeys.has(`${s.operatorBrand}|${s.from}|${s.to}|${s.departs}`), `${s.id}: not in data/generated/${dailyFile}`);
-  check(["confirmed", "listed"].includes(s.confidence) && s.runsDaily === true, `${s.id}: on the route pages but not daily`);
+// 1. Every row shown is on an operator's timetable (same operator, route and departure) and on a bookable route, and
+//    every route-page row is daily.
+const operatorKeys = new Set(operatorRows.map((r) => `${r.operator}|${r.from}|${r.to}|${r.dep}`));
+for (const s of PLANNER_SAILINGS) {
+  const from = PORT_SLUG[s.from], to = PORT_SLUG[s.to];
+  check(operatorKeys.has(`${s.operatorBrand}|${from}|${to}|${s.departs}`), `${s.id}: not in data/operator-sailings.json`);
+  check(bookable.has(`${s.operatorBrand}|${from}|${to}`), `${s.id}: route not in data/bookable-pairs.json`);
 }
+for (const s of SAILINGS) check(s.confidence === "operator" && s.runsDaily === true, `${s.id}: on the route pages but not daily`);
 // 2. No duplicate ids (route-page rows and planner rows).
 for (const [name, list] of [["SAILINGS", SAILINGS], ["PLANNER_SAILINGS", PLANNER_SAILINGS]]) {
   const ids = new Map();
@@ -56,23 +65,21 @@ for (const s of PLANNER_SAILINGS) {
   check(PORTS.has(s.to), `${s.id}: to "${s.to}" is not in data/ports.js`);
 }
 
-// 4. Every listed row has operator, departs and a price.
-for (const s of SAILINGS) {
+// 4. Every row has operator and departs, and no fare (12Go's fares may not be reused; the booking page has live ones).
+for (const s of PLANNER_SAILINGS) {
   check(Boolean(s.operator), `${s.id}: no operator`);
   check(/^\d{2}:\d{2}$/.test(s.departs || ""), `${s.id}: departs "${s.departs}" is not HH:MM`);
-  check(typeof s.fareAUD === "number" && s.fareAUD > 0, `${s.id}: no priceAUD`);
+  check(s.fareAUD == null && s.price == null, `${s.id}: has a fare`);
 }
 
-// 5. Dates: the check was run before the days it covers, and nothing claims a later check.
-// The nightly run checks dates up to 3 days ahead, so the latest check is before the last scanned day, and never in the future.
-check(CONFIRMED_SCAN.checked <= CONFIRMED_SCAN.to, `check date ${CONFIRMED_SCAN.checked} is after the last scanned day ${CONFIRMED_SCAN.to}`);
-check(CONFIRMED_SCAN.checked <= new Date().toISOString().slice(0, 10), `check date ${CONFIRMED_SCAN.checked} is in the future`);
-check(SAILINGS_UPDATED === CONFIRMED_SCAN.checked, `SAILINGS_UPDATED ${SAILINGS_UPDATED} is not the check date ${CONFIRMED_SCAN.checked}`);
-for (const s of PLANNER_SAILINGS) check(!s.verified || s.verified <= CONFIRMED_SCAN.checked, `${s.id}: verified ${s.verified} is later than the check date`);
+// 5. Dates: the check date is real (not in the future) and every row carries it. data/timetable.js is rebuilt from it.
+check(checked <= new Date().toISOString().slice(0, 10), `check date ${checked} is in the future`);
+check(SAILINGS_UPDATED === checked, `SAILINGS_UPDATED ${SAILINGS_UPDATED} is not the check date ${checked} (run node scripts/build-timetable.mjs)`);
+for (const s of PLANNER_SAILINGS) check(s.verified === checked, `${s.id}: verified ${s.verified} is not the check date ${checked}`);
 
 // 6. Route pages: its copy renders without prices or blanks; and, if the site has been built, the rendered page
-//    shows exactly its confirmed daily rows and that count. A page with no confirmed daily sailings this week is a
-//    warning, not a failure: it stays up with the "Check live times" box (no table), and the weekly report lists it.
+//    shows exactly its daily rows and that count. A page with no daily sailings is a warning, not a failure: it stays
+//    up with the "Check live times" box (no table).
 const today = new Date().toISOString().slice(0, 10);
 const listedIds = new Set(SAILINGS.map((s) => s.id));
 const htmlDir = join(ROOT, ".next", "server", "app", "indonesia", "routes");
@@ -81,10 +88,10 @@ console.log(`${"route page".padEnd(34)} ${"daily".padStart(5)} ${"rendered".padS
 for (const slug of ROUTE_SLUGS) {
   const route = ROUTE_PAGES[slug];
   const { active } = selectSailings(SAILINGS, route, today);
-  warn(active.length > 0, `route page ${slug}: no confirmed daily sailings this week, so it shows "Check live times" instead of a table`);
+  warn(active.length > 0, `route page ${slug}: no daily sailings, so it shows "Check live times" instead of a table`);
   for (const rel of route.related) check(Boolean(ROUTE_PAGES[rel]), `route page ${slug}: related slug "${rel}" does not exist`);
   if (active.length) {
-    const ctx = routeContext(route, active, CONFIRMED_SCAN.checkedText);
+    const ctx = routeContext(route, active, SAILINGS_CHECKED_TEXT);
     const text = [route.lead(ctx), ...route.faqs(ctx).flatMap((f) => [f.q, f.a])].join(" ");
     check(!/undefined|null|NaN|Infinity/.test(text), `route page ${slug}: copy contains undefined/null/NaN`);
     check(!/A\$\s?\d/.test(text), `route page ${slug}: copy mentions a price`);
@@ -97,7 +104,8 @@ for (const slug of ROUTE_SLUGS) {
     const rows = [...html.matchAll(/data-sailing-id="([^"]+)"/g)].map((m) => m[1]);
     rendered = rows.length;
     check(rows.length === active.length, `route page ${slug}: renders ${rows.length} rows, expected ${active.length}`);
-    for (const id of rows) check(listedIds.has(id), `route page ${slug}: renders ${id}, which is not a confirmed daily sailing`);
+    for (const id of rows) check(listedIds.has(id), `route page ${slug}: renders ${id}, which is not a daily sailing`);
+    check(!/A\$\s?\d|>Confirmed</.test(html), `route page ${slug}: still shows a fare or a Confirmed tag`);
     if (active.length) {
       // The summary counts real departures (a boat calling at several destinations once), not table rows.
       const n = countDepartures(active);
@@ -115,12 +123,11 @@ if (!haveHtml) console.log("(no .next build found: rendered pages not checked; r
 // (15% of route pages, at least 5: more one-port-to-one-port pages means one missing operator can empty several.)
 const MAX_EMPTY_PAGES = Math.max(5, Math.ceil(ROUTE_SLUGS.length * 0.15));
 const emptyPages = ROUTE_SLUGS.filter((slug) => !selectSailings(SAILINGS, ROUTE_PAGES[slug], today).active.length);
-check(emptyPages.length <= MAX_EMPTY_PAGES, `${emptyPages.length} route pages have no confirmed daily sailings (more than ${MAX_EMPTY_PAGES}): ${emptyPages.join(", ")}`);
+check(emptyPages.length <= MAX_EMPTY_PAGES, `${emptyPages.length} route pages have no daily sailings (more than ${MAX_EMPTY_PAGES}): ${emptyPages.join(", ")}`);
 
 const typical = PLANNER_SAILINGS.length - SAILINGS.length;
-console.log(`\n${SAILINGS.length} daily sailings on the route pages (${SAILINGS.filter((s) => s.confidence === "confirmed").length} confirmed with the operator); ${typical} more in the Trip Planner, labelled typical.`);
+console.log(`\n${SAILINGS.length} daily sailings on the route pages (${countDepartures(SAILINGS)} real departures), ${SAILINGS_CHECKED_TEXT}; ${typical} more in the Trip Planner, labelled typical.`);
 console.log(`${SAILINGS.filter((s) => !s.arrives).length} daily sailings have no arrival time.`);
-// "WARNING:" lines are copied into the weekly report email.
 if (warnings.length) console.log(`\n${warnings.map((w) => `WARNING: ${w}`).join("\n")}`);
 if (failures.length) {
   console.error(`\n${failures.length} check(s) failed:\n  ${failures.join("\n  ")}`);

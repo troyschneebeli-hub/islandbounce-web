@@ -19,12 +19,11 @@ export default function AboutPage() {
         route by route as we go.
       </p>
       <p style={{ fontSize: 15, lineHeight: 1.7, marginBottom: 16 }}>
-        How we check the times: we look at seven days of departures on our booking site. A boat is listed as a daily
-        departure when it was bookable on at least six of those days (the
-        booking site hides a boat on a day it&apos;s sold out). We also compare each one with the operator&apos;s own
-        published timetable: the ones that match (same operator, departure within ten minutes) are tagged Confirmed. Each
-        route page says when it was last checked. Fares are the lowest we saw for one adult. Schedules still change, so
-        always confirm on the booking page when you book.
+        Where the times come from: each operator&apos;s own published timetable. We keep reading the operators&apos; timetable
+        pages and update our list when a time changes. We only list boats you can book on our booking site, and only
+        call a boat daily when the operator&apos;s timetable says it runs every day (or doesn&apos;t name days and we&apos;ve seen
+        it bookable every day). Each page says when the times were last checked. We don&apos;t show fares: the booking page
+        has the live price for your date. Schedules still change, so always confirm on the booking page when you book.
       </p>
       <p style={{ fontSize: 15, lineHeight: 1.7, marginBottom: 16 }}>
         Our booking links go to our booking site, run with our partner 12Go. If you book through them we earn a

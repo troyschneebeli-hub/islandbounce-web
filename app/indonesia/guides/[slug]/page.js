@@ -99,7 +99,7 @@ export default function GuidePage({ params }) {
             <section style={{ marginBottom: 36 }}>
               <h2 style={h2}>{g.compare.title}</h2>
               <p style={{ ...para, fontSize: 13, opacity: 0.7 }}>
-                Boats on the booking page at least 6 days a week, {SAILINGS_CHECKED_TEXT}. Tap a route for every departure time.
+                Daily boats on the operators&apos; own timetables, {SAILINGS_CHECKED_TEXT}. Tap a route for every departure time.
               </p>
               <div style={{ overflowX: "auto" }}>
                 <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 520 }}>
@@ -110,7 +110,6 @@ export default function GuidePage({ params }) {
                       <th style={th}>Daily boats</th>
                       <th style={th}>First – last</th>
                       <th style={th}>Fastest crossing</th>
-                      <th style={th}>From (1 adult)</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -129,7 +128,6 @@ export default function GuidePage({ params }) {
                           <td style={td}>{p.count}</td>
                           <td style={{ ...td, whiteSpace: "nowrap" }}>{p.earliest === p.latest ? p.earliest : `${p.earliest} – ${p.latest}`}</td>
                           <td style={{ ...td, whiteSpace: "nowrap" }}>{fmtDuration(p.minDur)}</td>
-                          <td style={{ ...td, whiteSpace: "nowrap" }}>{p.minFare != null ? `A$${p.minFare}` : "—"}</td>
                         </tr>
                       );
                     })}
